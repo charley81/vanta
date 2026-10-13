@@ -11,3 +11,17 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ## Feature development workflow
 
 Before implementing a new feature or materially changing user-visible behavior, read `docs/ralph-workflow.md` and follow its planning gate and one-work-item-per-iteration loop. Bug fixes and maintenance work use the normal project workflow unless the user explicitly requests Ralph.
+
+## Agent skills
+
+### Issue tracker
+
+Issues are tracked in this repository’s GitHub Issues. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five canonical triage labels use their default names. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Domain documentation uses a single-context layout. See `docs/agents/domain.md`.
