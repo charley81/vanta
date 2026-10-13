@@ -7,3 +7,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+## Feature development workflow
+
+Before implementing a new feature or materially changing user-visible behavior, read `docs/ralph-workflow.md` and follow its planning gate and one-work-item-per-iteration loop. Bug fixes and maintenance work use the normal project workflow unless the user explicitly requests Ralph.

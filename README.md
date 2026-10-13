@@ -1,5 +1,16 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Feature development
+
+New features use the repository's [Ralph workflow](docs/ralph-workflow.md): create and approve a PRD, then implement one verified, committed work item per agent iteration.
+
+```bash
+pnpm feature:start -- <feature-slug>
+pnpm ralph:once
+```
+
+Use the watched loop first. The workflow guide explains the sandboxed, bounded AFK loop.
+
 ## Getting Started
 
 First, run the development server:
