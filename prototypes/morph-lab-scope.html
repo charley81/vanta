@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VANTA MORPH Lab scope prototype</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --espresso: #0f0905;
+      --brown: #604e43;
+      --terracotta: #ca8054;
+      --cream: #fefcfb;
+      --peach: #e7c5b1;
+      --muted: #9d8a7f;
+      --panel: #18100b;
+      --line: rgba(231, 197, 177, 0.22);
+      --focus: #f3b58f;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      background: var(--espresso);
+      color: var(--cream);
+    }
+
+    button, input { font: inherit; }
+    button { color: inherit; }
+
+    .prototype-banner {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 12px 24px;
+      border-bottom: 1px solid var(--line);
+      background: #e7c5b1;
+      color: #0f0905;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .shell { max-width: 1480px; margin: 0 auto; padding: 28px clamp(20px, 4vw, 64px) 64px; }
+
+    header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 24px;
+      padding-bottom: 26px;
+    }
+
+    .wordmark { font-size: clamp(38px, 6vw, 72px); font-weight: 300; letter-spacing: .06em; }
+    .route { color: var(--peach); font-size: 13px; letter-spacing: .14em; text-transform: uppercase; }
+
+    .question {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(280px, .75fr);
+      gap: clamp(24px, 5vw, 72px);
+      padding: 42px 0 52px;
+      border-top: 1px solid var(--line);
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { margin-bottom: 18px; font-size: clamp(42px, 6vw, 82px); font-weight: 400; line-height: .96; letter-spacing: -.04em; }
+    .lede { max-width: 720px; color: var(--peach); font-size: 17px; line-height: 1.65; }
+    .recommendation { padding: 24px; border: 1px solid var(--line); background: rgba(96, 78, 67, .12); }
+    .eyebrow { color: var(--terracotta); font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    .recommendation strong { display: block; margin: 10px 0 12px; font-size: 24px; font-weight: 500; }
+    .recommendation p:last-child { margin-bottom: 0; color: var(--muted); line-height: 1.55; }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(310px, .55fr);
+      min-height: 720px;
+      border: 1px solid var(--line);
+      background: #080604;
+    }
+
+    .instrument-area { position: relative; display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+    .instrument-backdrop {
+      flex: 1;
+      display: grid;
+      place-items: center;
+      padding: clamp(24px, 5vw, 70px);
+      background:
+        radial-gradient(circle at 52% 46%, rgba(202, 128, 84, .12), transparent 31%),
+        linear-gradient(150deg, #1b130e 0%, #090604 52%, #130c08 100%);
+    }
+
+    .instrument {
+      width: min(900px, 100%);
+      aspect-ratio: 1.9 / 1;
+      padding: clamp(18px, 3vw, 38px);
+      transform: perspective(1000px) rotateX(5deg);
+      border: 1px solid #4e423a;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #3a3532 0%, #171514 45%, #2a2522 100%);
+      box-shadow: 0 50px 90px rgba(0,0,0,.55), inset 0 1px rgba(255,255,255,.12);
+    }
+
+    .instrument__top { display: flex; justify-content: space-between; align-items: center; padding-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .instrument__name { font-size: clamp(18px, 2vw, 28px); font-weight: 300; letter-spacing: .12em; }
+    .display { width: 34%; min-width: 150px; height: 58px; padding: 12px; border: 5px solid #090909; background: #111a17; color: #dfb792; font: 11px/1.45 ui-monospace, monospace; letter-spacing: .08em; }
+
+    .control-groups { display: grid; grid-template-columns: 1fr 1.25fr 1fr; gap: clamp(12px, 2vw, 30px); padding-top: 28px; }
+    .control-group { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(12px, 2vw, 24px); align-content: start; }
+    .control-group h3 { grid-column: 1 / -1; margin-bottom: 0; color: #9b918b; font-size: 9px; letter-spacing: .16em; text-transform: uppercase; }
+
+    .hardware-control {
+      min-width: 0;
+      padding: 6px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      text-align: center;
+      cursor: default;
+    }
+
+    .hardware-control[data-supported="true"] { cursor: pointer; }
+    .hardware-control[data-supported="true"]:hover,
+    .hardware-control[data-supported="true"]:focus-visible,
+    .hardware-control[data-active="true"] { outline: 1px solid var(--peach); outline-offset: 3px; background: rgba(231,197,177,.08); }
+    .hardware-control[data-supported="false"] { opacity: .38; }
+
+    .knob {
+      --turn: 0deg;
+      position: relative;
+      display: block;
+      width: clamp(36px, 4.2vw, 56px);
+      aspect-ratio: 1;
+      margin: 0 auto 9px;
+      border: 3px ridge #57504c;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 28%, #5c5754 0 8%, #302c2a 17%, #0d0c0b 75%);
+      box-shadow: 0 7px 12px rgba(0,0,0,.7);
+      transform: rotate(var(--turn));
+    }
+    .knob::before { content: ""; position: absolute; top: 5px; left: calc(50% - 1px); width: 2px; height: 34%; background: var(--peach); }
+    .hardware-control[data-supported="false"] .knob::before { background: #777; }
+    .hardware-control span:last-child { display: block; overflow: hidden; color: #ddd5d0; font-size: clamp(8px, .8vw, 10px); letter-spacing: .1em; text-overflow: ellipsis; }
+
+    .morph-control { grid-column: 1 / -1; padding: 10px; }
+    .morph-control .knob { width: clamp(58px, 7vw, 88px); border-color: #846650; box-shadow: 0 0 0 8px rgba(202,128,84,.12), 0 0 28px rgba(231,197,177,.18); }
+
+    .transport {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      min-height: 116px;
+      padding: 22px clamp(22px, 4vw, 52px);
+      border-top: 1px solid var(--line);
+      background: var(--espresso);
+    }
+
+    .play {
+      width: 64px;
+      height: 64px;
+      flex: 0 0 auto;
+      border: 0;
+      border-radius: 7px;
+      background: var(--brown);
+      cursor: pointer;
+      font-size: 24px;
+    }
+    .play:hover, .play:focus-visible { background: var(--terracotta); }
+    .transport-copy { min-width: 0; }
+    .transport-status { margin-bottom: 5px; font-size: 14px; font-weight: 700; letter-spacing: .12em; }
+    .transport-hint { margin: 0; color: var(--peach); font-size: 12px; line-height: 1.45; letter-spacing: .08em; }
+
+    .focus-panel { display: flex; flex-direction: column; padding: clamp(24px, 3vw, 42px); background: rgba(15,9,5,.98); border-left: 1px solid var(--line); }
+    .focus-panel h2 { margin: 44px 0 14px; font-size: clamp(38px, 5vw, 64px); font-weight: 400; letter-spacing: -.04em; }
+    .control-description { min-height: 76px; color: var(--peach); line-height: 1.55; }
+    .value-row { display: flex; justify-content: space-between; gap: 16px; margin-top: auto; padding-top: 36px; font-size: 13px; font-weight: 700; letter-spacing: .1em; }
+    input[type="range"] { width: 100%; margin: 18px 0 10px; accent-color: var(--peach); cursor: ew-resize; }
+    .range-labels { display: flex; justify-content: space-between; color: var(--muted); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+    .close-hint { margin: 48px 0 0; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; line-height: 1.5; letter-spacing: .08em; }
+
+    .analysis-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 24px; margin-top: 40px; }
+    .card { padding: 28px; border: 1px solid var(--line); background: rgba(24,16,11,.62); }
+    .card h2 { font-size: 24px; font-weight: 500; }
+    .state-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 24px; margin: 0; }
+    .state-list div { padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+    dt { color: var(--muted); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+    dd { margin: 6px 0 0; font: 13px/1.4 ui-monospace, monospace; }
+
+    .scope-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 20px; }
+    .scope-item { padding: 12px; border: 1px solid var(--line); font-size: 12px; letter-spacing: .07em; }
+    .scope-item b { display: block; margin-bottom: 4px; color: var(--peach); }
+    .scope-item[data-supported="false"] { color: #71655e; }
+
+    .walkthroughs { margin-top: 24px; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+    .tab { padding: 10px 14px; border: 1px solid var(--line); background: transparent; cursor: pointer; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+    .tab[aria-selected="true"] { border-color: var(--peach); background: var(--peach); color: var(--espresso); }
+    .scenario-copy { max-width: 820px; color: var(--peach); line-height: 1.55; }
+    .steps { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 18px; }
+    .step { padding: 11px 14px; border: 1px solid var(--peach); background: transparent; cursor: pointer; }
+    .step:hover, .step:focus-visible { background: var(--peach); color: var(--espresso); }
+    .step[data-done="true"] { border-color: var(--brown); color: var(--muted); text-decoration: line-through; }
+    .arrow { color: var(--muted); }
+
+    .verdict { margin-top: 34px; padding: 30px; border-left: 4px solid var(--terracotta); background: #17100b; }
+    .verdict h2 { margin-bottom: 10px; }
+    .verdict p { margin-bottom: 0; color: var(--peach); line-height: 1.6; }
+
+    .toast { position: fixed; right: 20px; bottom: 20px; max-width: 380px; padding: 14px 18px; border: 1px solid var(--peach); background: #18100b; color: var(--cream); opacity: 0; transform: translateY(12px); pointer-events: none; transition: .2s ease; }
+    .toast[data-visible="true"] { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 960px) {
+      .question, .workspace, .analysis-grid { grid-template-columns: 1fr; }
+      .focus-panel { min-height: 470px; border-left: 0; border-top: 1px solid var(--line); }
+      .focus-panel h2 { margin-top: 28px; }
+      .value-row { margin-top: 20px; }
+    }
+
+    @media (max-width: 620px) {
+      .prototype-banner { display: block; }
+      .prototype-banner span:last-child { display: block; margin-top: 5px; }
+      header { grid-template-columns: 1fr; }
+      .control-groups { grid-template-columns: 1fr; }
+      .control-group { grid-template-columns: repeat(4, 1fr); }
+      .morph-control { grid-column: auto; }
+      .instrument { aspect-ratio: auto; transform: none; }
+      .display { width: 48%; }
+      .state-list, .scope-list { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="prototype-banner">
+    <span>Throwaway decision prototype — not production UI</span>
+    <span>Question: does this smaller scope feel like one coherent instrument?</span>
+  </div>
+
+  <main class="shell">
+    <header>
+      <div class="wordmark">VANTA</div>
+      <div class="route">Synth / MORPH Lab scope study</div>
+    </header>
+
+    <section class="question" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">Decision under test</p>
+        <h1 id="page-title">One voice.<br>Six controls.</h1>
+        <p class="lede">This prototype tests whether MORPH plus five supporting hardware controls creates a legible, playable web instrument without suggesting that MORPH Lab reproduces MONOLITH’s complete eight-voice architecture. Start the sound, use the lit controls, and try the guided comparisons below.</p>
+      </div>
+      <aside class="recommendation">
+        <p class="eyebrow">Recommended scope</p>
+        <strong>MORPH, CUTOFF, RESONANCE, DRIVE, ATTACK, RELEASE</strong>
+        <p>A monophonic repeating phrase provides the notes. MORPH changes several synthesis parameters together; the other controls shape filtering, saturation, and contour. All hardware remains visible, but unsupported controls are deliberately inert.</p>
+      </aside>
+    </section>
+
+    <section class="workspace" aria-label="Playable instrument scope prototype">
+      <div class="instrument-area">
+        <div class="instrument-backdrop" id="instrument-backdrop">
+          <div class="instrument" aria-label="Simplified MONOLITH hardware map">
+            <div class="instrument__top">
+              <div class="instrument__name">MONOLITH</div>
+              <div class="display" aria-live="polite"><span id="display-state">A / SUB ↔ B / FRACTURE</span><br><span id="display-value">MORPH 50%</span></div>
+            </div>
+            <div class="control-groups" id="hardware-controls"></div>
+          </div>
+        </div>
+        <div class="transport">
+          <button class="play" id="play" type="button" aria-label="Enable sound and play">▶</button>
+          <div class="transport-copy">
+            <div class="transport-status" id="transport-status">SOUND STOPPED</div>
+            <p class="transport-hint" id="transport-hint">Enable one evolving voice. No sound begins without an explicit press.</p>
+          </div>
+        </div>
+      </div>
+
+      <aside class="focus-panel" id="focus-panel">
+        <p class="eyebrow" id="focus-index">01 / Signature control</p>
+        <h2 id="focus-name">MORPH</h2>
+        <p class="control-description" id="focus-description">Moves one voice continuously from SUB’s stable fundamental weight to FRACTURE’s bright, unstable harmonic texture. It changes spectrum, filter, resonance, drive, and motion together—not merely volume.</p>
+        <div class="value-row"><span id="value-label">POSITION</span><output id="focus-output" for="focus-range">50%</output></div>
+        <input id="focus-range" type="range" min="0" max="100" value="50" aria-label="MORPH value" />
+        <div class="range-labels"><span id="range-min">SUB</span><span id="range-max">FRACTURE</span></div>
+        <p class="close-hint">Select any lit hardware control to focus it. Dim controls remain physically present but sit outside this web instrument’s scope.</p>
+      </aside>
+    </section>
+
+    <section class="analysis-grid">
+      <article class="card">
+        <p class="eyebrow">Full relevant state</p>
+        <h2>What the sound engine is doing</h2>
+        <dl class="state-list" id="state-list"></dl>
+      </article>
+      <article class="card">
+        <p class="eyebrow">Scope boundary</p>
+        <h2>Visible does not mean emulated</h2>
+        <p class="scenario-copy">Six controls are active. Seven named panel controls remain visible but unavailable. This is meant to read as a curated one-voice patch, not a disabled full synthesizer.</p>
+        <div class="scope-list" id="scope-list"></div>
+      </article>
+    </section>
+
+    <section class="card walkthroughs" aria-labelledby="walkthrough-title">
+      <p class="eyebrow">Guided listening</p>
+      <h2 id="walkthrough-title">Stress-test the recommendation</h2>
+      <div class="tabs" id="tabs" role="tablist"></div>
+      <p class="scenario-copy" id="scenario-copy"></p>
+      <div class="steps" id="steps"></div>
+    </section>
+
+    <section class="verdict">
+      <p class="eyebrow">Proposed decision</p>
+      <h2>Keep the lab narrow and musically consequential.</h2>
+      <p>If the walkthroughs prove that MORPH retains a recognisable identity while CUTOFF, RESONANCE, DRIVE, ATTACK, and RELEASE give meaningful agency, this is enough. Do not activate OSC, MIX, MOD, LFO, TONE, DECAY, or SUSTAIN just because their knobs are modeled. The production experience should describe itself as one evolving MONOLITH voice and never as a complete browser emulation.</p>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    // Pure decision model: DOM-free state and parameter mapping that can be lifted for production calibration.
+    const CONTROL_DEFS = {
+      morph: {
+        name: "MORPH", supported: true, group: "center", index: "01 / Signature control", default: 50,
+        description: "Moves one voice continuously from SUB’s stable fundamental weight to FRACTURE’s bright, unstable harmonic texture. It changes spectrum, filter, resonance, drive, and motion together—not merely volume.",
+        min: "SUB", max: "FRACTURE", valueLabel: "POSITION"
+      },
+      cutoff: {
+        name: "CUTOFF", supported: true, group: "filter", index: "02 / Filter", default: 55,
+        description: "Offsets the MORPH-defined filter trajectory darker or brighter without replacing MORPH’s identity.",
+        min: "DARK", max: "OPEN", valueLabel: "OFFSET"
+      },
+      resonance: {
+        name: "RESONANCE", supported: true, group: "filter", index: "03 / Filter", default: 32,
+        description: "Emphasises the filter edge. At FRACTURE it sharpens the unstable upper texture; at SUB it adds a restrained rounded peak.",
+        min: "ROUND", max: "PEAK", valueLabel: "AMOUNT"
+      },
+      drive: {
+        name: "DRIVE", supported: true, group: "filter", index: "04 / Output", default: 24,
+        description: "Adds post-filter saturation and density while output compensation keeps loudness from masquerading as better tone.",
+        min: "CLEAN", max: "DENSE", valueLabel: "AMOUNT"
+      },
+      attack: {
+        name: "ATTACK", supported: true, group: "envelope", index: "05 / Contour", default: 14,
+        description: "Sets how quickly each note in the repeating phrase reaches full level, from immediate impact to a swelling onset.",
+        min: "FAST", max: "SLOW", valueLabel: "TIME"
+      },
+      release: {
+        name: "RELEASE", supported: true, group: "envelope", index: "06 / Contour", default: 42,
+        description: "Sets how long each note trails after its gate closes, from clipped pulses to overlapping tails.",
+        min: "SHORT", max: "LONG", valueLabel: "TIME"
+      },
+      osc: { name: "OSC", supported: false, group: "sound", reason: "MORPH owns oscillator-spectrum movement in this patch." },
+      mix: { name: "MIX", supported: false, group: "sound", reason: "No multi-source mixer is exposed." },
+      mod: { name: "MOD", supported: false, group: "sound", reason: "MORPH owns calibrated instability and motion." },
+      lfo: { name: "LFO", supported: false, group: "sound", reason: "No general modulation-routing claim." },
+      tone: { name: "TONE", supported: false, group: "filter", reason: "Omitted to avoid a second brightness control beside CUTOFF." },
+      decay: { name: "DECAY", supported: false, group: "envelope", reason: "The one-voice phrase uses a simplified attack/release contour." },
+      sustain: { name: "SUSTAIN", supported: false, group: "envelope", reason: "The phrase has fixed gate level, not a full ADSR editor." }
+    };
+
+    const SUPPORTED = Object.keys(CONTROL_DEFS).filter((key) => CONTROL_DEFS[key].supported);
+
+    const initialState = {
+      playing: false,
+      focused: "morph",
+      controls: Object.fromEntries(SUPPORTED.map((key) => [key, CONTROL_DEFS[key].default])),
+      scenario: 0,
+      completedSteps: []
+    };
+
+    function clamp(value, min = 0, max = 100) { return Math.min(max, Math.max(min, value)); }
+    function expMap(t, min, max) { return min * Math.pow(max / min, t); }
+
+    function derive(state) {
+      const c = state.controls;
+      const morph = c.morph / 100;
+      const cutoffOffset = Math.pow(2, (c.cutoff - 50) / 42);
+      const filterHz = clamp(expMap(morph, 340, 4200) * cutoffOffset, 120, 9800);
+      const q = 0.8 + morph * 3.8 + (c.resonance / 100) * 8.5;
+      const saturation = 1 + morph * 3.2 + (c.drive / 100) * 8;
+      const attackMs = Math.round(expMap(c.attack / 100, 8, 780));
+      const releaseMs = Math.round(expMap(c.release / 100, 45, 1800));
+      const instability = Math.round(Math.pow(morph, 1.3) * 100);
+      const harmonicDensity = Math.round(12 + morph * 88);
+      return { morph, filterHz: Math.round(filterHz), q, saturation, attackMs, releaseMs, instability, harmonicDensity };
+    }
+
+    function reduce(state, action) {
+      switch (action.type) {
+        case "TOGGLE_PLAY": return { ...state, playing: !state.playing };
+        case "SET_PLAYING": return { ...state, playing: action.value };
+        case "FOCUS": return CONTROL_DEFS[action.control]?.supported ? { ...state, focused: action.control } : state;
+        case "SET_CONTROL": return {
+          ...state,
+          controls: { ...state.controls, [action.control]: clamp(action.value) }
+        };
+        case "PATCH": return {
+          ...state,
+          playing: action.playing ?? state.playing,
+          focused: action.focused ?? state.focused,
+          controls: { ...state.controls, ...(action.controls || {}) }
+        };
+        case "SCENARIO": return { ...state, scenario: action.index, completedSteps: [] };
+        case "STEP_DONE": return { ...state, completedSteps: [...new Set([...state.completedSteps, action.index])] };
+        case "RESET": return structuredClone(initialState);
+        default: return state;
+      }
+    }
+
+    class MorphAudioEngine {
+      constructor() {
+        this.context = null;
+        this.master = null;
+        this.timer = null;
+        this.active = new Set();
+        this.step = 0;
+        this.state = initialState;
+        this.pattern = [55, 65.41, 73.42, 82.41, 73.42, 65.41];
+      }
+
+      async start(state) {
+        this.state = state;
+        if (!this.context) {
+          this.context = new (window.AudioContext || window.webkitAudioContext)();
+          this.master = this.context.createGain();
+          this.master.gain.value = 0.22;
+          this.master.connect(this.context.destination);
+        }
+        await this.context.resume();
+        this.stopTimer();
+        this.step = 0;
+        this.trigger();
+        this.timer = window.setInterval(() => this.trigger(), 540);
+      }
+
+      update(state) { this.state = state; }
+
+      stop() {
+        this.stopTimer();
+        const now = this.context?.currentTime || 0;
+        this.active.forEach((voice) => {
+          try {
+            voice.gain.gain.cancelScheduledValues(now);
+            voice.gain.gain.setTargetAtTime(0, now, .025);
+            voice.sources.forEach((source) => source.stop(now + .12));
+          } catch (_) {}
+        });
+        this.active.clear();
+      }
+
+      stopTimer() {
+        if (this.timer) window.clearInterval(this.timer);
+        this.timer = null;
+      }
+
+      makeDrive(amount) {
+        const samples = 512;
+        const curve = new Float32Array(samples);
+        const k = amount * 8;
+        for (let i = 0; i < samples; i += 1) {
+          const x = i * 2 / (samples - 1) - 1;
+          curve[i] = Math.tanh(x * k) / Math.tanh(k);
+        }
+        return curve;
+      }
+
+      trigger() {
+        if (!this.context || !this.master) return;
+        const now = this.context.currentTime + .01;
+        const params = derive(this.state);
+        const frequency = this.pattern[this.step % this.pattern.length];
+        this.step += 1;
+
+        const input = this.context.createGain();
+        const filter = this.context.createBiquadFilter();
+        const shaper = this.context.createWaveShaper();
+        const output = this.context.createGain();
+        filter.type = "lowpass";
+        filter.frequency.setValueAtTime(params.filterHz, now);
+        filter.Q.setValueAtTime(params.q, now);
+        shaper.curve = this.makeDrive(params.saturation);
+        shaper.oversample = "2x";
+        output.gain.setValueAtTime(0.0001, now);
+        output.gain.exponentialRampToValueAtTime(0.82, now + params.attackMs / 1000);
+        const gateOff = now + .35;
+        output.gain.setValueAtTime(0.82, gateOff);
+        output.gain.exponentialRampToValueAtTime(0.0001, gateOff + params.releaseMs / 1000);
+        input.connect(filter).connect(shaper).connect(output).connect(this.master);
+
+        const sources = [];
+        const morph = params.morph;
+        const harmonics = [
+          { ratio: .5, gain: .34 * (1 - morph) },
+          { ratio: 1, gain: .72 },
+          { ratio: 2, gain: .08 + morph * .24 },
+          { ratio: 3, gain: .02 + morph * .20 },
+          { ratio: 5, gain: morph * .14 },
+          { ratio: 7, gain: morph * .09 }
+        ];
+
+        harmonics.forEach((partial, index) => {
+          if (partial.gain <= .001) return;
+          const oscillator = this.context.createOscillator();
+          const gain = this.context.createGain();
+          oscillator.type = index < 2 ? "sine" : "triangle";
+          oscillator.frequency.setValueAtTime(frequency * partial.ratio, now);
+          const detune = index > 1 ? (index - 1) * morph * 2.8 : 0;
+          oscillator.detune.setValueAtTime(detune, now);
+          gain.gain.setValueAtTime(partial.gain, now);
+          oscillator.connect(gain).connect(input);
+          oscillator.start(now);
+          oscillator.stop(gateOff + params.releaseMs / 1000 + .08);
+          sources.push(oscillator);
+        });
+
+        if (morph > .05) {
+          const oscillator = this.context.createOscillator();
+          const gain = this.context.createGain();
+          const wobble = this.context.createOscillator();
+          const wobbleGain = this.context.createGain();
+          oscillator.type = "sawtooth";
+          oscillator.frequency.setValueAtTime(frequency * 1.003, now);
+          gain.gain.setValueAtTime(morph * .12, now);
+          wobble.type = "sine";
+          wobble.frequency.setValueAtTime(2.2 + morph * 7.5, now);
+          wobbleGain.gain.setValueAtTime(morph * 10, now);
+          wobble.connect(wobbleGain).connect(oscillator.detune);
+          oscillator.connect(gain).connect(input);
+          oscillator.start(now); wobble.start(now);
+          oscillator.stop(gateOff + params.releaseMs / 1000 + .08);
+          wobble.stop(gateOff + params.releaseMs / 1000 + .08);
+          sources.push(oscillator, wobble);
+        }
+
+        const voice = { gain: output, sources };
+        this.active.add(voice);
+        window.setTimeout(() => this.active.delete(voice), 500 + params.releaseMs);
+      }
+    }
+
+    const scenarios = [
+      {
+        name: "Continuum",
+        copy: "Confirm that MORPH feels continuous rather than like two presets. Listen for the fundamental giving way to upper harmonics, brighter filtering, denser drive, and increasing instability—without a jump at the midpoint.",
+        steps: [
+          { label: "Start at SUB", patch: { playing: true, focused: "morph", controls: { morph: 0, cutoff: 55, resonance: 32, drive: 24, attack: 14, release: 42 } } },
+          { label: "Move to 25%", patch: { controls: { morph: 25 } } },
+          { label: "Move to 50%", patch: { controls: { morph: 50 } } },
+          { label: "Move to 75%", patch: { controls: { morph: 75 } } },
+          { label: "Arrive at FRACTURE", patch: { controls: { morph: 100 } } }
+        ]
+      },
+      {
+        name: "Not just cutoff",
+        copy: "Test the strongest semantic claim. A bright SUB and dark FRACTURE should still differ because MORPH also changes harmonic density, drive, resonance, detune, and motion. If they collapse into the same sound, MORPH is only a brightness knob and the scope fails.",
+        steps: [
+          { label: "Bright SUB", patch: { playing: true, focused: "cutoff", controls: { morph: 0, cutoff: 92, resonance: 32, drive: 24 } } },
+          { label: "Dark FRACTURE", patch: { focused: "morph", controls: { morph: 100, cutoff: 14, resonance: 32, drive: 24 } } },
+          { label: "Neutral midpoint", patch: { controls: { morph: 50, cutoff: 55 } } }
+        ]
+      },
+      {
+        name: "Supporting agency",
+        copy: "Keep MORPH fixed, then prove the five secondary controls make musically meaningful changes without turning the lab into a full editor. The phrase should move from tight and clean to resonant, driven, and spacious.",
+        steps: [
+          { label: "Tight + clean", patch: { playing: true, focused: "attack", controls: { morph: 55, cutoff: 46, resonance: 12, drive: 5, attack: 2, release: 12 } } },
+          { label: "Open filter", patch: { focused: "cutoff", controls: { cutoff: 82 } } },
+          { label: "Raise resonance", patch: { focused: "resonance", controls: { resonance: 78 } } },
+          { label: "Add drive", patch: { focused: "drive", controls: { drive: 72 } } },
+          { label: "Slow the contour", patch: { focused: "attack", controls: { attack: 48, release: 76 } } }
+        ]
+      },
+      {
+        name: "Scope edge",
+        copy: "Inspect the dim controls on the hardware. They remain honest physical context, but the lab refuses to imply oscillator selection, source mixing, modulation routing, a full ADSR, or output tone mastering. The question is whether this reads as curated rather than broken.",
+        steps: [
+          { label: "Return to reference patch", patch: { playing: true, focused: "morph", controls: { morph: 50, cutoff: 55, resonance: 32, drive: 24, attack: 14, release: 42 } } },
+          { label: "Stop sound", patch: { playing: false } }
+        ]
+      }
+    ];
+
+    let state = structuredClone(initialState);
+    const audio = new MorphAudioEngine();
+    let toastTimer = null;
+
+    const $ = (selector) => document.querySelector(selector);
+    const elements = {
+      hardware: $("#hardware-controls"), play: $("#play"), status: $("#transport-status"), hint: $("#transport-hint"),
+      focusIndex: $("#focus-index"), focusName: $("#focus-name"), focusDescription: $("#focus-description"),
+      valueLabel: $("#value-label"), output: $("#focus-output"), range: $("#focus-range"),
+      rangeMin: $("#range-min"), rangeMax: $("#range-max"), displayValue: $("#display-value"),
+      stateList: $("#state-list"), scopeList: $("#scope-list"), tabs: $("#tabs"), scenarioCopy: $("#scenario-copy"),
+      steps: $("#steps"), toast: $("#toast")
+    };
+
+    function showToast(message) {
+      elements.toast.textContent = message;
+      elements.toast.dataset.visible = "true";
+      window.clearTimeout(toastTimer);
+      toastTimer = window.setTimeout(() => { elements.toast.dataset.visible = "false"; }, 3200);
+    }
+
+    function dispatch(action) {
+      const previousPlaying = state.playing;
+      state = reduce(state, action);
+      audio.update(state);
+      if (state.playing && !previousPlaying) audio.start(state).catch(() => {
+        state = reduce(state, { type: "SET_PLAYING", value: false });
+        render();
+        showToast("Audio could not start. Check browser audio permissions.");
+      });
+      if (!state.playing && previousPlaying) audio.stop();
+      render();
+    }
+
+    function renderHardware() {
+      const groups = [
+        ["sound", "Sound", ["osc", "mix", "mod", "lfo"]],
+        ["center", "Signature", ["morph"]],
+        ["filter", "Filter + output", ["cutoff", "resonance", "drive", "tone"]],
+        ["envelope", "Envelope", ["attack", "decay", "sustain", "release"]]
+      ];
+      elements.hardware.innerHTML = groups.map(([group, label, keys]) => `
+        <div class="control-group control-group--${group}">
+          <h3>${label}</h3>
+          ${keys.map((key) => {
+            const def = CONTROL_DEFS[key];
+            const value = state.controls[key] ?? 50;
+            return `<button type="button" class="hardware-control ${key === "morph" ? "morph-control" : ""}" data-control="${key}" data-supported="${def.supported}" data-active="${state.focused === key}" aria-label="${def.name}${def.supported ? ", supported" : ", outside prototype scope"}">
+              <span class="knob" style="--turn:${-135 + value * 2.7}deg"></span><span>${def.name}</span>
+            </button>`;
+          }).join("")}
+        </div>`).join("");
+
+      elements.hardware.querySelectorAll("button").forEach((button) => {
+        button.addEventListener("click", () => {
+          const key = button.dataset.control;
+          const def = CONTROL_DEFS[key];
+          if (def.supported) dispatch({ type: "FOCUS", control: key });
+          else showToast(`${def.name} stays visible but inactive: ${def.reason}`);
+        });
+      });
+    }
+
+    function displayValue(key, value) {
+      if (key === "attack") return `${derive(state).attackMs} ms`;
+      if (key === "release") return `${derive(state).releaseMs} ms`;
+      return `${Math.round(value)}%`;
+    }
+
+    function renderFocus() {
+      const def = CONTROL_DEFS[state.focused];
+      const value = state.controls[state.focused];
+      elements.focusIndex.textContent = def.index;
+      elements.focusName.textContent = def.name;
+      elements.focusDescription.textContent = def.description;
+      elements.valueLabel.textContent = def.valueLabel;
+      elements.output.textContent = displayValue(state.focused, value);
+      elements.range.value = value;
+      elements.range.setAttribute("aria-label", `${def.name} value`);
+      elements.rangeMin.textContent = def.min;
+      elements.rangeMax.textContent = def.max;
+      elements.displayValue.textContent = `${def.name} ${displayValue(state.focused, value)}`;
+    }
+
+    function renderState() {
+      const p = derive(state);
+      const rows = [
+        ["Audio", state.playing ? "playing one repeating voice" : "stopped; settings retained"],
+        ["MORPH", `${state.controls.morph}% · ${state.controls.morph < 34 ? "SUB region" : state.controls.morph > 66 ? "FRACTURE region" : "continuum"}`],
+        ["Harmonic density", `${p.harmonicDensity}%`],
+        ["Instability", `${p.instability}%`],
+        ["Effective filter", `${p.filterHz} Hz`],
+        ["Effective resonance", `Q ${p.q.toFixed(1)}`],
+        ["Saturation", `${p.saturation.toFixed(1)}× with output compensation`],
+        ["Contour", `${p.attackMs} ms attack / ${p.releaseMs} ms release`]
+      ];
+      elements.stateList.innerHTML = rows.map(([term, value]) => `<div><dt>${term}</dt><dd>${value}</dd></div>`).join("");
+      elements.status.textContent = state.playing ? "SOUND PLAYING / ONE VOICE" : "SOUND STOPPED";
+      elements.hint.textContent = state.playing ? "Use the lit hardware controls. Press again to stop; settings remain." : "Enable one evolving voice. No sound begins without an explicit press.";
+      elements.play.textContent = state.playing ? "■" : "▶";
+      elements.play.setAttribute("aria-label", state.playing ? "Stop sound" : "Enable sound and play");
+    }
+
+    function renderScope() {
+      elements.scopeList.innerHTML = Object.entries(CONTROL_DEFS).map(([key, def]) => `
+        <div class="scope-item" data-supported="${def.supported}"><b>${def.name} · ${def.supported ? "ACTIVE" : "VISIBLE / INERT"}</b>${def.supported ? (key === "morph" ? "Multi-parameter continuum" : def.description.split(".")[0]) : def.reason}</div>
+      `).join("");
+    }
+
+    function renderScenario() {
+      elements.tabs.innerHTML = scenarios.map((scenario, index) => `<button type="button" class="tab" role="tab" aria-selected="${state.scenario === index}" data-index="${index}">${index + 1}. ${scenario.name}</button>`).join("");
+      elements.tabs.querySelectorAll("button").forEach((button) => button.addEventListener("click", () => dispatch({ type: "SCENARIO", index: Number(button.dataset.index) })));
+      const scenario = scenarios[state.scenario];
+      elements.scenarioCopy.textContent = scenario.copy;
+      elements.steps.innerHTML = scenario.steps.map((step, index) => `${index ? '<span class="arrow" aria-hidden="true">→</span>' : ""}<button type="button" class="step" data-index="${index}" data-done="${state.completedSteps.includes(index)}">${index + 1}. ${step.label}</button>`).join("");
+      elements.steps.querySelectorAll("button").forEach((button) => button.addEventListener("click", () => {
+        const index = Number(button.dataset.index);
+        dispatch({ type: "PATCH", ...scenario.steps[index].patch });
+        dispatch({ type: "STEP_DONE", index });
+      }));
+    }
+
+    function render() {
+      renderHardware();
+      renderFocus();
+      renderState();
+      renderScope();
+      renderScenario();
+    }
+
+    elements.play.addEventListener("click", () => dispatch({ type: "TOGGLE_PLAY" }));
+    elements.range.addEventListener("input", (event) => dispatch({ type: "SET_CONTROL", control: state.focused, value: Number(event.target.value) }));
+    window.addEventListener("keydown", (event) => {
+      if (event.code === "Space" && !["INPUT", "BUTTON"].includes(document.activeElement?.tagName)) {
+        event.preventDefault();
+        dispatch({ type: "TOGGLE_PLAY" });
+      }
+      if (event.key === "Escape") dispatch({ type: "FOCUS", control: "morph" });
+    });
+
+    render();
+  </script>
+</body>
+</html>
