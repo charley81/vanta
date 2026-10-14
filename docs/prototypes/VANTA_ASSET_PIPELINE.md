@@ -20,6 +20,8 @@ The query parameters are shareable:
 - `candidate=A|B|C`
 - `route=home|product|synth`
 
+The route is deliberately a neutral technical harness, not a VANTA page design. Figma remains authoritative for layout, typography, color, components, content, aspect ratios, and crops; the harness swaps only the implementation behind each existing product-media region.
+
 ## Compared compositions
 
 - **A / Realtime everywhere:** serve the untouched GLB and mount WebGL on Home, Product, and Synth.
@@ -86,7 +88,7 @@ The AVIF/WebP stills and WebM in this branch are derived from donor-prototype br
 
 ## Design context
 
-The prototype was checked against the Figma desktop MCP metadata and screenshots for the selected `final` canvas, Product hero (`129:477`), and Product MORPH feature (`129:521`). The design makes product imagery central on Product but does not require direct manipulation there, supporting authored responsive media for that route. Home and Synth responsibilities follow the previously resolved experience architecture.
+The prototype was checked against the Figma desktop MCP metadata, variables, and screenshots for the `final` canvas, Product page (`129:476`), Product hero (`129:477`), Product MORPH feature (`129:521`), and final vertical sections (`129:455`). The retrieved palette confirms the existing VANTA design tokens; the technical harness intentionally does not reuse or revise them. The design makes product imagery central on Product but does not require direct manipulation there, supporting authored responsive media for that route. Home and Synth responsibilities follow the previously resolved experience architecture.
 
 ## What this prototype does not decide
 

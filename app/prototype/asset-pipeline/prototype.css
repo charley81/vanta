@@ -1,592 +1,429 @@
-.shell {
-  --ink: #050505;
-  --paper: #e8e0d4;
-  --warm: #c7a98b;
-  --signal: #8eefff;
+.pipelineLabShell {
+  --lab-bg: #f4f4f1;
+  --lab-panel: #ffffff;
+  --lab-ink: #171717;
+  --lab-muted: #676762;
+  --lab-line: #d4d4cf;
+  --lab-accent: #126b73;
   min-height: 100vh;
-  overflow-x: hidden;
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--lab-bg);
+  color: var(--lab-ink);
   font-family: var(--font-geist-sans), sans-serif;
-  padding-bottom: 110px;
 }
 
-.shell button,
-.shell input {
+.pipelineLabShell *,
+.pipelineLabShell *::before,
+.pipelineLabShell *::after {
+  box-sizing: border-box;
+}
+
+.pipelineLabShell button,
+.pipelineLabShell input {
   font: inherit;
 }
 
-.header {
-  position: relative;
-  z-index: 20;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  min-height: 88px;
-  margin: 0 5vw;
-  border-bottom: 1px solid #4a4640;
+.pipelineLabHeader {
+  display: flex;
+  gap: 3rem;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 2rem clamp(1rem, 4vw, 4rem);
+  border-bottom: 1px solid var(--lab-line);
+  background: var(--lab-panel);
 }
 
-.brand {
-  width: max-content;
-  color: inherit;
-  font-size: 1.3rem;
-  font-weight: 700;
-  letter-spacing: -0.07em;
-  text-decoration: none;
-}
-
-.brand span {
-  margin-left: 0.2rem;
-  color: var(--warm);
-  font-size: 0.45rem;
-  vertical-align: top;
-}
-
-.prototypeMark,
-.eyebrow,
-.mediaRail,
-.candidateTitle p,
-.lists h3,
-.recommendation > p:first-child,
-.switcher > span {
+.pipelineLabKicker,
+.pipelineLabSegmented legend,
+.pipelineLabSlotHeading span,
+.pipelineLabCandidateHeading p,
+.pipelineLabInspector h3 {
+  margin: 0 0 0.45rem;
+  color: var(--lab-muted);
   font-family: var(--font-geist-mono), monospace;
-  font-size: 0.68rem;
-  letter-spacing: 0.12em;
+  font-size: 0.69rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
-.prototypeMark {
-  color: #8e8981;
+.pipelineLabHeader h1,
+.pipelineLabCandidateHeading h2,
+.pipelineLabDetails h2 {
+  margin: 0;
+  font-size: clamp(1.5rem, 2.6vw, 2.4rem);
+  font-weight: 560;
+  letter-spacing: -0.04em;
+  line-height: 1;
 }
 
-.header nav {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1.4rem;
+.pipelineLabAuthority {
+  display: grid;
+  max-width: 37rem;
+  padding: 0.8rem 1rem;
+  border-left: 4px solid var(--lab-accent);
+  background: #eaf3f2;
+  font-size: 0.86rem;
+  line-height: 1.45;
 }
 
-.header nav button {
+.pipelineLabAuthority span {
+  color: var(--lab-muted);
+}
+
+.pipelineLabControls {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  padding: 1rem clamp(1rem, 4vw, 4rem);
+  border-bottom: 1px solid var(--lab-line);
+}
+
+.pipelineLabSegmented {
+  min-width: 0;
+  margin: 0;
   padding: 0;
   border: 0;
-  border-bottom: 1px solid transparent;
-  background: none;
-  color: #837f78;
+}
+
+.pipelineLabSegmented > div {
+  display: flex;
+  gap: 0.35rem;
+  overflow-x: auto;
+}
+
+.pipelineLabSegmented button {
+  min-height: 38px;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--lab-line);
+  border-radius: 5px;
+  background: var(--lab-panel);
+  color: var(--lab-muted);
   cursor: pointer;
-  font-size: 0.82rem;
-  letter-spacing: 0.04em;
+  font-size: 0.78rem;
+  white-space: nowrap;
 }
 
-.header nav button[data-active="true"] {
-  border-color: var(--signal);
-  color: var(--paper);
+.pipelineLabSegmented button[aria-pressed="true"] {
+  border-color: var(--lab-ink);
+  background: var(--lab-ink);
+  color: #fff;
 }
 
-.intro {
+.pipelineLabWorkspace {
   display: grid;
-  grid-template-columns: 1.45fr 0.55fr;
-  gap: 8vw;
-  align-items: end;
-  padding: 10vh 5vw 6vh;
+  grid-template-columns: minmax(0, 1.65fr) minmax(310px, 0.65fr);
+  gap: 1rem;
+  padding: 1rem clamp(1rem, 4vw, 4rem) 2rem;
 }
 
-.eyebrow {
-  margin: 0 0 1.2rem;
-  color: var(--warm);
+.pipelineLabMediaColumn,
+.pipelineLabInspector,
+.pipelineLabDetails article {
+  border: 1px solid var(--lab-line);
+  border-radius: 7px;
+  background: var(--lab-panel);
 }
 
-.intro h1 {
-  max-width: 14ch;
-  margin: 0;
-  font-size: clamp(3rem, 6.8vw, 7.5rem);
-  font-weight: 500;
-  letter-spacing: -0.07em;
-  line-height: 0.88;
+.pipelineLabMediaColumn {
+  min-width: 0;
+  overflow: hidden;
 }
 
-.lede,
-.thesis,
-.diagnostics > div > p:last-child,
-.recommendation > p:last-child {
-  color: #aaa39a;
-  font-size: clamp(0.95rem, 1.25vw, 1.2rem);
-  line-height: 1.55;
+.pipelineLabSlotHeading {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 64px;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--lab-line);
 }
 
-.stage {
+.pipelineLabSlotHeading > div {
   display: grid;
-  grid-template-columns: minmax(0, 1.65fr) minmax(300px, 0.65fr);
-  min-height: min(75vw, 810px);
-  border-top: 1px solid #332f2a;
-  border-bottom: 1px solid #332f2a;
 }
 
-.media {
+.pipelineLabSlotHeading strong {
+  font-size: 0.9rem;
+}
+
+.pipelineLabSlotHeading code {
+  padding: 0.3rem 0.45rem;
+  border-radius: 4px;
+  background: #ecece8;
+  color: var(--lab-accent);
+  font-size: 0.72rem;
+}
+
+.pipelineLabMedia {
   position: relative;
-  min-height: 660px;
+  height: clamp(420px, 55vw, 720px);
   overflow: hidden;
   background: #050505;
-  border-right: 1px solid #332f2a;
   cursor: ew-resize;
 }
 
-.media canvas,
-.picture,
-.picture img,
-.video,
-.deferred {
+.pipelineLabMedia canvas,
+.pipelineLabPicture,
+.pipelineLabPicture img,
+.pipelineLabVideo,
+.pipelineLabDeferred {
+  display: block;
   width: 100%;
   height: 100%;
 }
 
-.picture {
-  display: block;
-}
-
-.picture img,
-.video {
-  display: block;
+.pipelineLabPicture img,
+.pipelineLabVideo {
   object-fit: cover;
 }
 
-.mediaRail {
-  position: absolute;
-  z-index: 5;
-  top: 0;
-  right: 0;
-  left: 0;
-  display: flex;
-  justify-content: space-between;
-  padding: 1.1rem 1.25rem;
-  color: #8c8881;
-  pointer-events: none;
-}
-
-.loading {
+.pipelineLabLoading {
   display: grid;
   width: 100%;
   height: 100%;
   place-items: center;
-  color: #7d7870;
+  color: #aaa;
   font-family: var(--font-geist-mono), monospace;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   text-transform: uppercase;
 }
 
-.morphControl {
-  position: absolute;
-  z-index: 6;
-  right: 1.25rem;
-  bottom: 1.25rem;
-  left: 1.25rem;
-  display: grid;
-  grid-template-columns: auto 1fr 3ch;
-  gap: 1rem;
-  align-items: center;
-  padding: 0.9rem 1rem;
-  border: 1px solid #4a4640;
-  background: rgb(5 5 5 / 84%);
-  backdrop-filter: blur(14px);
-  color: var(--signal);
-  font-family: var(--font-geist-mono), monospace;
-  font-size: 0.7rem;
-  letter-spacing: 0.12em;
-}
-
-.morphControl input {
-  width: 100%;
-  accent-color: var(--signal);
-}
-
-.morphControl output {
-  text-align: right;
-}
-
-.deferred {
+.pipelineLabDeferred {
   position: relative;
 }
 
-.deferred .picture img {
-  filter: brightness(0.45) saturate(0.6);
+.pipelineLabDeferred .pipelineLabPicture img {
+  filter: brightness(0.42) saturate(0.6);
 }
 
-.deferredScrim {
+.pipelineLabDeferred > div {
   position: absolute;
   inset: 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  padding: 8%;
-  background: linear-gradient(90deg, rgb(5 5 5 / 75%), transparent 75%);
+  padding: clamp(1.25rem, 5vw, 4rem);
+  background: linear-gradient(90deg, rgb(0 0 0 / 75%), transparent 80%);
+  color: #fff;
 }
 
-.deferredScrim p {
-  color: var(--signal);
-  font-family: var(--font-geist-mono), monospace;
-  font-size: 0.7rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+.pipelineLabDeferred strong {
+  font-size: clamp(1.3rem, 2.5vw, 2.2rem);
 }
 
-.deferredScrim h2 {
-  max-width: 13ch;
-  margin: 1rem 0 2rem;
-  font-size: clamp(2rem, 4vw, 4.2rem);
-  font-weight: 500;
-  letter-spacing: -0.06em;
-  line-height: 0.94;
+.pipelineLabDeferred span {
+  margin: 0.5rem 0 1.5rem;
+  color: #c8c8c3;
+  font-size: 0.85rem;
 }
 
-.deferredScrim button {
-  display: flex;
-  gap: 1.5rem;
-  padding: 0.9rem 1rem;
-  border: 1px solid var(--paper);
-  background: var(--paper);
-  color: var(--ink);
+.pipelineLabDeferred button {
+  padding: 0.7rem 0.9rem;
+  border: 1px solid #fff;
+  border-radius: 4px;
+  background: #fff;
+  color: #111;
   cursor: pointer;
   font-size: 0.78rem;
-  text-transform: uppercase;
 }
 
-.deferredScrim button span {
-  color: #6d6257;
+.pipelineLabMorph {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  border-top: 1px solid var(--lab-line);
   font-family: var(--font-geist-mono), monospace;
+  font-size: 0.72rem;
 }
 
-.specification {
-  display: flex;
-  flex-direction: column;
-  padding: clamp(2rem, 4vw, 4.5rem) clamp(1.5rem, 3vw, 3.5rem);
-  background: #0a0908;
+.pipelineLabMorph input {
+  width: 100%;
+  accent-color: var(--lab-accent);
 }
 
-.candidateTitle {
+.pipelineLabProxyNote {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--lab-line);
+  color: var(--lab-muted);
+  font-size: 0.74rem;
+  line-height: 1.45;
+}
+
+.pipelineLabInspector {
+  align-self: start;
+  min-width: 0;
+  padding: 1.25rem;
+}
+
+.pipelineLabCandidateHeading {
   display: flex;
-  gap: 1.5rem;
+  gap: 0.9rem;
   align-items: flex-start;
 }
 
-.candidateTitle > span {
-  color: var(--signal);
-  font-size: 4rem;
-  font-weight: 300;
+.pipelineLabCandidateHeading > span {
+  color: var(--lab-accent);
+  font-size: 2.7rem;
+  font-weight: 550;
   line-height: 0.82;
 }
 
-.candidateTitle p {
-  margin: 0 0 0.5rem;
-  color: #777169;
+.pipelineLabCandidateHeading p {
+  margin-bottom: 0.3rem;
 }
 
-.candidateTitle h2,
-.pipelineHeading h2,
-.diagnostics h2,
-.recommendation h2 {
-  margin: 0;
-  font-size: clamp(1.8rem, 3vw, 3.2rem);
-  font-weight: 500;
-  letter-spacing: -0.055em;
-  line-height: 0.95;
+.pipelineLabInspector > p {
+  margin: 1.25rem 0;
+  color: var(--lab-muted);
+  font-size: 0.86rem;
+  line-height: 1.5;
 }
 
-.thesis {
-  margin: 2.5rem 0;
+.pipelineLabRouteMatrix {
+  margin: 0 0 1.5rem;
+  border-top: 1px solid var(--lab-line);
 }
 
-.scores {
+.pipelineLabRouteMatrix > div {
   display: grid;
-  gap: 0.85rem;
-  padding: 1.5rem 0;
-  border-top: 1px solid #332f2a;
-  border-bottom: 1px solid #332f2a;
-}
-
-.score {
-  display: flex;
-  justify-content: space-between;
-  color: #aaa39a;
-  font-size: 0.76rem;
-}
-
-.scoreTicks {
-  display: flex;
-  gap: 4px;
-}
-
-.scoreTicks i {
-  width: 16px;
-  height: 3px;
-  background: #3b3935;
-}
-
-.scoreTicks i[data-on="true"] {
-  background: var(--signal);
-}
-
-.lists {
-  display: grid;
-  gap: 1.5rem;
-  margin-top: auto;
-  padding-top: 2.5rem;
-}
-
-.lists h3 {
-  margin: 0 0 0.8rem;
-  color: var(--warm);
-  font-weight: 400;
-}
-
-.lists ul {
-  display: grid;
-  gap: 0.55rem;
-  margin: 0;
-  padding: 0;
-  color: #99938b;
-  font-size: 0.8rem;
-  line-height: 1.4;
-  list-style: none;
-}
-
-.lists li::before {
-  content: "— ";
-  color: #57534d;
-}
-
-.pipelineSection,
-.diagnostics,
-.recommendation {
-  display: grid;
-  grid-template-columns: 0.72fr 1.28fr;
-  gap: 8vw;
-  padding: 12vh 8vw;
-}
-
-.pipeline {
-  margin: 0;
-  padding: 0;
-  border-top: 1px solid #4a4640;
-  list-style: none;
-}
-
-.pipeline li {
-  display: grid;
-  grid-template-columns: 5rem 1fr;
-  padding: 1.25rem 0;
-  border-bottom: 1px solid #332f2a;
-}
-
-.pipeline li span {
-  color: var(--signal);
-  font-family: var(--font-geist-mono), monospace;
+  grid-template-columns: 0.65fr 0.75fr 1.25fr;
+  gap: 0.5rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--lab-line);
+  color: var(--lab-muted);
   font-size: 0.7rem;
 }
 
-.pipeline li p {
+.pipelineLabRouteMatrix > div[data-current="true"] {
+  color: var(--lab-ink);
+  font-weight: 650;
+}
+
+.pipelineLabRouteMatrix dt,
+.pipelineLabRouteMatrix dd {
   margin: 0;
-  font-size: clamp(1rem, 1.4vw, 1.3rem);
 }
 
-.diagnostics {
-  background: var(--paper);
-  color: var(--ink);
+.pipelineLabRouteMatrix dd:nth-child(2) {
+  color: var(--lab-accent);
+  font-family: var(--font-geist-mono), monospace;
 }
 
-.diagnostics .eyebrow {
-  color: #806a55;
+.pipelineLabInspector h3 {
+  margin-top: 0;
 }
 
-.diagnostics > div > p:last-child {
-  max-width: 34rem;
-  color: #625e57;
-}
-
-.diagnostics pre {
+.pipelineLabInspector pre {
+  max-height: 440px;
   overflow: auto;
   margin: 0;
-  padding: 1.5rem;
-  border: 1px solid #aaa197;
-  background: #dcd3c7;
-  color: #302d29;
+  padding: 0.9rem;
+  border-radius: 5px;
+  background: #efefec;
   font-family: var(--font-geist-mono), monospace;
-  font-size: clamp(0.68rem, 0.9vw, 0.82rem);
-  line-height: 1.65;
+  font-size: 0.66rem;
+  line-height: 1.55;
 }
 
-.recommendation {
-  grid-template-columns: 0.45fr 0.65fr 0.9fr;
-  align-items: start;
-  background: #12100e;
+.pipelineLabDetails {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  padding: 0 clamp(1rem, 4vw, 4rem) 4rem;
 }
 
-.recommendation > p:first-child {
-  margin: 0;
-  color: var(--signal);
+.pipelineLabDetails article {
+  padding: 1.25rem;
 }
 
-.recommendation > p:last-child {
-  margin: 0;
+.pipelineLabDetails h2 {
+  font-size: 1.35rem;
 }
 
-.switcher {
-  position: fixed;
-  z-index: 50;
-  right: 50%;
-  bottom: 1rem;
-  display: flex;
-  gap: 0.4rem;
-  align-items: center;
-  width: min(760px, calc(100vw - 2rem));
-  padding: 0.45rem;
-  border: 1px solid #4d4942;
-  background: rgb(9 8 7 / 92%);
-  box-shadow: 0 12px 55px rgb(0 0 0 / 55%);
-  backdrop-filter: blur(18px);
-  transform: translateX(50%);
-}
-
-.switcher > span {
-  padding: 0 1rem;
-  color: #777169;
-}
-
-.switcher button {
-  display: flex;
-  flex: 1;
+.pipelineLabDetails ol,
+.pipelineLabDetails ul {
+  display: grid;
   gap: 0.65rem;
-  align-items: center;
-  justify-content: center;
-  min-height: 48px;
-  padding: 0.5rem;
-  border: 1px solid transparent;
-  background: transparent;
-  color: #88827a;
-  cursor: pointer;
-  font-size: 0.75rem;
+  margin: 1.25rem 0 0;
+  padding-left: 1.2rem;
+  color: var(--lab-muted);
+  font-size: 0.8rem;
+  line-height: 1.4;
 }
 
-.switcher button b {
-  color: var(--signal);
-  font-size: 1rem;
+.pipelineLabRecommendation {
+  border-color: #b6d4d1 !important;
+  background: #eaf3f2 !important;
 }
 
-.switcher button[data-active="true"] {
-  border-color: #5b5650;
-  background: #1a1815;
-  color: var(--paper);
+.pipelineLabRecommendation > p:last-child {
+  margin: 1.25rem 0 0;
+  color: #465957;
+  font-size: 0.84rem;
+  line-height: 1.5;
 }
 
-@media (max-width: 900px) {
-  .header {
-    grid-template-columns: 1fr auto;
-  }
-
-  .prototypeMark {
-    display: none;
-  }
-
-  .intro,
-  .stage,
-  .pipelineSection,
-  .diagnostics,
-  .recommendation {
+@media (max-width: 940px) {
+  .pipelineLabHeader,
+  .pipelineLabControls {
+    align-items: stretch;
     grid-template-columns: 1fr;
   }
 
-  .intro {
-    gap: 3rem;
-    padding-top: 8vh;
+  .pipelineLabHeader {
+    flex-direction: column;
   }
 
-  .lede {
-    max-width: 34rem;
+  .pipelineLabAuthority {
+    max-width: none;
   }
 
-  .media {
-    min-height: 68svh;
-    border-right: 0;
-    border-bottom: 1px solid #332f2a;
+  .pipelineLabWorkspace,
+  .pipelineLabDetails {
+    grid-template-columns: 1fr;
   }
 
-  .specification {
-    min-height: 620px;
-  }
-
-  .recommendation {
-    gap: 2rem;
+  .pipelineLabMedia {
+    height: min(68svh, 640px);
   }
 }
 
-@media (max-width: 620px) {
-  .header {
-    min-height: 76px;
-    margin: 0 1rem;
+@media (max-width: 560px) {
+  .pipelineLabHeader {
+    padding: 1.25rem 1rem;
   }
 
-  .header nav {
-    gap: 0.8rem;
+  .pipelineLabControls,
+  .pipelineLabWorkspace,
+  .pipelineLabDetails {
+    padding-right: 0.75rem;
+    padding-left: 0.75rem;
   }
 
-  .header nav button {
-    font-size: 0.7rem;
+  .pipelineLabSegmented > div {
+    padding-bottom: 0.2rem;
   }
 
-  .intro {
-    padding: 9vh 1rem 5vh;
+  .pipelineLabMedia {
+    height: 54svh;
+    min-height: 390px;
   }
 
-  .intro h1 {
-    font-size: 3.25rem;
+  .pipelineLabSlotHeading {
+    align-items: flex-start;
   }
 
-  .media {
-    min-height: 66svh;
+  .pipelineLabMorph {
+    grid-template-columns: 1fr auto;
   }
 
-  .mediaRail {
-    padding: 0.9rem 1rem;
-    font-size: 0.58rem;
-  }
-
-  .morphControl {
-    right: 0.75rem;
-    bottom: 0.75rem;
-    left: 0.75rem;
-  }
-
-  .specification {
-    min-height: 680px;
-    padding: 2.5rem 1rem;
-  }
-
-  .pipelineSection,
-  .diagnostics,
-  .recommendation {
-    gap: 2.5rem;
-    padding: 10vh 1rem;
-  }
-
-  .pipeline li {
-    grid-template-columns: 3rem 1fr;
-  }
-
-  .switcher {
-    overflow-x: auto;
-  }
-
-  .switcher > span,
-  .switcher button span {
-    display: none;
-  }
-
-  .switcher button {
-    min-width: 56px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .video {
-    display: none;
+  .pipelineLabMorph input {
+    grid-column: 1 / -1;
+    grid-row: 2;
   }
 }
