@@ -1,0 +1,402 @@
+.routeMain {
+  width: 100%;
+  flex: 1;
+}
+
+.routeHeader,
+.section,
+.splitSection,
+.specifications,
+.invitation,
+.unavailable {
+  width: min(100%, var(--content-max));
+  margin-inline: auto;
+  padding-inline: var(--page-gutter);
+}
+
+.routeHeader {
+  display: grid;
+  min-height: min(48rem, calc(100svh - var(--shell-height)));
+  grid-template-columns: minmax(0, 1.1fr) minmax(17rem, 0.9fr);
+  align-items: center;
+  gap: clamp(var(--space-8), 7vw, var(--space-24));
+  padding-block: clamp(var(--space-16), 10vw, 9rem);
+}
+
+.routeHeaderCopy {
+  min-width: 0;
+}
+
+.eyebrow,
+.index,
+.status,
+.specifications dt,
+.controlMeta,
+.endpoint,
+.banner,
+.boundaryList {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.eyebrow,
+.index,
+.endpoint {
+  color: var(--text-emphasis);
+}
+
+.routeHeader h1,
+.section h2,
+.splitSection h2,
+.specifications h2,
+.invitation h2,
+.unavailable h2 {
+  margin: 0;
+  font-weight: 480;
+  letter-spacing: -0.055em;
+  line-height: 0.96;
+  text-wrap: balance;
+}
+
+.routeHeader h1 {
+  max-width: 11ch;
+  font-size: clamp(3.5rem, 9vw, 8rem);
+}
+
+.section h2,
+.splitSection h2,
+.specifications h2,
+.invitation h2,
+.unavailable h2 {
+  max-width: 16ch;
+  font-size: clamp(2.25rem, 5vw, 5rem);
+}
+
+.lede,
+.body,
+.section p,
+.splitSection p,
+.invitation p,
+.unavailable p {
+  max-width: 40rem;
+  color: var(--text-secondary);
+  font-size: clamp(1rem, 1.35vw, 1.2rem);
+  line-height: 1.65;
+}
+
+.lede {
+  margin: var(--space-8) 0 0;
+}
+
+.price {
+  margin-block: var(--space-6);
+  color: var(--text-primary);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.section,
+.splitSection,
+.specifications,
+.invitation,
+.unavailable {
+  border-top: 1px solid var(--rule);
+  padding-block: clamp(var(--space-16), 9vw, 8rem);
+}
+
+.section {
+  display: grid;
+  grid-template-columns: minmax(5rem, 0.25fr) minmax(0, 1fr) minmax(0, 0.75fr);
+  gap: clamp(var(--space-6), 5vw, var(--space-16));
+}
+
+.section > p:last-child {
+  margin: 0;
+}
+
+.splitSection {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(var(--space-8), 8vw, var(--space-24));
+}
+
+.stateGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+}
+
+.stateCard,
+.controlCard,
+.boundaryList li {
+  border: 1px solid var(--rule);
+  padding: var(--space-6);
+  background: color-mix(in srgb, var(--surface-raised) 64%, transparent);
+}
+
+.stateCard h3,
+.controlCard h3 {
+  margin: 0;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+}
+
+.stateCard p,
+.controlCard p {
+  margin-bottom: 0;
+  font-size: 0.9375rem;
+}
+
+.mediaPlaceholder {
+  position: relative;
+  display: grid;
+  min-height: clamp(20rem, 44vw, 36rem);
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  background:
+    linear-gradient(90deg, transparent 49.8%, var(--rule) 50%, transparent 50.2%),
+    linear-gradient(transparent 49.8%, var(--rule) 50%, transparent 50.2%),
+    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--color-brown) 48%, transparent), transparent 42%),
+    var(--surface-raised);
+}
+
+.mediaPlaceholder::before {
+  width: min(70%, 24rem);
+  aspect-ratio: 1.75;
+  border: 1px solid var(--text-secondary);
+  background:
+    radial-gradient(circle at 50% 45%, var(--color-signal) 0 2px, transparent 3px),
+    linear-gradient(150deg, color-mix(in srgb, var(--color-taupe) 16%, transparent), transparent 55%);
+  box-shadow: 0 1.25rem 4rem color-mix(in srgb, black 55%, transparent);
+  content: "";
+  transform: perspective(42rem) rotateX(58deg) rotateZ(-8deg);
+}
+
+.mediaPlaceholderLabel {
+  position: absolute;
+  right: var(--space-4);
+  bottom: var(--space-4);
+  left: var(--space-4);
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  color: var(--text-secondary);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.actionRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-8);
+}
+
+.action,
+.secondaryAction,
+.actionButton {
+  display: inline-flex;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--text-primary);
+  padding: var(--space-3) var(--space-6);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.action,
+.actionButton {
+  background: var(--text-primary);
+  color: var(--surface-foundation);
+}
+
+.secondaryAction {
+  background: transparent;
+  color: var(--text-primary);
+}
+
+.actionButton {
+  cursor: pointer;
+}
+
+.actionButton:disabled {
+  border-color: var(--rule);
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  cursor: not-allowed;
+}
+
+.status {
+  max-width: 42rem;
+  margin: var(--space-4) 0 0;
+  color: var(--text-secondary);
+  text-transform: none;
+}
+
+.specifications dl {
+  margin: var(--space-12) 0 0;
+  border-top: 1px solid var(--rule);
+}
+
+.specifications dl > div {
+  display: grid;
+  grid-template-columns: minmax(10rem, 0.35fr) minmax(0, 1fr);
+}
+
+.specifications dt,
+.specifications dd {
+  margin: 0;
+  border-bottom: 1px solid var(--rule);
+  padding: var(--space-4) 0;
+}
+
+.specifications dt {
+  color: var(--text-secondary);
+}
+
+.specifications dd {
+  line-height: 1.6;
+}
+
+.specList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+  margin: var(--space-12) 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.controlCard {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.controlCard label {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+}
+
+.controlCard input {
+  width: 100%;
+  accent-color: var(--color-signal);
+}
+
+.controlMeta {
+  display: flex;
+  justify-content: space-between;
+  color: var(--text-secondary);
+  font-size: 0.5625rem;
+}
+
+.banner {
+  margin: 0;
+  border-bottom: 1px solid var(--rule);
+  padding: var(--space-4) var(--page-gutter);
+  background: var(--color-peach);
+  color: var(--color-espresso);
+  text-align: center;
+  text-transform: none;
+}
+
+.unavailable {
+  min-height: min(42rem, calc(100svh - var(--shell-height)));
+}
+
+.boundaryList {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: var(--space-12) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.invitation {
+  background: color-mix(in srgb, var(--color-brown) 18%, var(--surface-foundation));
+}
+
+@media (max-width: 47.999rem) {
+  .routeHeader,
+  .splitSection {
+    grid-template-columns: 1fr;
+  }
+
+  .routeHeader {
+    min-height: auto;
+    gap: var(--space-12);
+    padding-block: var(--space-16);
+  }
+
+  .section {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+
+  .stateGrid,
+  .controls,
+  .boundaryList {
+    grid-template-columns: 1fr;
+  }
+
+  .specifications dl > div {
+    grid-template-columns: 1fr;
+  }
+
+  .specifications dt {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .specifications dd {
+    padding-top: var(--space-2);
+  }
+
+  .mediaPlaceholder {
+    min-height: 20rem;
+  }
+}
+
+@media (forced-colors: active) {
+  .mediaPlaceholder,
+  .stateCard,
+  .controlCard,
+  .boundaryList li,
+  .action,
+  .secondaryAction,
+  .actionButton {
+    background: Canvas;
+    color: CanvasText;
+  }
+
+  .mediaPlaceholder::before {
+    border: 2px solid CanvasText;
+    box-shadow: none;
+  }
+}

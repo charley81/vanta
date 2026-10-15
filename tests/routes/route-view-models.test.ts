@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { EDITORIAL_FIXTURES } from "@/src/editorial/fixtures.server";
 import {
+  composeCheckoutPreviewRouteViewModel,
   composeHomeRouteViewModel,
   composeProductRouteViewModel,
   composeSynthRouteViewModel,
@@ -14,6 +15,7 @@ describe("route view-model composition", () => {
       EDITORIAL_FIXTURES.productPage,
     );
     const synth = composeSynthRouteViewModel(EDITORIAL_FIXTURES.synthPage);
+    const checkoutPreview = composeCheckoutPreviewRouteViewModel();
 
     expect(home.chapters.map(({ id }) => id)).toEqual([
       "philosophy",
@@ -40,6 +42,21 @@ describe("route view-model composition", () => {
       category: "MORPH LAB",
       headline: "One gesture. Endless change.",
     });
+    expect(synth.supportedControls.map(({ name }) => name)).toEqual([
+      "MORPH",
+      "CUTOFF",
+      "RESONANCE",
+      "DRIVE",
+      "ATTACK",
+      "RELEASE",
+    ]);
+    expect(checkoutPreview).toMatchObject({
+      route: "/checkout-preview",
+      title: "Checkout Preview | VANTA",
+      unavailable: {
+        heading: "Checkout Preview needs a confirmed Bag.",
+      },
+    });
 
     expect(JSON.stringify(composeHomeRouteViewModel(EDITORIAL_FIXTURES.homePage)))
       .toBe(JSON.stringify(home));
@@ -50,6 +67,7 @@ describe("route view-model composition", () => {
       composeHomeRouteViewModel(EDITORIAL_FIXTURES.homePage),
       composeProductRouteViewModel(EDITORIAL_FIXTURES.productPage),
       composeSynthRouteViewModel(EDITORIAL_FIXTURES.synthPage),
+      composeCheckoutPreviewRouteViewModel(),
     ]);
 
     expect(publicModels).not.toMatch(

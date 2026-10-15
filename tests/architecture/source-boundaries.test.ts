@@ -104,6 +104,18 @@ describe("public runtime configuration", () => {
     expect(inspectPublicRuntimeConfiguration(process.cwd())).toEqual([]);
   });
 
+  it("allows the approved public Preview disclosure without allowing an integration", () => {
+    const root = project({
+      "package.json": JSON.stringify({ dependencies: {} }),
+      "src/preview-copy.ts": `
+        export const boundary =
+          "Nothing is entered, submitted, stored, or sent to Shopify.";
+      `,
+    });
+
+    expect(inspectPublicRuntimeConfiguration(root)).toEqual([]);
+  });
+
   it("rejects forbidden public commerce-platform configuration", () => {
     const root = project({
       "package.json": JSON.stringify({
