@@ -6,6 +6,7 @@ import "./globals.css";
 import { getSiteSettingsForRequest } from "@/src/editorial/preview-content.server";
 
 import { BagOverlayBoundary } from "./ui/bag-overlay-boundary";
+import { ContinuityBoundary } from "./ui/continuity-boundary";
 import {
   FooterBagTrigger,
   ShellNavigation,
@@ -57,6 +58,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           </Link>
           <ShellNavigation bagContent={<BagOverlayBoundary />} />
         </header>
+        <ContinuityBoundary />
         {children}
         <footer className={shellStyles.siteFooter}>
           <p>VANTA / MONOLITH</p>
