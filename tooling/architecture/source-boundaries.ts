@@ -61,12 +61,19 @@ const PUBLIC_COMMERCE_IDENTIFIER =
   /\b(shopifyMode|commerceMode|storefrontToken|productId|variantId|cartId|checkoutUrl)\b/i;
 const PUBLIC_SECRET_REFERENCE =
   /NEXT_PUBLIC_[A-Z0-9_]*(TOKEN|SECRET|PASSWORD|PRIVATE_KEY|API_KEY)/;
+const APPROVED_PUBLIC_DISCLOSURES = [
+  "Nothing is entered, submitted, stored, or sent to Shopify.",
+] as const;
 
 function containsForbiddenPublicReference(text: string): boolean {
+  const sourceWithoutApprovedDisclosure = APPROVED_PUBLIC_DISCLOSURES.reduce(
+    (source, disclosure) => source.replaceAll(disclosure, ""),
+    text,
+  );
   return (
-    PUBLIC_PLATFORM_REFERENCE.test(text) ||
-    PUBLIC_COMMERCE_IDENTIFIER.test(text) ||
-    PUBLIC_SECRET_REFERENCE.test(text)
+    PUBLIC_PLATFORM_REFERENCE.test(sourceWithoutApprovedDisclosure) ||
+    PUBLIC_COMMERCE_IDENTIFIER.test(sourceWithoutApprovedDisclosure) ||
+    PUBLIC_SECRET_REFERENCE.test(sourceWithoutApprovedDisclosure)
   );
 }
 

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
 
+import { BagOverlayBoundary } from "./ui/bag-overlay-boundary";
 import {
   FooterBagTrigger,
   ShellNavigation,
@@ -51,7 +52,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <Link aria-label="VANTA home" className={shellStyles.siteBrand} href="/">
             VANTA
           </Link>
-          <ShellNavigation />
+          <ShellNavigation bagContent={<BagOverlayBoundary />} />
         </header>
         {children}
         <footer className={shellStyles.siteFooter}>

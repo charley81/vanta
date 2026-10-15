@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import styles from "./shell-navigation.module.css";
 import {
   type KeyboardEvent,
+  type ReactNode,
   useEffect,
   useRef,
   useState,
@@ -35,7 +36,7 @@ function NavigationLinks({ onNavigate }: { onNavigate?: () => void }) {
   ));
 }
 
-export function ShellNavigation() {
+export function ShellNavigation({ bagContent }: { bagContent: ReactNode }) {
   const [activeDisclosure, setActiveDisclosure] =
     useState<Disclosure | null>(null);
   const bagDialogRef = useRef<HTMLDialogElement>(null);
@@ -165,7 +166,12 @@ export function ShellNavigation() {
         className={styles.dialog}
         id="bag-dialog"
         onClick={(event) => {
-          if (event.target === event.currentTarget) closeDisclosure();
+          if (
+            event.target === event.currentTarget ||
+            (event.target instanceof Element && event.target.closest("a[href]"))
+          ) {
+            closeDisclosure();
+          }
         }}
         onClose={closeDisclosure}
         onKeyDown={containFocus}
@@ -178,17 +184,35 @@ export function ShellNavigation() {
               Close Bag
             </button>
           </div>
-          <p className={styles.dialogStatus}>0 items</p>
+          {bagContent}
         </div>
       </dialog>
     </div>
   );
 }
 
-export function FooterBagTrigger() {
+type BagTriggerProps = {
+  ariaDescribedBy?: string;
+  ariaLabel?: string;
+  children?: ReactNode;
+  className?: string;
+};
+
+export function BagTrigger({
+  ariaDescribedBy,
+  ariaLabel = "Open Bag, 0 items",
+  children = (
+    <>
+      Bag <span aria-hidden="true">/ 0</span>
+    </>
+  ),
+  className,
+}: BagTriggerProps) {
   return (
     <button
-      aria-label="Open Bag, 0 items"
+      aria-describedby={ariaDescribedBy}
+      aria-label={ariaLabel}
+      className={className}
       onClick={(event) =>
         window.dispatchEvent(
           new CustomEvent(OPEN_BAG_EVENT, { detail: event.currentTarget }),
@@ -196,7 +220,11 @@ export function FooterBagTrigger() {
       }
       type="button"
     >
-      Bag <span aria-hidden="true">/ 0</span>
+      {children}
     </button>
   );
+}
+
+export function FooterBagTrigger() {
+  return <BagTrigger />;
 }

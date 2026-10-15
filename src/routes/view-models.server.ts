@@ -286,12 +286,71 @@ export function composeSynthRouteViewModel(editorial: unknown) {
     introduction: page.introduction,
     enableSoundLabel: "Enable Sound" as const,
     supportedControls: [
-      "MORPH",
-      "CUTOFF",
-      "RESONANCE",
-      "DRIVE",
-      "ATTACK",
-      "RELEASE",
+      {
+        name: "MORPH",
+        value: 50,
+        purpose: "Move continuously from SUB weight to FRACTURE texture.",
+        endpoints: ["SUB", "FRACTURE"],
+      },
+      {
+        name: "CUTOFF",
+        value: 54,
+        purpose: "Offset the voice toward darker or brighter filtering.",
+        endpoints: ["DARK", "BRIGHT"],
+      },
+      {
+        name: "RESONANCE",
+        value: 32,
+        purpose: "Emphasize the filter edge without changing the phrase.",
+        endpoints: ["SOFT", "FOCUSED"],
+      },
+      {
+        name: "DRIVE",
+        value: 24,
+        purpose: "Add bounded post-filter saturation.",
+        endpoints: ["CLEAN", "SATURATED"],
+      },
+      {
+        name: "ATTACK",
+        value: 18,
+        purpose: "Shape the onset from immediate to swelling.",
+        endpoints: ["IMMEDIATE", "SWELLING"],
+      },
+      {
+        name: "RELEASE",
+        value: 42,
+        purpose: "Shape the tail from clipped to overlapping.",
+        endpoints: ["CLIPPED", "OVERLAPPING"],
+      },
+    ] as const,
+  };
+}
+
+export function composeCheckoutPreviewRouteViewModel() {
+  return {
+    route: "/checkout-preview" as const,
+    title: "Checkout Preview | VANTA" as const,
+    seoDescription:
+      "Review the VANTA Checkout Preview boundary for MONOLITH using predefined synthetic details without payment, ordering, or visitor data.",
+    banner:
+      "Preview — Synthetic details only. Nothing is entered, submitted, stored, or sent to Shopify.",
+    unavailable: {
+      heading: "Checkout Preview needs a confirmed Bag.",
+      body: "Bag persistence and mutation are not enabled in this Core build. Return to MONOLITH to review the instrument or open MORPH Lab.",
+      productAction: {
+        label: "RETURN TO MONOLITH" as const,
+        href: "/monolith" as const,
+      },
+      synthAction: {
+        label: "OPEN MORPH LAB" as const,
+        href: "/synth" as const,
+      },
+    },
+    boundaries: [
+      "No payment information",
+      "No order or reservation",
+      "No visitor data",
+      "No transaction",
     ] as const,
   };
 }
@@ -301,3 +360,6 @@ export type ProductRouteViewModel = ReturnType<
   typeof composeProductRouteViewModel
 >;
 export type SynthRouteViewModel = ReturnType<typeof composeSynthRouteViewModel>;
+export type CheckoutPreviewRouteViewModel = ReturnType<
+  typeof composeCheckoutPreviewRouteViewModel
+>;
