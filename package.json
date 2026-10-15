@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "check": "pnpm lint && pnpm typecheck && pnpm build",
     "feature:start": "./scripts/ralph/start-feature.sh",
     "ralph:once": "./scripts/ralph/once.sh",

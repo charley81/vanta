@@ -1,0 +1,1243 @@
+schema_version: 1
+status: draft_pending_human_approval
+baseline_commit: null
+
+sources:
+  product_truth: https://github.com/charley81/vanta/issues/2
+  experience_architecture: https://github.com/charley81/vanta/issues/3
+  art_direction: https://github.com/charley81/vanta/issues/4
+  morph_scope: https://github.com/charley81/vanta/issues/7
+  ownership: https://github.com/charley81/vanta/issues/8
+  media_pipeline: https://github.com/charley81/vanta/issues/9
+  inclusive_behavior: https://github.com/charley81/vanta/issues/10
+  quality_budgets: https://github.com/charley81/vanta/issues/11
+  application_architecture: https://github.com/charley81/vanta/issues/12
+  launch_operations: https://github.com/charley81/vanta/issues/13
+  continuity: https://github.com/charley81/vanta/issues/34
+  checkout_boundary: https://github.com/charley81/vanta/issues/36
+  checkout_prototype: https://github.com/charley81/vanta/issues/37
+  final_handoff: https://github.com/charley81/vanta/issues/38
+
+requirements:
+  - id: PRODUCT-001
+    domain: PRODUCT
+    level: must
+    statement: MONOLITH is represented as one Graphite eight-voice hybrid desktop synthesizer centered on continuous MORPH between SUB and FRACTURE, with no variants or editions.
+    applies_to: [home, product, synth, bag, checkout_preview, metadata]
+    source: product_truth
+    acceptance_stage: candidate
+    verification: [inspection, automated]
+    evidence: [product_truth_report, rendered_copy_report]
+    owner: product_design
+  - id: PRODUCT-002
+    domain: PRODUCT
+    level: must
+    statement: Public Product and brand surfaces use the canonical claims and sound meanings without unsupported awards, scarcity, endorsements, provenance, or measurable sound-quality claims.
+    applies_to: [home, product, synth]
+    source: product_truth
+    acceptance_stage: candidate
+    verification: [inspection]
+    evidence: [content_review]
+    owner: product_design
+  - id: PRODUCT-003
+    domain: PRODUCT
+    level: must
+    statement: Product specifications contain only the approved architecture, dimensions, enclosure, display, connections, and named controls and omit unsupported weight, electrical, accessory, warranty, manufacturing, and regulatory claims.
+    applies_to: [product, structured_data]
+    source: product_truth
+    acceptance_stage: candidate
+    verification: [automated, inspection]
+    evidence: [product_truth_report]
+    owner: product_design
+  - id: PRODUCT-004
+    domain: PRODUCT
+    level: must
+    statement: Code supplies VANTA, MONOLITH, Desktop Synthesizer, Graphite, quantity one, and $2,499 USD as the only public Catalog values.
+    applies_to: [product, bag, checkout_preview, structured_data]
+    source: checkout_boundary
+    acceptance_stage: build
+    verification: [automated]
+    evidence: [catalog_manifest_report]
+    owner: engineering
+  - id: PRODUCT-005
+    domain: PRODUCT
+    level: must
+    statement: Public surfaces do not show stock, scarcity, shipping estimates, tax estimates, quantity controls, preorder language, availability disclaimers, or an Offer in structured data.
+    applies_to: [product, bag, checkout_preview, structured_data]
+    source: product_truth
+    acceptance_stage: candidate
+    verification: [automated, inspection]
+    evidence: [rendered_copy_report, structured_data_report]
+    owner: product_design
+  - id: PRODUCT-006
+    domain: PRODUCT
+    level: must
+    statement: Home, Product, and Synth remain in-world; non-transactional disclosure appears wherever Checkout Preview could otherwise imply a purchase and nowhere as a general concept-product notice.
+    applies_to: [home, product, synth, bag, checkout_preview]
+    source: checkout_boundary
+    acceptance_stage: candidate
+    verification: [inspection]
+    evidence: [journey_capture, content_review]
+    owner: product_design
+  - id: PRODUCT-007
+    domain: PRODUCT
+    level: must
+    statement: Signal Black uses the approved palette and reserves signal cyan for operational state rather than decoration.
+    applies_to: [all_public_ui]
+    source: art_direction
+    acceptance_stage: candidate
+    verification: [inspection, automated]
+    evidence: [design_review, token_report]
+    owner: product_design
+  - id: PRODUCT-008
+    domain: PRODUCT
+    level: must
+    statement: Production typography preserves grotesk declaration, restrained serif-italic emphasis, and monospaced telemetry roles while meeting licensing, layout, readability, and font-transfer requirements.
+    applies_to: [all_public_ui]
+    source: final_handoff
+    acceptance_stage: candidate
+    verification: [inspection, measurement]
+    evidence: [typography_decision, font_budget_report, design_review]
+    owner: product_design
+
+  - id: HOME-001
+    domain: HOME
+    level: must
+    statement: Home presents the opening reveal, nine canonical chapters, MORPH Lab invitation, and closing in the specified order.
+    applies_to: [home]
+    source: experience_architecture
+    acceptance_stage: candidate
+    verification: [automated, inspection]
+    evidence: [dom_order_report, journey_capture]
+    owner: product_design
+  - id: HOME-002
+    domain: HOME
+    level: must
+    statement: The enhanced horizontal chapter presentation activates only at a viewport of at least 64rem by 38rem with no reduced-motion request and working sticky positioning.
+    applies_to: [home]
+    source: inclusive_behavior
+    acceptance_stage: candidate
+    verification: [automated, manual]
+    evidence: [responsive_matrix]
+    owner: engineering
+  - id: HOME-003
+    domain: HOME
+    level: must
+    statement: Home choreography does not intercept wheel scrolling, require dragging, create nested horizontal scrolling, trap focus, or add custom navigation keys.
+    applies_to: [home]
+    source: inclusive_behavior
+    acceptance_stage: candidate
+    verification: [manual, automated]
+    evidence: [input_accessibility_report]
+    owner: accessibility
+  - id: HOME-004
+    domain: HOME
+    level: must
+    statement: Every Home chapter exists once as a sequential semantic section and remains complete in vertical, reduced-motion, Core, and assistive presentations.
+    applies_to: [home]
+    source: inclusive_behavior
+    acceptance_stage: candidate
+    verification: [automated, manual]
+    evidence: [dom_order_report, accessibility_report]
+    owner: accessibility
+  - id: HOME-005
+    domain: HOME
+    level: must
+    statement: Realtime Home rendering enhances a stable authored fallback and never gates route content or LCP.
+    applies_to: [home]
+    source: media_pipeline
+    acceptance_stage: candidate
+    verification: [automated, measurement]
+    evidence: [network_trace, fallback_capture, performance_report]
+    owner: engineering
+  - id: HOME-006
+    domain: HOME
+    level: must
+    statement: Reduced motion removes camera travel, parallax, horizontal translation, animated telemetry, and autoplaying motion while preserving every narrative beat.
+    applies_to: [home]
+    source: inclusive_behavior
+    acceptance_stage: candidate
+    verification: [manual, inspection]
+    evidence: [reduced_motion_capture]
+    owner: accessibility
+  - id: HOME-007
+    domain: HOME
+    level: must
+    statement: Fresh explicit Home navigation starts at the opening, while history restoration returns directly to the saved semantic position without autoplaying motion.
+    applies_to: [home]
+    source: continuity
+    acceptance_stage: candidate
+    verification: [automated, manual]
+    evidence: [history_journey_report]
+    owner: engineering
+  - id: HOME-008
+    domain: HOME
+    level: must
+    statement: Cinematic interaction produces no sound and creates no MORPH session or persistent instrument state.
+    applies_to: [home]
+    source: experience_architecture
+    acceptance_stage: candidate
+    verification: [automated]
+    evidence: [state_transition_report]
+    owner: engineering
+
+  - id: PRODUCT-ROUTE-001
+    domain: PRODUCT
+    level: must
+    statement: Product renders the nine specified evaluation sections in order with canonical price and Add to Bag at the hero and a repeated non-urgent Bag action near the footer.
+    applies_to: [product]
+    source: experience_architecture
+    acceptance_stage: candidate
+    verification: [inspection, automated]
+    evidence: [dom_order_report, journey_capture]
+    owner: product_design
+  - id: PRODUCT-ROUTE-002
+    domain: PRODUCT
+    level: must
+    statement: Product remains a conventional responsive document whose media/content splits stack in semantic order and whose specifications require no page-level horizontal scrolling.
+    applies_to: [product]
+    source: inclusive_behavior
+    acceptance_stage: candidate
+    verification: [manual, automated]
+    evidence: [responsive_matrix, accessibility_report]
+    owner: accessibility
+  - id: PRODUCT-ROUTE-003
+    domain: PRODUCT
+    level: must
+    statement: A direct Product entry imports or requests no Three.js, React Three Fiber, decoder, GLB, or audio implementation.
+    applies_to: [product]
+    source: media_pipeline
+    acceptance_stage: build
+    verification: [automated, measurement]
+    evidence: [bundle_isolation_report, network_trace]
+    owner: engineering
+  - id: PRODUCT-ROUTE-004
+    domain: PRODUCT
+    level: must
+    statement: Add to Bag opens Bag only after an idempotent quantity-one mutation is confirmed, and Try MORPH Lab starts Synth.
+    applies_to: [product]
+    source: continuity
+    acceptance_stage: candidate
+    verification: [automated, manual]
+    evidence: [journey_test_report]
+    owner: engineering
+
+  - id: SYNTH-001
+    domain: SYNTH
+    level: must
+    statement: Synth starts with audio disabled, authored media visible, and an explicit trusted-gesture Enable Sound action.
+    applies_to: [synth]
+    source: inclusive_behavior
+    acceptance_stage: candidate
+    verification: [automated, manual]
+    evidence: [journey_capture, audio_trace]
+    owner: engineering
+  - id: SYNTH-002
+    domain: SYNTH
+    level: must
+    statement: MORPH Lab plays one repeating monophonic authored phrase and provides no keyboard, note grid, MIDI, chord mode, preset browser, save, share, URL encoding, or polyphony claim.
+    applies_to: [synth]
+    source: morph_scope
+    acceptance_stage: candidate
+    verification: [inspection, automated]
+    evidence: [scope_review, rendered_copy_report]
+    owner: product_design
+  - id: SYNTH-003
+    domain: SYNTH
+    level: must
+    statement: Only MORPH, CUTOFF, RESONANCE, DRIVE, ATTACK, and RELEASE are operable; all other visible controls are inert and have no interaction affordance or focus target.
+    applies_to: [synth]
+    source: morph_scope
+    acceptance_stage: candidate
+    verification: [automated, manual]
+    evidence: [control_matrix]
+    owner: engineering
+  - id: SYNTH-004
+    domain: SYNTH
+    level: must
+    statement: The semantic Control deck exposes transport, six selections, and six native ranges from 0 to 100 with step 1, visible values, purposes, and endpoint language.
+    applies_to: [synth]
+    source: inclusive_behavior
+    acceptance_stage: candidate
+    verification: [automated, manual]
+    evidence: [accessibility_tree_report, control_matrix]
+    owner: accessibility
+  - id: SYNTH-005
+    domain: SYNTH
+    level: must
+    statement: Physical and semantic controls update the same normalized state and calibrated audio parameter, with keyboard and touch outcomes equivalent to pointer drag.
+    applies_to: [synth]
+    source: inclusive_behavior
+    acceptance_stage: candidate
+    verification: [automated, manual]
+    evidence: [control_equivalence_report]
+    owner: engineering
+  - id: SYNTH-006
+    domain: SYNTH
+    level: must
+    statement: MORPH changes multiple synthesis dimensions continuously, with loudness compensation, and passes the continuum and bright-SUB/dark-FRACTURE semantic tests.
+    applies_to: [synth]
+    source: morph_scope
+    acceptance_stage: candidate
+    verification: [measurement, manual]
+    evidence: [audio_calibration_report]
+    owner: product_design
+  - id: SYNTH-007
+    domain: SYNTH
+    level: must
+    statement: Audio and the Control deck become usable independently of 3D readiness, and data-saving requires a separate opt-in action before model download.
+    applies_to: [synth]
+    source: inclusive_behavior
+    acceptance_stage: candidate
+    verification: [automated, manual]
+    evidence: [network_trace, journey_test_report]
+    owner: engineering
+  - id: SYNTH-008
+    domain: SYNTH
+    level: must
+    statement: Hide, Bag opening, route intent, and platform interruption pause audio/rendering without resetting values and never resume automatically.
+    applies_to: [synth]
+    source: continuity
+    acceptance_stage: candidate
+    verification: [automated, manual]
+    evidence: [lifecycle_report]
+    owner: engineering
+  - id: SYNTH-009
+    domain: SYNTH
+    level: must
+    statement: MORPH session values and selected control survive client navigation and BFCache in the tab but reset on reload, new tab, duplicate tab, or crash reconstruction.
+    applies_to: [synth]
+    source: continuity
+    acceptance_stage: candidate
+    verification: [automated]
+    evidence: [state_lifetime_report]
+    owner: engineering
+  - id: SYNTH-010
+    domain: SYNTH
+    level: must
+    statement: Meaningful audio states are visible and politely announced while continuous parameter changes are not announced on every frame.
+    applies_to: [synth]
+    source: inclusive_behavior
+    acceptance_stage: candidate
+    verification: [manual, automated]
+    evidence: [screen_reader_report]
+    owner: accessibility
+
+  - id: BAG-001
+    domain: BAG
+    level: must
+    statement: Bag stores at most one MONOLITH using a signed secure HttpOnly SameSite cookie containing only schema version, membership, and expiry for no more than 30 days.
+    applies_to: [bag, server]
+    source: checkout_boundary
+    acceptance_stage: candidate
+    verification: [automated, inspection]
+    evidence: [cookie_security_report, state_lifetime_report]
+    owner: security_privacy
+  - id: BAG-002
+    domain: BAG
+    level: must
+    statement: Bag is one accessible modal rendered as a right drawer on wide layouts and full-screen sheet on narrow layouts.
+    applies_to: [bag]
+    source: checkout_prototype
+    acceptance_stage: candidate
+    verification: [manual, automated]
+    evidence: [responsive_matrix, accessibility_report]
+    owner: accessibility
+  - id: BAG-003
+    domain: BAG
+    level: must
+    statement: Populated Bag presents the specified persistence statement, line item, canonical subtotal, Remove, Preview disclosure/action, Product action, and MORPH Lab action in linear order.
+    applies_to: [bag]
+    source: checkout_prototype
+    acceptance_stage: candidate
+    verification: [inspection, automated]
+    evidence: [dom_order_report, journey_capture]
+    owner: product_design
+  - id: BAG-004
+    domain: BAG
+    level: must
+    statement: Bag exposes no caller-selected product, quantity, price, identity, address, discount, GraphQL, checkout URL, payment, tax, shipping calculation, urgency, or stock mechanism.
+    applies_to: [bag, api]
+    source: checkout_boundary
+    acceptance_stage: candidate
+    verification: [automated, inspection]
+    evidence: [api_contract_report, rendered_copy_report]
+    owner: security_privacy
+  - id: BAG-005
+    domain: BAG
+    level: must
+    statement: Bag read, add, and remove are the complete browser API and mutations are validated, same-origin, rate-limited, idempotent, and ordered against stale results.
+    applies_to: [bag, api]
+    source: application_architecture
+    acceptance_stage: candidate
+    verification: [automated]
+    evidence: [api_security_report, race_test_report]
+    owner: engineering
+  - id: BAG-006
+    domain: BAG
+    level: must
+    statement: Failed or timed-out Bag operations preserve the last confirmed state, report a targeted error within five seconds, and offer explicit Retry.
+    applies_to: [bag]
+    source: quality_budgets
+    acceptance_stage: candidate
+    verification: [automated, manual]
+    evidence: [failure_injection_report]
+    owner: engineering
+  - id: BAG-007
+    domain: BAG
+    level: must
+    statement: Opening Bag creates a same-document history state, pauses Synth without disposal, contains focus, and closing restores its invoker without resuming sound.
+    applies_to: [bag, synth]
+    source: continuity
+    acceptance_stage: candidate
+    verification: [automated, manual]
+    evidence: [history_journey_report, accessibility_report]
+    owner: accessibility
+  - id: BAG-008
+    domain: BAG
+    level: must
+    statement: Cross-tab Bag changes send only invalidation and require a server refetch; Bag contents are never copied through browser messaging.
+    applies_to: [bag]
+    source: continuity
+    acceptance_stage: candidate
+    verification: [automated]
+    evidence: [cross_tab_report]
+    owner: engineering
+  - id: BAG-009
+    domain: BAG
+    level: must
+    statement: Public Bag has no Shopify runtime mode, identifier, token, cart, product request, or checkout URL.
+    applies_to: [bag, public_runtime]
+    source: checkout_boundary
+    acceptance_stage: build
+    verification: [automated]
+    evidence: [bundle_isolation_report, network_trace, configuration_scan]
+    owner: security_privacy
+
+  - id: PREVIEW-001
+    domain: PREVIEW
+    level: must
+    statement: Checkout Preview collects or persists no visitor identity, address, phone, payment, discount, gift card, free text, or other buyer data.
+    applies_to: [checkout_preview]
+    source: checkout_boundary
+    acceptance_stage: candidate
+    verification: [automated, inspection]
+    evidence: [privacy_network_report, control_inventory]
+    owner: security_privacy
+  - id: PREVIEW-002
+    domain: PREVIEW
+    level: must
+    statement: Checkout Preview invokes no Shopify cart/checkout, payment provider, order API, fulfillment, reservation, authorization, notification, or price commitment.
+    applies_to: [checkout_preview, public_runtime]
+    source: checkout_boundary
+    acceptance_stage: candidate
+    verification: [automated, inspection]
+    evidence: [privacy_network_report, side_effect_report]
+    owner: security_privacy
+  - id: PREVIEW-003
+    domain: PREVIEW
+    level: must
+    statement: Checkout Preview uses the Signal Ledger Contact, Delivery, and Review sequence with only the active stage expanded, reached-stage revisits allowed, and future stages locked.
+    applies_to: [checkout_preview]
+    source: checkout_prototype
+    acceptance_stage: candidate
+    verification: [automated, manual]
+    evidence: [journey_test_report]
+    owner: product_design
+  - id: PREVIEW-004
+    domain: PREVIEW
+    level: must
+    statement: Every Preview stage displays the exact synthetic-only banner and persistent ledger with the approved item, cost, tax, total, and non-commitment language.
+    applies_to: [checkout_preview]
+    source: checkout_prototype
+    acceptance_stage: candidate
+    verification: [automated, inspection]
+    evidence: [rendered_copy_report, journey_capture]
+    owner: product_design
+  - id: PREVIEW-005
+    domain: PREVIEW
+    level: must
+    statement: Contact and Delivery render the approved Mara Vale and VANTA Preview Studio values as visibly predefined fictional content rather than editable controls.
+    applies_to: [checkout_preview]
+    source: checkout_prototype
+    acceptance_stage: candidate
+    verification: [automated, inspection]
+    evidence: [control_inventory, rendered_copy_report]
+    owner: product_design
+  - id: PREVIEW-006
+    domain: PREVIEW
+    level: must
+    statement: Review explicitly lists the transaction and data exclusions and its sole completion action is labeled Complete preview.
+    applies_to: [checkout_preview]
+    source: checkout_prototype
+    acceptance_stage: candidate
+    verification: [inspection, automated]
+    evidence: [rendered_copy_report]
+    owner: product_design
+  - id: PREVIEW-007
+    domain: PREVIEW
+    level: must
+    statement: Completion renders the exact Ordering offline terminal statement, four outcome facts, Return to MONOLITH, and Preview again actions.
+    applies_to: [checkout_preview]
+    source: checkout_prototype
+    acceptance_stage: candidate
+    verification: [inspection, automated]
+    evidence: [rendered_copy_report, journey_capture]
+    owner: product_design
+  - id: PREVIEW-008
+    domain: PREVIEW
+    level: must
+    statement: Preview progress is versioned tab-local sessionStorage with a 30-minute inactivity expiry and contains only reached stage, active stage, completion, and activity time.
+    applies_to: [checkout_preview]
+    source: continuity
+    acceptance_stage: candidate
+    verification: [automated, inspection]
+    evidence: [state_lifetime_report]
+    owner: security_privacy
+  - id: PREVIEW-009
+    domain: PREVIEW
+    level: must
+    statement: Contact, Delivery, Review, and terminal are validated history states at one canonical URL; Back and Forward retrace only legally reached states.
+    applies_to: [checkout_preview]
+    source: continuity
+    acceptance_stage: candidate
+    verification: [automated, manual]
+    evidence: [history_journey_report]
+    owner: engineering
+  - id: PREVIEW-010
+    domain: PREVIEW
+    level: must
+    statement: Reload/reentry after interruption offers Resume last stage and Start again, while explicit Exit, global navigation, Return, Bag removal/expiry, Start again, or inactivity clears Preview state.
+    applies_to: [checkout_preview]
+    source: continuity
+    acceptance_stage: candidate
+    verification: [automated, manual]
+    evidence: [recovery_matrix]
+    owner: engineering
+  - id: PREVIEW-011
+    domain: PREVIEW
+    level: must
+    statement: Direct Preview entry requires confirmed Bag membership; invalid, empty, or expired Bag renders a transparent unavailable boundary with Return to MONOLITH.
+    applies_to: [checkout_preview]
+    source: continuity
+    acceptance_stage: candidate
+    verification: [automated, manual]
+    evidence: [journey_test_report]
+    owner: engineering
+  - id: PREVIEW-012
+    domain: PREVIEW
+    level: must
+    statement: Stage changes focus and announce the stage heading, progress is labelled, controls are keyboard-operable, and terminal/interruption status is politely announced without continuous chatter.
+    applies_to: [checkout_preview]
+    source: checkout_prototype
+    acceptance_stage: candidate
+    verification: [manual, automated]
+    evidence: [accessibility_report, screen_reader_report]
+    owner: accessibility
+
+  - id: CONTENT-001
+    domain: CONTENT
+    level: must
+    statement: Sanity uses only the fixed siteSettings, homePage, productPage, and synthPage singletons plus inline editorialImage and seo objects.
+    applies_to: [sanity]
+    source: ownership
+    acceptance_stage: build
+    verification: [automated, inspection]
+    evidence: [schema_report]
+    owner: content_editorial
+  - id: CONTENT-002
+    domain: CONTENT
+    level: must
+    statement: Sanity contains no product, price, specification, Bag, navigation, control, behavior, generic page/section, arbitrary HTML, arbitrary link, or unconstrained rich-content authority.
+    applies_to: [sanity]
+    source: ownership
+    acceptance_stage: build
+    verification: [automated, inspection]
+    evidence: [schema_report]
+    owner: content_editorial
+  - id: CONTENT-003
+    domain: CONTENT
+    level: must
+    statement: Required fields, text limits, approved links, non-decorative alt text, Product-truth prohibitions, and designed constraints block invalid publication.
+    applies_to: [sanity]
+    source: launch_operations
+    acceptance_stage: candidate
+    verification: [automated, manual]
+    evidence: [schema_validation_report]
+    owner: content_editorial
+  - id: CONTENT-004
+    domain: CONTENT
+    level: must
+    statement: Published Sanity content is explicitly cached and tagged, while signed idempotent invalidation targets only affected tags and verifies public freshness within 60 seconds.
+    applies_to: [sanity, server]
+    source: launch_operations
+    acceptance_stage: candidate
+    verification: [automated, exercise]
+    evidence: [cache_invalidation_report]
+    owner: engineering
+  - id: CONTENT-005
+    domain: CONTENT
+    level: must
+    statement: Editorial preview is authenticated, visibly marked, private/no-store, non-indexable, excluded from journey analytics, and unable to mutate Bag or public cache state.
+    applies_to: [editorial_preview]
+    source: launch_operations
+    acceptance_stage: candidate
+    verification: [automated, manual]
+    evidence: [preview_security_report]
+    owner: security_privacy
+  - id: CONTENT-006
+    domain: CONTENT
+    level: must
+    statement: Preview entry validates secret, perspective, and an application-owned Home/Product/Synth target; preview exit uses a state-changing POST operation.
+    applies_to: [editorial_preview, api]
+    source: application_architecture
+    acceptance_stage: candidate
+    verification: [automated]
+    evidence: [preview_security_report]
+    owner: security_privacy
+  - id: CONTENT-007
+    domain: CONTENT
+    level: must
+    statement: Draft or release content never enters public caches, metadata/social output, telemetry, or public journey state.
+    applies_to: [editorial_preview, public_runtime]
+    source: launch_operations
+    acceptance_stage: candidate
+    verification: [automated]
+    evidence: [preview_isolation_report]
+    owner: security_privacy
+  - id: CONTENT-008
+    domain: CONTENT
+    level: must
+    statement: Every publication records author and publisher, passes validation and preview, and supports independent known-good content rollback with invalidation verification.
+    applies_to: [sanity, operations]
+    source: launch_operations
+    acceptance_stage: launch
+    verification: [exercise, review]
+    evidence: [publishing_exercise]
+    owner: content_editorial
+  - id: CONTENT-009
+    domain: CONTENT
+    level: must
+    statement: Each indexed route has one unique 120-to-160-character Sanity description and one dedicated 1200-by-630 social image.
+    applies_to: [home, product, synth, metadata]
+    source: launch_operations
+    acceptance_stage: candidate
+    verification: [automated, inspection]
+    evidence: [metadata_report, social_card_review]
+    owner: content_editorial
+
+  - id: MEDIA-001
+    domain: MEDIA
+    level: must
+    statement: Every 3D/media derivative traces to the approved GLB hash and records pipeline version, camera, light, crop, and output properties.
+    applies_to: [asset_pipeline]
+    source: media_pipeline
+    acceptance_stage: build
+    verification: [automated]
+    evidence: [derivative_manifest_report]
+    owner: engineering
+  - id: MEDIA-002
+    domain: MEDIA
+    level: must
+    statement: Source validation asserts glTF validity, bounds, materials, textures, all required interaction nodes, and the approved source hash before derivation.
+    applies_to: [asset_pipeline]
+    source: media_pipeline
+    acceptance_stage: build
+    verification: [automated]
+    evidence: [glb_validation_report]
+    owner: engineering
+  - id: MEDIA-003
+    domain: MEDIA
+    level: must
+    statement: The browser model uses conservative Meshopt derivation and preserves all 141 named nodes, supported-control hierarchy, and accepted geometry unless a separately evidenced optimization is approved.
+    applies_to: [asset_pipeline, home, synth]
+    source: media_pipeline
+    acceptance_stage: build
+    verification: [automated, inspection]
+    evidence: [derivative_manifest_report, visual_comparison]
+    owner: engineering
+  - id: MEDIA-004
+    domain: MEDIA
+    level: must
+    statement: Production media masters are not browser screenshots, Figma-hosted assets, or donor-prototype surrogates.
+    applies_to: [asset_pipeline, sanity]
+    source: media_pipeline
+    acceptance_stage: candidate
+    verification: [inspection]
+    evidence: [media_provenance_report]
+    owner: product_design
+  - id: MEDIA-005
+    domain: MEDIA
+    level: must
+    statement: Home uses qualified realtime over authored fallback, Product uses authored responsive media only, and Synth defers realtime until activation.
+    applies_to: [home, product, synth]
+    source: media_pipeline
+    acceptance_stage: candidate
+    verification: [automated, measurement]
+    evidence: [network_trace, route_isolation_report]
+    owner: engineering
+  - id: MEDIA-006
+    domain: MEDIA
+    level: must
+    statement: Realtime stops rendering while hidden, offscreen, complete, covered by Bag, or otherwise not requiring frames.
+    applies_to: [home, synth]
+    source: quality_budgets
+    acceptance_stage: candidate
+    verification: [measurement, automated]
+    evidence: [render_lifecycle_trace]
+    owner: engineering
+  - id: MEDIA-007
+    domain: MEDIA
+    level: must
+    statement: Runtime adaptation lowers DPR/effects first and replaces Realtime with authored media after two consecutive two-second windows below 30 fps.
+    applies_to: [home, synth]
+    source: quality_budgets
+    acceptance_stage: candidate
+    verification: [measurement, automated]
+    evidence: [frame_budget_report]
+    owner: engineering
+
+  - id: STATE-001
+    domain: STATE
+    level: must
+    statement: State conflicts resolve in the order requested route and confirmed Bag, valid Return context, valid Preview/MORPH session, then canonical defaults.
+    applies_to: [navigation, bag, synth, checkout_preview]
+    source: continuity
+    acceptance_stage: candidate
+    verification: [automated]
+    evidence: [state_precedence_report]
+    owner: engineering
+  - id: STATE-002
+    domain: STATE
+    level: must
+    statement: Invalid, expired, contradictory, malformed, impossible, or unknown-version transient state clears only its affected concern and selects a safe canonical state.
+    applies_to: [navigation, synth, checkout_preview, presentation]
+    source: continuity
+    acceptance_stage: candidate
+    verification: [automated]
+    evidence: [state_parser_report]
+    owner: engineering
+  - id: STATE-003
+    domain: STATE
+    level: must
+    statement: Continuity state uses no localStorage, public URL parameters, analytics payloads, or free-form visitor data.
+    applies_to: [public_runtime]
+    source: continuity
+    acceptance_stage: candidate
+    verification: [automated, inspection]
+    evidence: [storage_inventory, privacy_network_report]
+    owner: security_privacy
+  - id: STATE-004
+    domain: STATE
+    level: must
+    statement: Explicit destination navigation starts canonical route beginnings and focuses headings, while Back and Forward restore semantic position, visible state, and prior focus when valid.
+    applies_to: [navigation]
+    source: continuity
+    acceptance_stage: candidate
+    verification: [automated, manual]
+    evidence: [history_journey_report]
+    owner: accessibility
+  - id: STATE-005
+    domain: STATE
+    level: must
+    statement: Restoration renders the Core shell, recomposes current conditions, restores semantic normalized position before enhancement, then restores focus and cancels correction on visitor interaction.
+    applies_to: [navigation]
+    source: continuity
+    acceptance_stage: candidate
+    verification: [automated, manual]
+    evidence: [restoration_report]
+    owner: engineering
+  - id: STATE-006
+    domain: STATE
+    level: must
+    statement: A newer route intent supersedes an older uncommitted navigation, and only one menu, Bag, route, or Preview surface transition is active at a time.
+    applies_to: [navigation]
+    source: continuity
+    acceptance_stage: candidate
+    verification: [automated]
+    evidence: [transition_race_report]
+    owner: engineering
+  - id: STATE-007
+    domain: STATE
+    level: must
+    statement: Pending navigation keeps the source usable, shows only link-local progress after about 100 ms, and on failure preserves source state and offers Retry.
+    applies_to: [navigation]
+    source: continuity
+    acceptance_stage: candidate
+    verification: [automated, manual]
+    evidence: [navigation_failure_report]
+    owner: engineering
+  - id: STATE-008
+    domain: STATE
+    level: must
+    statement: Prefetch is never treated as route entry, cinematic completion, audio consent, Preview progression, or analytics visitation.
+    applies_to: [navigation, telemetry]
+    source: continuity
+    acceptance_stage: candidate
+    verification: [automated]
+    evidence: [prefetch_behavior_report]
+    owner: engineering
+
+  - id: ARCH-001
+    domain: ARCH
+    level: must
+    statement: VANTA deploys as one server-first Next.js 16 App Router application through Netlify's Node-backed integration using pinned Node and pnpm versions.
+    applies_to: [application, deployment]
+    source: application_architecture
+    acceptance_stage: build
+    verification: [automated, inspection]
+    evidence: [build_manifest, environment_report]
+    owner: engineering
+  - id: ARCH-002
+    domain: ARCH
+    level: must
+    statement: The root layout remains free of request-time Bag cookies and heavy 3D/audio imports so route shells remain independently cacheable.
+    applies_to: [application]
+    source: application_architecture
+    acceptance_stage: build
+    verification: [automated]
+    evidence: [route_isolation_report]
+    owner: engineering
+  - id: ARCH-003
+    domain: ARCH
+    level: must
+    statement: Server Components compose domain view models directly from server-only modules and do not call the application's own Route Handlers.
+    applies_to: [application, server]
+    source: application_architecture
+    acceptance_stage: build
+    verification: [automated, inspection]
+    evidence: [architecture_test_report]
+    owner: engineering
+  - id: ARCH-004
+    domain: ARCH
+    level: must
+    statement: Client boundaries are limited to interaction/browser concerns and vendor SDKs, credentials, queries, cache rules, and raw errors remain inside server adapters.
+    applies_to: [application]
+    source: application_architecture
+    acceptance_stage: build
+    verification: [automated, inspection]
+    evidence: [dependency_boundary_report]
+    owner: engineering
+  - id: ARCH-005
+    domain: ARCH
+    level: must
+    statement: Public composition joins code Product truth/Catalog and validated Sanity Editorial projections without substituting one owner's missing value from another source.
+    applies_to: [server, home, product, synth]
+    source: ownership
+    acceptance_stage: candidate
+    verification: [automated]
+    evidence: [composition_contract_report]
+    owner: engineering
+  - id: ARCH-006
+    domain: ARCH
+    level: must
+    statement: Published Sanity reads use explicit Cache Components scopes, cache lives, and tags, while request APIs remain outside ordinary cached scopes.
+    applies_to: [server]
+    source: application_architecture
+    acceptance_stage: build
+    verification: [automated, inspection]
+    evidence: [cache_architecture_report]
+    owner: engineering
+  - id: ARCH-007
+    domain: ARCH
+    level: must
+    statement: Runtime cache design assumes neither serverless in-memory persistence across requests nor cache survival across deployments.
+    applies_to: [server, deployment]
+    source: application_architecture
+    acceptance_stage: build
+    verification: [inspection, exercise]
+    evidence: [cache_resilience_report]
+    owner: engineering
+  - id: ARCH-008
+    domain: ARCH
+    level: must
+    statement: MORPH, Presentation, Preview, Return context, and Bag overlay state remain bounded concerns and no runtime browser/media object enters shared serializable stores.
+    applies_to: [client_runtime]
+    source: application_architecture
+    acceptance_stage: build
+    verification: [automated, inspection]
+    evidence: [state_architecture_report]
+    owner: engineering
+  - id: ARCH-009
+    domain: ARCH
+    level: must
+    statement: Audio, rendering, Bag, Preview, and navigation use idempotent lifecycle/state-machine boundaries whose local failure cannot replace route content.
+    applies_to: [client_runtime]
+    source: application_architecture
+    acceptance_stage: candidate
+    verification: [automated, failure_injection]
+    evidence: [lifecycle_report, failure_injection_report]
+    owner: engineering
+  - id: ARCH-010
+    domain: ARCH
+    level: must
+    statement: Public production imports, configures, or contacts no Shopify SDK, Storefront endpoint, product, cart, checkout, token, or identifier.
+    applies_to: [public_runtime, build]
+    source: checkout_boundary
+    acceptance_stage: build
+    verification: [automated]
+    evidence: [bundle_isolation_report, network_trace, configuration_scan]
+    owner: security_privacy
+
+  - id: QUALITY-001
+    domain: QUALITY
+    level: must
+    statement: Each route meets p75 LCP at or below 2.5 seconds, INP at or below 200 ms, and CLS at or below 0.1 once field volume is sufficient.
+    applies_to: [home, product, synth, checkout_preview]
+    source: quality_budgets
+    acceptance_stage: post_launch
+    verification: [measurement]
+    evidence: [field_vitals_report]
+    owner: engineering
+  - id: QUALITY-002
+    domain: QUALITY
+    level: must
+    statement: Before sufficient field volume, median-of-three cold runs meet LCP at or below 2.5 seconds, TBT at or below 200 ms, CLS at or below 0.1, and TTFB at or below 800 ms per route.
+    applies_to: [home, product, synth, checkout_preview]
+    source: quality_budgets
+    acceptance_stage: candidate
+    verification: [measurement]
+    evidence: [lab_performance_report]
+    owner: engineering
+  - id: QUALITY-003
+    domain: QUALITY
+    level: must
+    statement: A median performance regression above 10 percent receives explicit approval even when absolute ceilings pass.
+    applies_to: [all_routes]
+    source: quality_budgets
+    acceptance_stage: candidate
+    verification: [measurement, review]
+    evidence: [regression_report, approval_record]
+    owner: release_approver
+  - id: QUALITY-004
+    domain: QUALITY
+    level: must
+    statement: Initial/deferred JavaScript, font, route-through-LCP transfer, runtime GLB, and single-motion payloads remain within every ceiling in the technical specification.
+    applies_to: [build, home, product, synth, bag]
+    source: quality_budgets
+    acceptance_stage: build
+    verification: [automated, measurement]
+    evidence: [bundle_budget_report, transfer_budget_report]
+    owner: engineering
+  - id: QUALITY-005
+    domain: QUALITY
+    level: must
+    statement: Realtime becomes ready within four seconds on the reference network/CPU profile, targets 60 fps desktop and 45 fps mobile, and never remains below the 30 fps hard floor.
+    applies_to: [home, synth]
+    source: quality_budgets
+    acceptance_stage: candidate
+    verification: [measurement]
+    evidence: [realtime_performance_report]
+    owner: engineering
+  - id: QUALITY-006
+    domain: QUALITY
+    level: must
+    statement: Governed realtime assets stay at or below 32 MB decoded textures, 96 MB estimated GPU resources, DPR 1.5 mobile/2 desktop, startup tasks 100 ms, and interaction tasks 50 ms.
+    applies_to: [home, synth]
+    source: quality_budgets
+    acceptance_stage: candidate
+    verification: [measurement]
+    evidence: [gpu_resource_report, main_thread_trace]
+    owner: engineering
+  - id: QUALITY-007
+    domain: QUALITY
+    level: must
+    statement: First sound occurs within 500 ms cold and 150 ms warm, accepted controls schedule audio changes within 50 ms, and visible state updates in the same animation frame.
+    applies_to: [synth]
+    source: quality_budgets
+    acceptance_stage: candidate
+    verification: [measurement]
+    evidence: [audio_latency_report]
+    owner: engineering
+  - id: QUALITY-008
+    domain: QUALITY
+    level: must
+    statement: A ten-minute scripted Synth session has no application-caused clicks, stuck notes, overlapping transport, runaway gain, or unrecovered interruption.
+    applies_to: [synth]
+    source: quality_budgets
+    acceptance_stage: candidate
+    verification: [measurement, manual]
+    evidence: [audio_stress_report]
+    owner: engineering
+  - id: QUALITY-009
+    domain: QUALITY
+    level: must
+    statement: Every route conforms to WCAG 2.2 AA with zero automated serious/critical findings and no A/AA violation lacking an approved exception.
+    applies_to: [all_public_ui]
+    source: quality_budgets
+    acceptance_stage: candidate
+    verification: [automated, manual]
+    evidence: [accessibility_report]
+    owner: accessibility
+  - id: QUALITY-010
+    domain: QUALITY
+    level: must
+    statement: All routes operate at 400 percent zoom and 320 CSS pixels without two-dimensional page scrolling, clipped actions, or overlapping text and provide at least 44-by-44 CSS-pixel targets.
+    applies_to: [all_public_ui]
+    source: inclusive_behavior
+    acceptance_stage: candidate
+    verification: [manual, automated]
+    evidence: [responsive_accessibility_report]
+    owner: accessibility
+  - id: QUALITY-011
+    domain: QUALITY
+    level: must
+    statement: Core passes on the specified floor devices and enhanced behavior is covered on current/previous major browsers plus the documented minimum Core browser range.
+    applies_to: [all_public_ui]
+    source: quality_budgets
+    acceptance_stage: candidate
+    verification: [manual, automated]
+    evidence: [device_browser_matrix]
+    owner: engineering
+  - id: QUALITY-012
+    domain: QUALITY
+    level: must
+    statement: Manual assistive-technology coverage includes the specified VoiceOver, NVDA, JAWS, and TalkBack browser combinations.
+    applies_to: [all_public_ui]
+    source: quality_budgets
+    acceptance_stage: candidate
+    verification: [manual]
+    evidence: [screen_reader_report]
+    owner: accessibility
+  - id: QUALITY-013
+    domain: QUALITY
+    level: must
+    statement: Failures remain local, preserve unaffected content/state, expose targeted recovery, and are exercised for scripts, network, content, Bag, model, WebGL, audio, telemetry, and lifecycle faults.
+    applies_to: [all_public_ui]
+    source: quality_budgets
+    acceptance_stage: candidate
+    verification: [failure_injection]
+    evidence: [failure_injection_report]
+    owner: engineering
+
+  - id: SECURITY-001
+    domain: SECURITY
+    level: must
+    statement: Production enforces separate allowlisted public and preview CSPs after report-only qualification without forcing nonce-based dynamic rendering.
+    applies_to: [public_runtime, editorial_preview]
+    source: launch_operations
+    acceptance_stage: candidate
+    verification: [automated, manual]
+    evidence: [csp_report]
+    owner: security_privacy
+  - id: SECURITY-002
+    domain: SECURITY
+    level: must
+    statement: Production sends the specified referrer, content-type, frame, permissions, and qualified HSTS headers and uses no undocumented wildcard origin.
+    applies_to: [public_runtime]
+    source: launch_operations
+    acceptance_stage: candidate
+    verification: [automated]
+    evidence: [header_policy_report]
+    owner: security_privacy
+  - id: SECURITY-003
+    domain: SECURITY
+    level: must
+    statement: Public framing is denied, while Editorial preview permits only the exact Sanity Studio origin and minimum required connections.
+    applies_to: [public_runtime, editorial_preview]
+    source: launch_operations
+    acceptance_stage: candidate
+    verification: [automated, manual]
+    evidence: [frame_policy_report]
+    owner: security_privacy
+  - id: SECURITY-004
+    domain: SECURITY
+    level: must
+    statement: Public source-map requests return 404 and private maps remain restricted and retained only while their deployment can receive traffic.
+    applies_to: [deployment, monitoring]
+    source: launch_operations
+    acceptance_stage: candidate
+    verification: [automated, inspection]
+    evidence: [source_map_report]
+    owner: security_privacy
+  - id: SECURITY-005
+    domain: SECURITY
+    level: must
+    statement: Secrets and draft tokens are absent from browser bundles, generated output, public logs, responses, and repository content.
+    applies_to: [build, deployment]
+    source: launch_operations
+    acceptance_stage: build
+    verification: [automated]
+    evidence: [secret_scan, bundle_scan]
+    owner: security_privacy
+  - id: SECURITY-006
+    domain: SECURITY
+    level: must
+    statement: Public endpoints pass applicable origin, schema, rate-limit, replay, idempotency, injection, and abuse tests.
+    applies_to: [api]
+    source: launch_operations
+    acceptance_stage: candidate
+    verification: [automated]
+    evidence: [api_security_report]
+    owner: security_privacy
+  - id: SECURITY-007
+    domain: SECURITY
+    level: must
+    statement: Dependency, vulnerability, and secret scans contain no unresolved critical finding.
+    applies_to: [build, deployment]
+    source: launch_operations
+    acceptance_stage: candidate
+    verification: [automated, review]
+    evidence: [dependency_scan, vulnerability_scan, secret_scan]
+    owner: security_privacy
+  - id: SECURITY-008
+    domain: SECURITY
+    level: must
+    statement: Cross-origin isolation is enabled only after every content, media, audio, worker, and preview dependency passes deployed compatibility qualification.
+    applies_to: [public_runtime]
+    source: launch_operations
+    acceptance_stage: candidate
+    verification: [automated, manual]
+    evidence: [cross_origin_compatibility_report]
+    owner: security_privacy
+
+  - id: OPS-001
+    domain: OPS
+    level: must
+    statement: Only Home, Product, and Synth are canonical indexable sitemap routes; Checkout Preview and all preview, deployment, API, health, and operational surfaces have response-level noindex policy.
+    applies_to: [metadata, deployment]
+    source: launch_operations
+    acceptance_stage: candidate
+    verification: [automated]
+    evidence: [indexing_policy_report]
+    owner: content_editorial
+  - id: OPS-002
+    domain: OPS
+    level: must
+    statement: Alternate hosts, Netlify hosts, legacy paths, and trailing-slash variants permanently redirect to the configured canonical HTTPS production origin.
+    applies_to: [deployment]
+    source: launch_operations
+    acceptance_stage: candidate
+    verification: [automated]
+    evidence: [redirect_report]
+    owner: engineering
+  - id: OPS-003
+    domain: OPS
+    level: must
+    statement: Home emits Organization and WebSite JSON-LD and Product emits sanitized Product JSON-LD without commerce, availability, rating, review, or action signals.
+    applies_to: [home, product, metadata]
+    source: launch_operations
+    acceptance_stage: candidate
+    verification: [automated, inspection]
+    evidence: [structured_data_report]
+    owner: content_editorial
+  - id: OPS-004
+    domain: OPS
+    level: must
+    statement: Public analytics uses no cookies, persistent identity, fingerprint, location, advertising, profile, autocapture, replay, survey, feature flag, DOM capture, or cross-page visitor identifier.
+    applies_to: [telemetry, public_runtime]
+    source: launch_operations
+    acceptance_stage: candidate
+    verification: [automated, inspection]
+    evidence: [privacy_network_report, storage_inventory]
+    owner: security_privacy
+  - id: OPS-005
+    domain: OPS
+    level: must
+    statement: Browser telemetry uses only the seven allowlisted event families through a same-origin validated, redacted, rate-limited, replaceable boundary with payloads at or below 10 KiB.
+    applies_to: [telemetry, api]
+    source: launch_operations
+    acceptance_stage: candidate
+    verification: [automated]
+    evidence: [telemetry_contract_report]
+    owner: security_privacy
+  - id: OPS-006
+    domain: OPS
+    level: must
+    statement: Telemetry honors GPC and DNT, runs after meaningful content, fails silently, and follows the specified raw, aggregate, log, and source-map retention periods.
+    applies_to: [telemetry, monitoring]
+    source: launch_operations
+    acceptance_stage: candidate
+    verification: [automated, review]
+    evidence: [telemetry_privacy_report]
+    owner: security_privacy
+  - id: OPS-007
+    domain: OPS
+    level: must
+    statement: Five-minute synthetic probes, release-tagged monitoring, minimum-sample alerts, and the four specified quality alerts are configured and tested before launch.
+    applies_to: [monitoring, operations]
+    source: launch_operations
+    acceptance_stage: launch
+    verification: [exercise, inspection]
+    evidence: [monitoring_alert_exercise]
+    owner: operations_release
+  - id: OPS-008
+    domain: OPS
+    level: must
+    statement: Production promotion uses the exact immutable qualified candidate from protected main and begins a 30-minute launch watch.
+    applies_to: [deployment, operations]
+    source: launch_operations
+    acceptance_stage: launch
+    verification: [exercise, review]
+    evidence: [promotion_record, launch_watch_record]
+    owner: operations_release
+  - id: OPS-009
+    domain: OPS
+    level: must
+    statement: Application rollback selects a previously qualified immutable deployment and content rollback independently republishes a known-good revision and verifies invalidation.
+    applies_to: [deployment, sanity, operations]
+    source: launch_operations
+    acceptance_stage: launch
+    verification: [exercise]
+    evidence: [rollback_exercise]
+    owner: operations_release
+  - id: OPS-010
+    domain: OPS
+    level: must
+    statement: Primary and backup custodians, MFA, least privilege, recovery, secret rotation/review, access inventory, escalation, and required operational runbooks are recorded before launch.
+    applies_to: [operations]
+    source: launch_operations
+    acceptance_stage: launch
+    verification: [review, exercise]
+    evidence: [ownership_access_review, runbook_exercise]
+    owner: operations_release
+  - id: OPS-011
+    domain: OPS
+    level: must
+    statement: Non-public Shopify qualification uses only a password-protected development store, synthetic identity/address/test payments, suppressed notifications/fulfillment, and cancelled or archived test orders.
+    applies_to: [shopify_qualification]
+    source: checkout_boundary
+    acceptance_stage: candidate
+    verification: [exercise, inspection]
+    evidence: [shopify_qualification_report]
+    owner: engineering
+  - id: OPS-012
+    domain: OPS
+    level: must
+    statement: Shopify qualification outage or failure affects only the qualification result and leaves every public route, Bag, and Checkout Preview fully operational.
+    applies_to: [shopify_qualification, public_runtime]
+    source: checkout_boundary
+    acceptance_stage: candidate
+    verification: [failure_injection]
+    evidence: [shopify_isolation_report]
+    owner: engineering
+  - id: OPS-013
+    domain: OPS
+    level: must
+    statement: Launch approval references one candidate-bound evidence manifest and signatures for product/design, engineering, accessibility, content, security/privacy, operations, and Release Approver.
+    applies_to: [launch]
+    source: final_handoff
+    acceptance_stage: launch
+    verification: [review]
+    evidence: [signed_readiness_record]
+    owner: release_approver
+  - id: OPS-014
+    domain: OPS
+    level: must
+    statement: Every waiver records measured evidence, impact, compensating control, owner, approvals, issue, expiry, and follow-up, and no threshold or result is silently changed to pass.
+    applies_to: [launch, operations]
+    source: launch_operations
+    acceptance_stage: launch
+    verification: [review]
+    evidence: [waiver_register]
+    owner: release_approver
+  - id: OPS-015
+    domain: OPS
+    level: must
+    statement: Transaction-boundary, visitor-data prohibition, secret-exposure, and deceptive-commerce failures are not waivable.
+    applies_to: [launch, operations]
+    source: final_handoff
+    acceptance_stage: launch
+    verification: [review]
+    evidence: [signed_readiness_record]
+    owner: release_approver

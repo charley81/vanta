@@ -1,0 +1,98 @@
+schema_version: 1
+status: template
+notice: >-
+  This file is a schema example and makes no verification or launch claim. Copy it
+  for one immutable candidate and replace every example/null value with real data.
+
+candidate:
+  baseline_commit: null
+  application_commit: null
+  deployment_id: null
+  deployment_url: null
+  production_origin: null
+  content_release_or_revisions: []
+  product_truth_manifest_sha256: null
+  glb_source_sha256: ccbdb568548e154335b2d8eb147a8f39b9881eb930e2b290e098f419425ca261
+  derivative_manifest_sha256: null
+  configuration_manifest_sha256: null
+  node_version: null
+  pnpm_version: null
+  next_version: null
+  netlify_adapter_version: null
+  created_at: null
+  created_by: null
+
+artifacts:
+  - id: example-artifact
+    status: not_run # pass | fail | blocked | waived | not_applicable | not_run
+    title: Replace this example with a real artifact
+    requirement_ids: []
+    acceptance_stage: candidate # build | candidate | launch | post_launch
+    verification_methods: [] # automated | inspection | manual | measurement | exercise | review
+    environment: null
+    started_at: null
+    completed_at: null
+    tool_and_version: null
+    command_or_procedure: null
+    result_summary: null
+    measurements: {}
+    public_uri: null
+    restricted_uri: null
+    sha256: null
+    custodian: null
+    retention_until: null
+    sensitive: false
+    redactions: []
+    notes: null
+
+bindings:
+  production_origin:
+    value_or_reference: null
+    owner: null
+    validated_at: null
+    evidence_artifact_id: null
+  sanity_project_dataset:
+    value_or_reference: null
+    owner: null
+    validated_at: null
+    evidence_artifact_id: null
+  privacy_notice:
+    value_or_reference: null
+    owner: null
+    validated_at: null
+    evidence_artifact_id: null
+  rollback_deployment:
+    value_or_reference: null
+    owner: null
+    validated_at: null
+    evidence_artifact_id: null
+
+waivers: []
+# - id: waiver-example
+#   requirement_ids: [QUALITY-000]
+#   evidence_artifact_ids: []
+#   rationale: null
+#   impact: null
+#   compensating_control: null
+#   owner: null
+#   approving_roles: []
+#   issue_url: null
+#   expires_at: null
+#   follow_up_milestone: null
+
+signatures: []
+# - role: release_approver
+#   identity: null
+#   decision: reject # approve | reject
+#   signed_at: null
+#   candidate_deployment_id: null
+#   baseline_commit: null
+#   evidence_manifest_sha256: null
+#   accepted_waiver_ids: []
+#   backup_status: null
+#   notes: null
+
+manifest:
+  generated_at: null
+  sha256: null
+  supersedes_manifest_sha256: null
