@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { getPublishedSynthRouteViewModel } from "@/src/editorial/public-content.server";
+import {
+  getPublishedSynthMetadataForRequest,
+  getSynthRouteContentForRequest,
+} from "@/src/editorial/preview-content.server";
 
 import styles from "../ui/core-route.module.css";
+import { EditorialPreviewBanner } from "../ui/editorial-preview-banner";
 import { MediaPlaceholder } from "../ui/media-placeholder";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const model = await getPublishedSynthRouteViewModel();
+  const model = await getPublishedSynthMetadataForRequest();
   return {
     title: { absolute: model.title },
     description: model.seoDescription,
@@ -15,9 +19,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function SynthPage() {
-  const model = await getPublishedSynthRouteViewModel();
+  const { model, preview } = await getSynthRouteContentForRequest();
   return (
-    <main className={styles.routeMain} id="main-content" tabIndex={-1}>
+    <>
+      {preview ? <EditorialPreviewBanner session={preview} /> : null}
+      <main className={styles.routeMain} id="main-content" tabIndex={-1}>
       <section aria-labelledby="synth-heading" className={styles.routeHeader}>
         <div className={styles.routeHeaderCopy}>
           <p className={styles.eyebrow}>{model.category}</p>
@@ -84,6 +90,7 @@ export default async function SynthPage() {
           EXPLORE MONOLITH
         </Link>
       </section>
-    </main>
+      </main>
+    </>
   );
 }

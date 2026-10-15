@@ -3,7 +3,7 @@ import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
 
-import { getPublishedSiteSettings } from "@/src/editorial/public-content.server";
+import { getSiteSettingsForRequest } from "@/src/editorial/preview-content.server";
 
 import { BagOverlayBoundary } from "./ui/bag-overlay-boundary";
 import {
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const siteSettings = await getPublishedSiteSettings();
+  const siteSettings = await getSiteSettingsForRequest();
   return (
     <html
       lang="en"

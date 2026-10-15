@@ -2,6 +2,10 @@ import { defineConfig, devices } from "@playwright/test";
 
 const port = 32142;
 const baseURL = `http://127.0.0.1:${port}`;
+const browserPreviewSecret = "browser-preview-session-secret-32-characters";
+
+process.env.EDITORIAL_PREVIEW_SESSION_SECRET = browserPreviewSecret;
+process.env.SANITY_STUDIO_ORIGIN = "https://studio.example";
 
 export default defineConfig({
   testDir: "./tests/browser",
@@ -31,6 +35,11 @@ export default defineConfig({
       ? `pnpm start --port ${port}`
       : `pnpm build && pnpm start --port ${port}`,
     url: baseURL,
+    env: {
+      ...process.env,
+      EDITORIAL_PREVIEW_SESSION_SECRET: browserPreviewSecret,
+      SANITY_STUDIO_ORIGIN: "https://studio.example",
+    },
     reuseExistingServer: false,
     timeout: 120_000,
   },

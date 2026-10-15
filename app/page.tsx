@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { getPublishedHomeRouteViewModel } from "@/src/editorial/public-content.server";
+import {
+  getHomeRouteContentForRequest,
+  getPublishedHomeMetadataForRequest,
+} from "@/src/editorial/preview-content.server";
 
+import { EditorialPreviewBanner } from "./ui/editorial-preview-banner";
 import coreStyles from "./ui/core-route.module.css";
 import styles from "./home.module.css";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const model = await getPublishedHomeRouteViewModel();
+  const model = await getPublishedHomeMetadataForRequest();
   return {
     title: { absolute: model.title },
     description: model.seoDescription,
@@ -15,9 +19,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const model = await getPublishedHomeRouteViewModel();
+  const { model, preview } = await getHomeRouteContentForRequest();
   return (
-    <main className={`${coreStyles.routeMain} ${styles.home}`} id="main-content" tabIndex={-1}>
+    <>
+      {preview ? <EditorialPreviewBanner session={preview} /> : null}
+      <main className={`${coreStyles.routeMain} ${styles.home}`} id="main-content" tabIndex={-1}>
       <section aria-labelledby="home-heading" className={styles.introduction}>
         <div aria-hidden="true" className={styles.grid} />
         <div className={styles.copy}>
@@ -78,6 +84,7 @@ export default async function HomePage() {
         </p>
         <p>{model.closing.tagline}</p>
       </section>
-    </main>
+      </main>
+    </>
   );
 }

@@ -1,0 +1,58 @@
+.banner {
+  align-items: center;
+  background: #7de3d6;
+  color: #050807;
+  display: flex;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.75rem;
+  gap: 1rem;
+  justify-content: space-between;
+  letter-spacing: 0.04em;
+  padding: 0.75rem clamp(1rem, 4vw, 3rem);
+  position: relative;
+  z-index: 20;
+}
+
+.banner div {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+}
+
+.banner strong {
+  letter-spacing: 0.12em;
+}
+
+.banner button {
+  background: #050807;
+  border: 1px solid #050807;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  min-height: 2.75rem;
+  padding: 0.5rem 0.9rem;
+  white-space: nowrap;
+}
+
+.banner button:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+}
+
+@media (max-width: 40rem) {
+  .banner {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .banner button {
+    width: 100%;
+  }
+}
+
+@media (forced-colors: active) {
+  .banner {
+    border-block: 2px solid CanvasText;
+  }
+}

@@ -1,0 +1,47 @@
+import { describe, expect, it } from "vitest";
+
+import {
+  previewContentSecurityPolicy,
+  publicContentSecurityPolicy,
+  RESTRICTIVE_PERMISSIONS_POLICY,
+} from "@/src/security/response-policy";
+
+describe("public and Editorial preview response policy", () => {
+  it("denies public framing with an allowlisted static CSP", () => {
+    const policy = publicContentSecurityPolicy();
+    expect(policy).toContain("frame-ancestors 'none'");
+    expect(policy).toContain("connect-src 'self'");
+    expect(policy).toContain("object-src 'none'");
+    expect(policy).not.toContain("nonce-");
+    expect(policy).not.toContain("*");
+  });
+
+  it("changes only framing for the exact Studio origin and adds no browser Sanity connection", () => {
+    const publicPolicy = publicContentSecurityPolicy();
+    const previewPolicy = previewContentSecurityPolicy(
+      "https://studio.example",
+    );
+
+    expect(previewPolicy).toContain(
+      "frame-ancestors https://studio.example",
+    );
+    expect(previewPolicy).toContain("connect-src 'self'");
+    expect(previewPolicy).not.toContain("*.sanity.io");
+    expect(previewPolicy.replace("https://studio.example", "'none'")).toBe(
+      publicPolicy,
+    );
+  });
+
+  it("disables sensitive and unused browser capabilities", () => {
+    for (const capability of [
+      "camera=()",
+      "microphone=()",
+      "geolocation=()",
+      "payment=()",
+      "usb=()",
+      "browsing-topics=()",
+    ]) {
+      expect(RESTRICTIVE_PERMISSIONS_POLICY).toContain(capability);
+    }
+  });
+});

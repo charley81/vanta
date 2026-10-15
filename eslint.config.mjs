@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Generated browser-test traces contain vendored, minified JavaScript.
+    "artifacts/playwright/**",
+    "artifacts/test-results/**",
   ]),
 ]);
 

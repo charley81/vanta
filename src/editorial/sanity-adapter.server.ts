@@ -2,7 +2,7 @@ import "server-only";
 
 import { createClient, type SanityClient } from "@sanity/client";
 
-import { EDITORIAL_PROJECTIONS } from "@/sanity/projections";
+import { publishedEditorialProjection } from "@/sanity/projections";
 
 export const EDITORIAL_DOCUMENT_IDS = [
   "siteSettings",
@@ -42,7 +42,7 @@ export function createPublishedEditorialAdapter(
     async read(documentId) {
       try {
         return await fetchProjection(
-          EDITORIAL_PROJECTIONS[documentId],
+          publishedEditorialProjection(documentId),
           {},
           { perspective: "published" },
         );

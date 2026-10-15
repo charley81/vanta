@@ -196,6 +196,7 @@ type BagTriggerProps = {
   ariaLabel?: string;
   children?: ReactNode;
   className?: string;
+  disabled?: boolean;
 };
 
 export function BagTrigger({
@@ -207,12 +208,14 @@ export function BagTrigger({
     </>
   ),
   className,
+  disabled = false,
 }: BagTriggerProps) {
   return (
     <button
       aria-describedby={ariaDescribedBy}
       aria-label={ariaLabel}
       className={className}
+      disabled={disabled}
       onClick={(event) =>
         window.dispatchEvent(
           new CustomEvent(OPEN_BAG_EVENT, { detail: event.currentTarget }),
