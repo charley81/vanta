@@ -38,3 +38,9 @@ export const EDITORIAL_PROJECTIONS = {
     introduction
   }`,
 } as const;
+
+export function publishedEditorialProjection(
+  documentId: keyof typeof EDITORIAL_PROJECTIONS,
+): string {
+  return EDITORIAL_PROJECTIONS[documentId].replace("[0]{", "[0]{_rev,");
+}

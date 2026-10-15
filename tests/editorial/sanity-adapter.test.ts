@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { EDITORIAL_PROJECTIONS } from "@/sanity/projections";
+import { publishedEditorialProjection } from "@/sanity/projections";
 import { createPublishedEditorialAdapter } from "@/src/editorial/sanity-adapter.server";
 import { resolveEditorialSourceConfiguration } from "@/src/editorial/source.server";
 
@@ -15,7 +15,7 @@ describe("published Sanity adapter", () => {
       headline: "Sound, given mass.",
     });
     expect(fetchProjection).toHaveBeenCalledWith(
-      EDITORIAL_PROJECTIONS.homePage,
+      publishedEditorialProjection("homePage"),
       {},
       { perspective: "published" },
     );

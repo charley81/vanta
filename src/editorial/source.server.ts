@@ -6,6 +6,8 @@ import {
   type PublishedSanityConfiguration,
   readSanityPublishedProjection,
 } from "@/src/editorial/sanity-adapter.server";
+import { type EditorialPreviewPerspective } from "@/src/editorial/preview-policy";
+import { readSanityPreviewProjection } from "@/src/editorial/preview-adapter.server";
 
 export type EditorialSourceConfiguration =
   | { mode: "fixture" }
@@ -77,11 +79,14 @@ export function resolveEditorialSourceConfiguration(
 }
 
 function readFixtureProjection(documentId: EditorialDocumentId): unknown {
-  if (documentId === "siteSettings") return LOCAL_SITE_SETTINGS_FIXTURE;
-  return INITIAL_EDITORIAL_PROJECTION_FIXTURES[documentId];
+  const projection =
+    documentId === "siteSettings"
+      ? LOCAL_SITE_SETTINGS_FIXTURE
+      : INITIAL_EDITORIAL_PROJECTION_FIXTURES[documentId];
+  return { ...projection, _rev: `fixture-${documentId}` };
 }
 
-export async function readPublishedEditorialProjection(
+export async function readPublishedEditorialSnapshotProjection(
   documentId: EditorialDocumentId,
 ): Promise<unknown> {
   const configuration = resolveEditorialSourceConfiguration(process.env);
@@ -89,4 +94,42 @@ export async function readPublishedEditorialProjection(
     return readFixtureProjection(documentId);
   }
   return readSanityPublishedProjection(configuration, documentId);
+}
+
+function stripEditorialSystemFields(projection: unknown): unknown {
+  if (!projection || typeof projection !== "object" || Array.isArray(projection)) {
+    return projection;
+  }
+  const content = { ...(projection as Record<string, unknown>) };
+  delete content._rev;
+  return content;
+}
+
+export async function readPublishedEditorialProjection(
+  documentId: EditorialDocumentId,
+): Promise<unknown> {
+  return stripEditorialSystemFields(
+    await readPublishedEditorialSnapshotProjection(documentId),
+  );
+}
+
+export async function readPreviewEditorialProjection(
+  documentId: EditorialDocumentId,
+  perspective: EditorialPreviewPerspective,
+): Promise<unknown> {
+  const configuration = resolveEditorialSourceConfiguration(process.env);
+  if (configuration.mode === "fixture") {
+    return stripEditorialSystemFields(readFixtureProjection(documentId));
+  }
+  const token = process.env.SANITY_API_READ_TOKEN?.trim();
+  if (!token) {
+    throw new Error("SANITY_API_READ_TOKEN is required for Editorial preview");
+  }
+  return stripEditorialSystemFields(
+    await readSanityPreviewProjection(
+      { ...configuration, token },
+      documentId,
+      perspective,
+    ),
+  );
 }

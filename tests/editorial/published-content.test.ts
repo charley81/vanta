@@ -7,12 +7,13 @@ import { INITIAL_EDITORIAL_PROJECTION_FIXTURES } from "@/sanity/seed/initial-con
 import {
   EDITORIAL_CACHE_ARCHITECTURE,
   EDITORIAL_CACHE_TAGS,
+  getPublishedEditorialRevision,
   getPublishedHomeRouteViewModel,
   getPublishedProductRouteViewModel,
   getPublishedSiteSettings,
   getPublishedSynthRouteViewModel,
 } from "@/src/editorial/public-content.server";
-import { readPublishedEditorialProjection } from "@/src/editorial/source.server";
+import { readPublishedEditorialSnapshotProjection } from "@/src/editorial/source.server";
 
 vi.mock("next/cache", () => ({
   cacheLife: vi.fn(),
@@ -20,7 +21,7 @@ vi.mock("next/cache", () => ({
 }));
 
 vi.mock("@/src/editorial/source.server", () => ({
-  readPublishedEditorialProjection: vi.fn(),
+  readPublishedEditorialSnapshotProjection: vi.fn(),
 }));
 
 const siteSettings = {
@@ -37,13 +38,16 @@ const siteSettings = {
   },
 };
 
-const readProjection = vi.mocked(readPublishedEditorialProjection);
+const readProjection = vi.mocked(readPublishedEditorialSnapshotProjection);
 
 beforeEach(() => {
   vi.clearAllMocks();
   readProjection.mockImplementation(async (documentId) => {
-    if (documentId === "siteSettings") return siteSettings;
-    return INITIAL_EDITORIAL_PROJECTION_FIXTURES[documentId];
+    const projection =
+      documentId === "siteSettings"
+        ? siteSettings
+        : INITIAL_EDITORIAL_PROJECTION_FIXTURES[documentId];
+    return { ...projection, _rev: `rev-${documentId}` };
   });
 });
 
@@ -77,17 +81,28 @@ describe("published Editorial composition cache", () => {
     ]);
   });
 
+  it("caches the validated view model and published revision as one tagged snapshot", async () => {
+    await expect(getPublishedEditorialRevision("productPage")).resolves.toBe(
+      "rev-productPage",
+    );
+    expect(readProjection).toHaveBeenCalledOnce();
+    expect(cacheTag).toHaveBeenCalledWith(
+      EDITORIAL_CACHE_TAGS.productPage,
+    );
+  });
+
   it("rejects an absent required singleton so a candidate cannot cache incomplete content", async () => {
     readProjection.mockResolvedValueOnce(null);
 
     await expect(getPublishedSiteSettings()).rejects.toThrow(
-      "siteSettings must be an object",
+      "siteSettings must include its published revision",
     );
   });
 
   it("rejects malformed Sanity output before it can become a valid cached route model", async () => {
     readProjection.mockResolvedValueOnce({
       ...INITIAL_EDITORIAL_PROJECTION_FIXTURES.homePage,
+      _rev: "rev-homePage",
       opening: {
         ...INITIAL_EDITORIAL_PROJECTION_FIXTURES.homePage.opening,
         body: "<strong>Untrusted markup</strong>",

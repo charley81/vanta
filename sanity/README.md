@@ -57,6 +57,30 @@ Published reads use the Sanity API (not the Sanity CDN) inside document-specific
 
 Local development and local builds use the deterministic seed projections when no source is selected. Automated jobs must opt in explicitly with `SANITY_CONTENT_SOURCE=fixture`; repository CI does this so it cannot accidentally depend on a mutable remote dataset.
 
+## Protected Editorial preview
+
+The optional Presentation tool is enabled only when the Studio build receives `SANITY_STUDIO_PREVIEW_ORIGIN`, set to the exact HTTPS application origin. It opens only Home, Product, and Synth through `/api/editorial/preview`.
+
+The application preview context requires server-only bindings:
+
+- `SANITY_API_READ_TOKEN`: least-privilege viewer token used for secret validation and draft/release reads;
+- `SANITY_STUDIO_ORIGIN`: exact HTTPS origin of the deployed Studio allowed to frame preview;
+- `EDITORIAL_PREVIEW_SESSION_SECRET`: random 32–256 character HMAC secret.
+
+Entry validates Sanity's short-lived Preview URL secret, the exact Studio origin, an allowlisted route, and a bounded `drafts` or release-stack perspective before enabling Next.js Draft Mode. Preview reads bypass public cache scopes and the Sanity CDN. Metadata continues to read the published perspective. The signed preview session is `HttpOnly`, lasts at most one hour, and selects the separate preview CSP. Exit is same-origin POST only.
+
+## Publication invalidation
+
+Configure a signed Sanity webhook with:
+
+- URL: `<PUBLIC_SITE_ORIGIN>/api/editorial/invalidate`;
+- trigger: create and update;
+- filter: `_id in ["siteSettings", "homePage", "productPage", "synthPage"]`;
+- projection: `{ "documentId": _id, "revision": _rev }`;
+- secret: the same random 32–256 character value bound to the application as `SANITY_WEBHOOK_SECRET`.
+
+Set `PUBLIC_SITE_ORIGIN` to the exact public HTTPS origin. The handler verifies Sanity's signature over the raw body, accepts only the fixed projection above, marks only that document's cache tag stale with the `max` stale-while-revalidate profile, and polls the public freshness endpoint with bounded retries. It returns `503` with `Retry-After` unless the public cached revision is observed within the verification window, allowing Sanity to retry while the last valid cached content remains available.
+
 ## Seed a dataset
 
 The seed uploads four dedicated 1200×630 source social cards, validates the complete candidate dataset, and atomically creates or replaces the four fixed singleton IDs.

@@ -1,14 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { getPublishedProductRouteViewModel } from "@/src/editorial/public-content.server";
+import {
+  getProductRouteContentForRequest,
+  getPublishedProductMetadataForRequest,
+} from "@/src/editorial/preview-content.server";
 
 import styles from "../ui/core-route.module.css";
+import { EditorialPreviewBanner } from "../ui/editorial-preview-banner";
 import { MediaPlaceholder } from "../ui/media-placeholder";
 import { BagTrigger } from "../ui/shell-navigation";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const model = await getPublishedProductRouteViewModel();
+  const model = await getPublishedProductMetadataForRequest();
   return {
     title: { absolute: model.title },
     description: model.seoDescription,
@@ -16,9 +20,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ProductPage() {
-  const model = await getPublishedProductRouteViewModel();
+  const { model, preview } = await getProductRouteContentForRequest();
   return (
-    <main className={styles.routeMain} id="main-content" tabIndex={-1}>
+    <>
+      {preview ? <EditorialPreviewBanner session={preview} /> : null}
+      <main className={styles.routeMain} id="main-content" tabIndex={-1}>
       <section aria-labelledby="product-heading" className={styles.routeHeader} data-section="hero">
         <div className={styles.routeHeaderCopy}>
           <p className={styles.eyebrow}>{model.hero.identifier}</p>
@@ -31,13 +37,15 @@ export default async function ProductPage() {
               ariaDescribedBy="bag-core-status"
               ariaLabel="Add MONOLITH to Bag"
               className={styles.actionButton}
+              disabled={Boolean(preview)}
             >
               {model.hero.addToBagLabel}
             </BagTrigger>
           </div>
           <p className={styles.status} id="bag-core-status">
-            Bag storage is not enabled in this Core build. The Bag overlay
-            explains the available routes without changing product state.
+            {preview
+              ? "Bag mutation is disabled in Editorial preview."
+              : "Bag storage is not enabled in this Core build. The Bag overlay explains the available routes without changing product state."}
           </p>
         </div>
         <MediaPlaceholder label="MONOLITH / GRAPHITE" detail="AUTHORED STILL PENDING" />
@@ -156,11 +164,16 @@ export default async function ProductPage() {
         <h2 id="product-final-action-heading">Eight voices. One continuum.</h2>
         <div>
           <p>{model.hero.price}</p>
-          <BagTrigger ariaLabel="Add MONOLITH to Bag" className={styles.secondaryAction}>
+          <BagTrigger
+            ariaLabel="Add MONOLITH to Bag"
+            className={styles.secondaryAction}
+            disabled={Boolean(preview)}
+          >
             {model.hero.addToBagLabel}
           </BagTrigger>
         </div>
       </section>
-    </main>
+      </main>
+    </>
   );
 }

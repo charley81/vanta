@@ -2,7 +2,7 @@ import "server-only";
 
 import { cacheLife, cacheTag } from "next/cache";
 
-import { readPublishedEditorialProjection } from "@/src/editorial/source.server";
+import { readPublishedEditorialSnapshotProjection } from "@/src/editorial/source.server";
 import {
   composeHomeRouteViewModel,
   composeProductRouteViewModel,
@@ -25,42 +25,95 @@ export const EDITORIAL_CACHE_ARCHITECTURE = {
   survivesDeployment: false,
 } as const;
 
-export async function getPublishedSiteSettings() {
+function splitPublishedProjection(
+  projection: unknown,
+  documentId: string,
+): { content: Record<string, unknown>; revision: string } {
+  if (!projection || typeof projection !== "object" || Array.isArray(projection)) {
+    throw new Error(`${documentId} must include its published revision`);
+  }
+  const { _rev: revision, ...content } = projection as Record<string, unknown>;
+  if (typeof revision !== "string" || !revision) {
+    throw new Error(`${documentId} must include its published revision`);
+  }
+  return { content, revision };
+}
+
+async function getPublishedSiteSettingsSnapshot() {
   "use cache";
   cacheLife("max");
   cacheTag(EDITORIAL_CACHE_TAGS.siteSettings);
 
-  return composeSiteSettingsViewModel(
-    await readPublishedEditorialProjection("siteSettings"),
+  const { content, revision } = splitPublishedProjection(
+    await readPublishedEditorialSnapshotProjection("siteSettings"),
+    "siteSettings",
   );
+  return { model: composeSiteSettingsViewModel(content), revision };
 }
 
-export async function getPublishedHomeRouteViewModel() {
+async function getPublishedHomeSnapshot() {
   "use cache";
   cacheLife("max");
   cacheTag(EDITORIAL_CACHE_TAGS.homePage);
 
-  return composeHomeRouteViewModel(
-    await readPublishedEditorialProjection("homePage"),
+  const { content, revision } = splitPublishedProjection(
+    await readPublishedEditorialSnapshotProjection("homePage"),
+    "homePage",
   );
+  return { model: composeHomeRouteViewModel(content), revision };
 }
 
-export async function getPublishedProductRouteViewModel() {
+async function getPublishedProductSnapshot() {
   "use cache";
   cacheLife("max");
   cacheTag(EDITORIAL_CACHE_TAGS.productPage);
 
-  return composeProductRouteViewModel(
-    await readPublishedEditorialProjection("productPage"),
+  const { content, revision } = splitPublishedProjection(
+    await readPublishedEditorialSnapshotProjection("productPage"),
+    "productPage",
   );
+  return { model: composeProductRouteViewModel(content), revision };
 }
 
-export async function getPublishedSynthRouteViewModel() {
+async function getPublishedSynthSnapshot() {
   "use cache";
   cacheLife("max");
   cacheTag(EDITORIAL_CACHE_TAGS.synthPage);
 
-  return composeSynthRouteViewModel(
-    await readPublishedEditorialProjection("synthPage"),
+  const { content, revision } = splitPublishedProjection(
+    await readPublishedEditorialSnapshotProjection("synthPage"),
+    "synthPage",
   );
+  return { model: composeSynthRouteViewModel(content), revision };
+}
+
+export async function getPublishedSiteSettings() {
+  return (await getPublishedSiteSettingsSnapshot()).model;
+}
+
+export async function getPublishedHomeRouteViewModel() {
+  return (await getPublishedHomeSnapshot()).model;
+}
+
+export async function getPublishedProductRouteViewModel() {
+  return (await getPublishedProductSnapshot()).model;
+}
+
+export async function getPublishedSynthRouteViewModel() {
+  return (await getPublishedSynthSnapshot()).model;
+}
+
+export async function getPublishedEditorialRevision(
+  documentId: keyof typeof EDITORIAL_CACHE_TAGS,
+): Promise<string> {
+  switch (documentId) {
+    case "siteSettings":
+      return (await getPublishedSiteSettingsSnapshot()).revision;
+    case "homePage":
+      return (await getPublishedHomeSnapshot()).revision;
+    case "productPage":
+      return (await getPublishedProductSnapshot()).revision;
+    case "synthPage":
+      return (await getPublishedSynthSnapshot()).revision;
+  }
 }
