@@ -5,10 +5,19 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:verified": "tsx tooling/verification/cli.ts run production-build -- pnpm build",
     "start": "next start",
-    "lint": "eslint",
-    "typecheck": "next typegen && tsc --noEmit",
-    "check": "pnpm lint && pnpm typecheck && pnpm build"
+    "lint": "tsx tooling/verification/cli.ts run lint -- pnpm exec eslint .",
+    "typecheck": "tsx tooling/verification/cli.ts run typecheck -- pnpm typecheck:raw",
+    "typecheck:raw": "next typegen && tsc --noEmit",
+    "test": "pnpm test:unit && pnpm test:browser",
+    "test:unit": "tsx tooling/verification/cli.ts run unit-tests -- pnpm exec vitest run",
+    "test:unit:watch": "vitest",
+    "test:browser": "tsx tooling/verification/cli.ts run browser-tests -- pnpm exec playwright test",
+    "validate:requirements": "tsx tooling/verification/cli.ts requirements",
+    "validate:evidence": "tsx tooling/verification/cli.ts evidence",
+    "validate:performance": "tsx tooling/verification/cli.ts performance verification/fixtures/performance-regression.json",
+    "check": "pnpm validate:requirements && pnpm validate:evidence && pnpm validate:performance && pnpm lint && pnpm typecheck && pnpm test:unit && pnpm build:verified && pnpm test:browser"
   },
   "dependencies": {
     "next": "16.4.0",
@@ -16,14 +25,29 @@
     "react-dom": "19.3.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.64.1",
     "@tailwindcss/turbopack": "^4",
-    "@types/node": "^20",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@types/node": "^22.20.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@vitejs/plugin-react": "^6.1.2",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
     "eslint": "^9",
     "eslint-config-next": "16.4.0",
+    "jsdom": "^30.1.3",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "tsx": "^4.23.15",
+    "typescript": "^5",
+    "vitest": "^5.0.5",
+    "yaml": "^2.9.1"
   },
-  "packageManager": "pnpm@10.32.1"
+  "packageManager": "pnpm@10.32.1",
+  "engines": {
+    "node": "22.22.1"
+  }
 }

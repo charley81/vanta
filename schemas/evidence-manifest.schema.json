@@ -1,0 +1,222 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vanta.invalid/schemas/evidence-manifest.schema.json",
+  "title": "VANTA evidence manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "status", "notice", "candidate", "artifacts", "bindings", "waivers", "signatures", "manifest"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "status": { "enum": ["template", "draft", "candidate"] },
+    "notice": { "type": "string", "minLength": 1 },
+    "candidate": { "$ref": "#/$defs/candidate" },
+    "artifacts": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/artifact" }
+    },
+    "bindings": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/binding" }
+    },
+    "waivers": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/waiver" }
+    },
+    "signatures": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/signature" }
+    },
+    "manifest": { "$ref": "#/$defs/manifestIdentity" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "candidate" } }, "required": ["status"] },
+      "then": {
+        "properties": {
+          "candidate": {
+            "type": "object",
+            "properties": {
+              "baseline_commit": { "$ref": "#/$defs/nonEmptyString" },
+              "application_commit": { "$ref": "#/$defs/nonEmptyString" },
+              "deployment_id": { "$ref": "#/$defs/nonEmptyString" },
+              "deployment_url": { "$ref": "#/$defs/uri" },
+              "production_origin": { "$ref": "#/$defs/uri" },
+              "content_release_or_revisions": { "type": "array", "items": { "$ref": "#/$defs/nonEmptyString" }, "minItems": 1, "uniqueItems": true },
+              "product_truth_manifest_sha256": { "$ref": "#/$defs/sha256String" },
+              "glb_source_sha256": { "$ref": "#/$defs/sha256String" },
+              "derivative_manifest_sha256": { "$ref": "#/$defs/sha256String" },
+              "configuration_manifest_sha256": { "$ref": "#/$defs/sha256String" },
+              "node_version": { "$ref": "#/$defs/nonEmptyString" },
+              "pnpm_version": { "$ref": "#/$defs/nonEmptyString" },
+              "next_version": { "$ref": "#/$defs/nonEmptyString" },
+              "netlify_adapter_version": { "$ref": "#/$defs/nonEmptyString" },
+              "created_at": { "$ref": "#/$defs/dateTime" },
+              "created_by": { "$ref": "#/$defs/nonEmptyString" }
+            }
+          },
+          "artifacts": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "properties": {
+                "requirement_ids": { "type": "array", "items": { "type": "string" }, "minItems": 1, "uniqueItems": true },
+                "verification_methods": { "type": "array", "minItems": 1 },
+                "environment": { "$ref": "#/$defs/nonEmptyString" },
+                "started_at": { "$ref": "#/$defs/dateTime" },
+                "completed_at": { "$ref": "#/$defs/dateTime" },
+                "tool_and_version": { "$ref": "#/$defs/nonEmptyString" },
+                "command_or_procedure": { "$ref": "#/$defs/nonEmptyString" },
+                "result_summary": { "$ref": "#/$defs/nonEmptyString" },
+                "sha256": { "$ref": "#/$defs/sha256String" },
+                "custodian": { "$ref": "#/$defs/nonEmptyString" },
+                "retention_until": { "type": "string", "format": "date" }
+              },
+              "anyOf": [
+                { "type": "object", "properties": { "public_uri": { "$ref": "#/$defs/uri" } }, "required": ["public_uri"] },
+                { "type": "object", "properties": { "restricted_uri": { "$ref": "#/$defs/uri" } }, "required": ["restricted_uri"] }
+              ]
+            }
+          },
+          "bindings": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "value_or_reference": { "$ref": "#/$defs/nonEmptyString" },
+                "owner": { "$ref": "#/$defs/nonEmptyString" },
+                "validated_at": { "$ref": "#/$defs/dateTime" },
+                "evidence_artifact_id": { "$ref": "#/$defs/nonEmptyString" }
+              }
+            }
+          },
+          "manifest": {
+            "type": "object",
+            "properties": {
+              "generated_at": { "$ref": "#/$defs/dateTime" },
+              "sha256": { "$ref": "#/$defs/sha256String" }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "nullableString": { "type": ["string", "null"] },
+    "nonEmptyString": { "type": "string", "minLength": 1 },
+    "uri": { "type": "string", "format": "uri", "minLength": 1 },
+    "nullableUri": { "type": ["string", "null"], "format": "uri" },
+    "dateTime": { "type": "string", "format": "date-time" },
+    "nullableDateTime": { "type": ["string", "null"], "format": "date-time" },
+    "sha256": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+    "sha256String": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "stringArray": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["baseline_commit", "application_commit", "deployment_id", "deployment_url", "production_origin", "content_release_or_revisions", "product_truth_manifest_sha256", "glb_source_sha256", "derivative_manifest_sha256", "configuration_manifest_sha256", "node_version", "pnpm_version", "next_version", "netlify_adapter_version", "created_at", "created_by"],
+      "properties": {
+        "baseline_commit": { "$ref": "#/$defs/nullableString" },
+        "application_commit": { "$ref": "#/$defs/nullableString" },
+        "deployment_id": { "$ref": "#/$defs/nullableString" },
+        "deployment_url": { "$ref": "#/$defs/nullableUri" },
+        "production_origin": { "$ref": "#/$defs/nullableUri" },
+        "content_release_or_revisions": { "$ref": "#/$defs/stringArray" },
+        "product_truth_manifest_sha256": { "$ref": "#/$defs/sha256" },
+        "glb_source_sha256": { "$ref": "#/$defs/sha256" },
+        "derivative_manifest_sha256": { "$ref": "#/$defs/sha256" },
+        "configuration_manifest_sha256": { "$ref": "#/$defs/sha256" },
+        "node_version": { "$ref": "#/$defs/nullableString" },
+        "pnpm_version": { "$ref": "#/$defs/nullableString" },
+        "next_version": { "$ref": "#/$defs/nullableString" },
+        "netlify_adapter_version": { "$ref": "#/$defs/nullableString" },
+        "created_at": { "$ref": "#/$defs/nullableDateTime" },
+        "created_by": { "$ref": "#/$defs/nullableString" }
+      }
+    },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status", "title", "requirement_ids", "acceptance_stage", "verification_methods", "environment", "started_at", "completed_at", "tool_and_version", "command_or_procedure", "result_summary", "measurements", "public_uri", "restricted_uri", "sha256", "custodian", "retention_until", "sensitive", "redactions", "notes"],
+      "properties": {
+        "id": { "$ref": "#/$defs/nonEmptyString" },
+        "status": { "enum": ["pass", "fail", "blocked", "waived", "not_applicable", "not_run"] },
+        "title": { "$ref": "#/$defs/nonEmptyString" },
+        "requirement_ids": { "$ref": "#/$defs/stringArray" },
+        "acceptance_stage": { "enum": ["build", "candidate", "launch", "post_launch"] },
+        "verification_methods": { "type": "array", "items": { "enum": ["automated", "inspection", "manual", "measurement", "exercise", "review"] }, "uniqueItems": true },
+        "environment": { "$ref": "#/$defs/nullableString" },
+        "started_at": { "$ref": "#/$defs/nullableDateTime" },
+        "completed_at": { "$ref": "#/$defs/nullableDateTime" },
+        "tool_and_version": { "$ref": "#/$defs/nullableString" },
+        "command_or_procedure": { "$ref": "#/$defs/nullableString" },
+        "result_summary": { "$ref": "#/$defs/nullableString" },
+        "measurements": { "type": "object" },
+        "public_uri": { "$ref": "#/$defs/nullableUri" },
+        "restricted_uri": { "$ref": "#/$defs/nullableUri" },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "custodian": { "$ref": "#/$defs/nullableString" },
+        "retention_until": { "type": ["string", "null"], "format": "date" },
+        "sensitive": { "type": "boolean" },
+        "redactions": { "$ref": "#/$defs/stringArray" },
+        "notes": { "$ref": "#/$defs/nullableString" }
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value_or_reference", "owner", "validated_at", "evidence_artifact_id"],
+      "properties": {
+        "value_or_reference": { "$ref": "#/$defs/nullableString" },
+        "owner": { "$ref": "#/$defs/nullableString" },
+        "validated_at": { "$ref": "#/$defs/nullableDateTime" },
+        "evidence_artifact_id": { "$ref": "#/$defs/nullableString" }
+      }
+    },
+    "waiver": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "requirement_ids", "evidence_artifact_ids", "rationale", "impact", "compensating_control", "owner", "approving_roles", "issue_url", "expires_at", "follow_up_milestone"],
+      "properties": {
+        "id": { "$ref": "#/$defs/nonEmptyString" },
+        "requirement_ids": { "type": "array", "items": { "type": "string" }, "minItems": 1, "uniqueItems": true },
+        "evidence_artifact_ids": { "type": "array", "items": { "type": "string" }, "minItems": 1, "uniqueItems": true },
+        "rationale": { "$ref": "#/$defs/nonEmptyString" },
+        "impact": { "$ref": "#/$defs/nonEmptyString" },
+        "compensating_control": { "$ref": "#/$defs/nonEmptyString" },
+        "owner": { "$ref": "#/$defs/nonEmptyString" },
+        "approving_roles": { "type": "array", "items": { "type": "string" }, "minItems": 1, "uniqueItems": true },
+        "issue_url": { "$ref": "#/$defs/uri" },
+        "expires_at": { "type": "string", "format": "date" },
+        "follow_up_milestone": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "identity", "decision", "signed_at", "candidate_deployment_id", "baseline_commit", "evidence_manifest_sha256", "accepted_waiver_ids", "backup_status", "notes"],
+      "properties": {
+        "role": { "$ref": "#/$defs/nonEmptyString" },
+        "identity": { "$ref": "#/$defs/nonEmptyString" },
+        "decision": { "enum": ["approve", "reject"] },
+        "signed_at": { "$ref": "#/$defs/dateTime" },
+        "candidate_deployment_id": { "$ref": "#/$defs/nonEmptyString" },
+        "baseline_commit": { "$ref": "#/$defs/nonEmptyString" },
+        "evidence_manifest_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "accepted_waiver_ids": { "$ref": "#/$defs/stringArray" },
+        "backup_status": { "$ref": "#/$defs/nonEmptyString" },
+        "notes": { "$ref": "#/$defs/nullableString" }
+      }
+    },
+    "manifestIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["generated_at", "sha256", "supersedes_manifest_sha256"],
+      "properties": {
+        "generated_at": { "$ref": "#/$defs/nullableDateTime" },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "supersedes_manifest_sha256": { "$ref": "#/$defs/sha256" }
+      }
+    }
+  }
+}

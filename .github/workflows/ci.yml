@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Validate requirement references
+        run: pnpm validate:requirements
+
+      - name: Validate evidence manifests
+        run: pnpm validate:evidence
+
+      - name: Exercise performance regression gate
+        run: pnpm validate:performance
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Generate route types and type-check
+        run: pnpm typecheck
+
+      - name: Run unit and component tests
+        run: pnpm test:unit
+
+      - name: Build production application
+        run: pnpm build:verified
+
+      - name: Run browser and accessibility tests
+        run: pnpm test:browser
+
+      - name: Upload verification reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verification-${{ github.sha }}
+          path: artifacts/
+          if-no-files-found: error
+          retention-days: 30

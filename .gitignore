@@ -10,8 +10,11 @@
 !.yarn/releases
 !.yarn/versions
 
-# testing
+# testing and generated verification evidence
 /coverage
+/artifacts/
+/playwright-report/
+/test-results/
 
 # next.js
 /.next/
