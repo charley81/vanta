@@ -5,6 +5,7 @@ const baseURL = `http://127.0.0.1:${port}`;
 const browserPreviewSecret = "browser-preview-session-secret-32-characters";
 
 process.env.EDITORIAL_PREVIEW_SESSION_SECRET = browserPreviewSecret;
+process.env.SANITY_CONTENT_SOURCE = "fixture";
 process.env.SANITY_STUDIO_ORIGIN = "https://studio.example";
 
 export default defineConfig({
@@ -38,6 +39,7 @@ export default defineConfig({
     env: {
       ...process.env,
       EDITORIAL_PREVIEW_SESSION_SECRET: browserPreviewSecret,
+      SANITY_CONTENT_SOURCE: "fixture",
       SANITY_STUDIO_ORIGIN: "https://studio.example",
     },
     reuseExistingServer: false,
