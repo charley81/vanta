@@ -8,10 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
-    "check": "pnpm lint && pnpm typecheck && pnpm build",
-    "feature:start": "./scripts/ralph/start-feature.sh",
-    "ralph:once": "./scripts/ralph/once.sh",
-    "ralph": "./scripts/ralph/afk.sh"
+    "check": "pnpm lint && pnpm typecheck && pnpm build"
   },
   "dependencies": {
     "next": "16.4.0",
