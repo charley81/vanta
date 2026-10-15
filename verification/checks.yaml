@@ -46,7 +46,7 @@ checks:
     command: pnpm validate:public-runtime
     tool: vanta-verification
     report_path: artifacts/reports/public-runtime-scan.json
-    requirement_ids: [ARCH-010, SECURITY-005]
+    requirement_ids: [BAG-009, ARCH-010, SECURITY-005]
   - id: lint
     command: pnpm lint
     tool: eslint
@@ -61,7 +61,7 @@ checks:
     command: pnpm test:unit
     tool: vitest
     report_path: artifacts/reports/unit-tests.json
-    requirement_ids: [PRODUCT-001, PRODUCT-002, PRODUCT-003, PRODUCT-004, PRODUCT-005, PRODUCT-006, CONTENT-001, CONTENT-003, CONTENT-004, STATE-001, STATE-002, STATE-003, STATE-005, STATE-006, STATE-007, STATE-008, ARCH-002, ARCH-003, ARCH-004, ARCH-005, ARCH-006, ARCH-007, ARCH-008, ARCH-009, ARCH-010, QUALITY-013, SECURITY-005, SECURITY-007]
+    requirement_ids: [PRODUCT-001, PRODUCT-002, PRODUCT-003, PRODUCT-004, PRODUCT-005, PRODUCT-006, CONTENT-001, CONTENT-003, CONTENT-004, BAG-001, BAG-004, BAG-005, BAG-009, STATE-001, STATE-002, STATE-003, STATE-005, STATE-006, STATE-007, STATE-008, ARCH-002, ARCH-003, ARCH-004, ARCH-005, ARCH-006, ARCH-007, ARCH-008, ARCH-009, ARCH-010, QUALITY-013, SECURITY-005, SECURITY-006, SECURITY-007]
   - id: production-build
     command: pnpm build:verified
     tool: next

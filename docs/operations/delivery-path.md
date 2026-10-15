@@ -22,9 +22,22 @@ Requirements supported: `ARCH-001`, `OPS-008`, `SECURITY-005`, `SECURITY-007`
 | Non-Git production deploys | Blocked |
 | Functions region | `us-east-2` |
 
-The exact non-production toolchain values are repository-owned: Node `22.22.1` in [`.node-version`](../../.node-version) and pnpm `10.32.1` in [`package.json`](../../package.json). The project had no environment variables configured when this record was verified because the current scaffold requires none. Do not invent placeholder values. Add future public configuration and secrets only when their owning feature specifies exact values and contexts.
+The exact non-production toolchain values are repository-owned: Node `22.22.1` in [`.node-version`](../../.node-version) and pnpm `10.32.1` in [`package.json`](../../package.json). Do not invent placeholder configuration values.
 
-Secrets must be entered through Netlify's environment-variable controls with the narrowest applicable deploy contexts and scopes. They must never be committed, written into this record, exposed through a `NEXT_PUBLIC_` name, copied into issue comments, or included in generated reports. Values required by both prerendering and server handlers need Builds and Functions scope.
+Secrets must be entered through Netlify's environment-variable controls with the narrowest applicable deploy contexts and scopes. They must never be committed, written into this record, exposed through a `NEXT_PUBLIC_` name, copied into issue comments, or included in generated reports. Values required by both startup validation and server handlers need Builds and Functions scope.
+
+### Bag configuration and rotation
+
+Bag defaults to safely disabled. Its private deployment configuration is:
+
+| Variable | Contract |
+|---|---|
+| `BAG_MODE` | `disabled` or `first-party-bag`; an unknown value fails application startup |
+| `BAG_SIGNING_KEYS` | Present only for `first-party-bag`: one to three unique comma-separated base64url values, each decoding to 32–64 bytes; the first key signs and all keys verify |
+
+Missing, malformed, duplicate, or excessive signing keys keep Bag disabled without exposing configuration details. The signing variable must never use a `NEXT_PUBLIC_` name. Production requires HTTPS because the `__Host-vanta_bag` cookie is always `Secure`, as well as `HttpOnly`, host-only, path `/`, and `SameSite=Strict`.
+
+Generate signing material in an approved secret-management context rather than this repository or a shell transcript. To rotate, prepend a new active key, retain the previous key as a verifier for at least the full 30-day Bag lifetime, deploy and verify cookie re-signing, then remove the previous key. Emergency shutdown sets `BAG_MODE=disabled`; do not remove or overwrite retained key material until recovery and expiry implications are reviewed. Public records capture only configuration status and provenance, never values.
 
 ### Immutable preview identity
 
