@@ -20,12 +20,18 @@
     "validate:product-catalog": "tsx tooling/verification/cli.ts product-catalog",
     "validate:boundaries": "tsx tooling/verification/cli.ts boundaries",
     "validate:public-runtime": "tsx tooling/verification/cli.ts public-runtime",
-    "check": "pnpm validate:requirements && pnpm validate:evidence && pnpm validate:performance && pnpm validate:product-catalog && pnpm validate:boundaries && pnpm validate:public-runtime && pnpm lint && pnpm typecheck && pnpm test:unit && pnpm build:verified && pnpm test:browser"
+    "validate:editorial": "sanity schema validate && tsx scripts/validate-editorial.ts && vitest run tests/editorial/editorial-model.test.ts",
+    "sanity:dev": "sanity dev",
+    "sanity:deploy": "sanity deploy",
+    "seed:editorial": "tsx scripts/seed-editorial.ts",
+    "check": "pnpm validate:requirements && pnpm validate:evidence && pnpm validate:performance && pnpm validate:product-catalog && pnpm validate:boundaries && pnpm validate:public-runtime && pnpm validate:editorial && pnpm lint && pnpm typecheck && pnpm test:unit && pnpm build:verified && pnpm test:browser"
   },
   "dependencies": {
+    "@sanity/client": "8.9.0",
     "next": "16.4.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "sanity": "6.19.0",
     "server-only": "^0.0.1"
   },
   "devDependencies": {
@@ -43,6 +49,8 @@
     "ajv-formats": "^3.0.1",
     "eslint": "^9",
     "eslint-config-next": "16.4.0",
+    "groq-js": "1.29.0",
+    "image-size": "2.0.2",
     "jsdom": "^30.1.3",
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
