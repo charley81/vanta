@@ -1,4 +1,11 @@
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import {
+  mkdtempSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
@@ -96,6 +103,26 @@ describe("server/client source ownership", () => {
         expect.objectContaining({ code: "server_component_calls_route_handler" }),
       ]),
     );
+  });
+});
+
+describe("public Bag surface", () => {
+  it("exposes only read, add MONOLITH, and remove MONOLITH Route Handlers", () => {
+    const routes = readdirSync("app/api/bag", { recursive: true })
+      .map(String)
+      .filter((path) => path.endsWith("route.ts"))
+      .sort();
+
+    expect(routes).toEqual(["add/route.ts", "remove/route.ts", "route.ts"]);
+    for (const [path, method] of [
+      ["route.ts", "GET"],
+      ["add/route.ts", "POST"],
+      ["remove/route.ts", "POST"],
+    ] as const) {
+      const source = readFileSync(`app/api/bag/${path}`, "utf8");
+      expect(source).toContain(`export async function ${method}`);
+      expect(source.match(/\bexport\b/gu)).toHaveLength(1);
+    }
   });
 });
 
