@@ -6,16 +6,11 @@ Implementation is governed by the approved [VANTA production specification](docs
 
 ## Getting Started
 
-First, run the development server:
+Install the pinned toolchain and run the development server:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install --frozen-lockfile
 pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
@@ -33,10 +28,12 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Production checks
+## Verification and production checks
 
 ```bash
 pnpm check
 ```
 
-The production application is qualified through Netlify's Node-backed Next.js integration as specified in the Handoff Baseline.
+The check suite validates requirement references and evidence manifests, exercises the performance-regression gate, lints, generates route types, type-checks, runs unit/component tests, creates a production build, and runs Chromium browser/accessibility smoke tests. Generated reports use the stable locations documented in [the verification guide](verification/README.md).
+
+The production application is qualified through Netlify's Node-backed Next.js integration as specified in the Handoff Baseline. Local and branch reports do not become candidate Acceptance evidence until a release-specific manifest binds them to an immutable candidate.

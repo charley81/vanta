@@ -1,0 +1,59 @@
+schema_version: 1
+artifact_root: artifacts
+fixture_root: verification/fixtures
+# OPS-015 categories mapped to their current stable requirement IDs.
+non_waivable_requirement_ids:
+  - PRODUCT-005 # deceptive-commerce boundary
+  - PRODUCT-006 # deceptive-commerce disclosure boundary
+  - BAG-004 # transaction and visitor-data boundary
+  - BAG-009 # transaction boundary
+  - PREVIEW-001 # visitor-data prohibition
+  - PREVIEW-002 # transaction boundary
+  - STATE-003 # visitor-data prohibition
+  - ARCH-010 # transaction boundary
+  - SECURITY-005 # secret-exposure boundary
+  - OPS-004 # visitor-data prohibition
+  - OPS-011 # transaction boundary
+  - OPS-012 # transaction boundary
+  - OPS-015 # non-waivability rule itself
+checks:
+  - id: requirement-references
+    command: pnpm validate:requirements
+    tool: yaml
+    report_path: artifacts/reports/requirements.json
+    requirement_ids: [ARCH-002, ARCH-003, ARCH-004, QUALITY-003, QUALITY-004, QUALITY-009, SECURITY-005, SECURITY-007, OPS-013, OPS-014, OPS-015]
+  - id: evidence-manifest
+    command: pnpm validate:evidence
+    tool: ajv
+    report_path: artifacts/reports/evidence-manifest.json
+    requirement_ids: [OPS-013, OPS-014, OPS-015]
+  - id: performance-regression
+    command: pnpm validate:performance
+    tool: vanta-verification
+    report_path: artifacts/reports/performance-regression.json
+    requirement_ids: [QUALITY-003]
+  - id: lint
+    command: pnpm lint
+    tool: eslint
+    report_path: artifacts/reports/lint.json
+    requirement_ids: [ARCH-004, SECURITY-005]
+  - id: typecheck
+    command: pnpm typecheck
+    tool: typescript
+    report_path: artifacts/reports/typecheck.json
+    requirement_ids: [ARCH-002, ARCH-003, ARCH-004]
+  - id: unit-tests
+    command: pnpm test:unit
+    tool: vitest
+    report_path: artifacts/reports/unit-tests.json
+    requirement_ids: [ARCH-002, ARCH-003, ARCH-004, SECURITY-005, SECURITY-007]
+  - id: production-build
+    command: pnpm build:verified
+    tool: next
+    report_path: artifacts/reports/production-build.json
+    requirement_ids: [QUALITY-004, SECURITY-005]
+  - id: browser-tests
+    command: pnpm test:browser
+    tool: playwright
+    report_path: artifacts/reports/browser-tests.json
+    requirement_ids: [QUALITY-009]
