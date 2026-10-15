@@ -1,5 +1,6 @@
 import { createReadStream } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { loadEnvConfig } from "@next/env";
 import {
   createClient,
   type IdentifiedSanityDocumentStub,
@@ -10,6 +11,8 @@ import {
   assertValidEditorialDataset,
   validateApprovedLink,
 } from "@/sanity/validation";
+
+loadEnvConfig(process.cwd());
 
 const projectId = process.env.SANITY_STUDIO_PROJECT_ID;
 const dataset = process.env.SANITY_STUDIO_DATASET;
@@ -49,36 +52,43 @@ const assets = {
   synth: "synth-social.jpg",
 } as const;
 
-const uploadedAssets = await Promise.all(
-  Object.entries(assets).map(async ([name, filename]) => {
-    const path = fileURLToPath(
-      new URL(`../sanity/seed/assets/${filename}`, import.meta.url),
-    );
-    const asset = await client.assets.upload("image", createReadStream(path), {
-      contentType: "image/jpeg",
-      filename,
-    });
-    return [name, asset._id] as const;
-  }),
-);
+async function seedEditorial(): Promise<void> {
+  const uploadedAssets = await Promise.all(
+    Object.entries(assets).map(async ([name, filename]) => {
+      const path = fileURLToPath(
+        new URL(`../sanity/seed/assets/${filename}`, import.meta.url),
+      );
+      const asset = await client.assets.upload("image", createReadStream(path), {
+        contentType: "image/jpeg",
+        filename,
+      });
+      return [name, asset._id] as const;
+    }),
+  );
 
-const socialImages = Object.fromEntries(uploadedAssets) as Record<
-  keyof typeof assets,
-  string
->;
-const documents = buildInitialEditorialSeed({
-  privacyNoticeUrl: privacyNoticeUrl!,
-  socialImages,
-});
-assertValidEditorialDataset(documents);
+  const socialImages = Object.fromEntries(uploadedAssets) as Record<
+    keyof typeof assets,
+    string
+  >;
+  const documents = buildInitialEditorialSeed({
+    privacyNoticeUrl: privacyNoticeUrl!,
+    socialImages,
+  });
+  assertValidEditorialDataset(documents);
 
-let transaction = client.transaction();
-for (const document of documents) {
-  const sanityDocument: IdentifiedSanityDocumentStub = { ...document };
-  transaction = transaction.createOrReplace(sanityDocument);
+  let transaction = client.transaction();
+  for (const document of documents) {
+    const sanityDocument: IdentifiedSanityDocumentStub = { ...document };
+    transaction = transaction.createOrReplace(sanityDocument);
+  }
+  await transaction.commit({ visibility: "sync" });
+
+  console.log(
+    `Seeded ${documents.length} validated Editorial singletons in ${projectId}/${dataset}.`,
+  );
 }
-await transaction.commit({ visibility: "sync" });
 
-console.log(
-  `Seeded ${documents.length} validated Editorial singletons in ${projectId}/${dataset}.`,
-);
+seedEditorial().catch((error: unknown) => {
+  console.error(error instanceof Error ? error.message : "Editorial seed failed");
+  process.exitCode = 1;
+});

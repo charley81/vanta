@@ -16,6 +16,8 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      SANITY_CONTENT_SOURCE: fixture
     steps:
       - uses: actions/checkout@v4
 
@@ -42,6 +44,9 @@ jobs:
 
       - name: Exercise performance regression gate
         run: pnpm validate:performance
+
+      - name: Validate Editorial schema, seed, and delivery contracts
+        run: pnpm validate:editorial
 
       - name: Lint
         run: pnpm lint

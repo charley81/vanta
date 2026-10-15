@@ -1,20 +1,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { EDITORIAL_FIXTURES } from "@/src/editorial/fixtures.server";
-import { composeHomeRouteViewModel } from "@/src/routes/view-models.server";
+import { getPublishedHomeRouteViewModel } from "@/src/editorial/public-content.server";
 
 import coreStyles from "./ui/core-route.module.css";
 import styles from "./home.module.css";
 
-const model = composeHomeRouteViewModel(EDITORIAL_FIXTURES.homePage);
+export async function generateMetadata(): Promise<Metadata> {
+  const model = await getPublishedHomeRouteViewModel();
+  return {
+    title: { absolute: model.title },
+    description: model.seoDescription,
+  };
+}
 
-export const metadata: Metadata = {
-  title: { absolute: model.title },
-  description: model.seoDescription,
-};
-
-export default function HomePage() {
+export default async function HomePage() {
+  const model = await getPublishedHomeRouteViewModel();
   return (
     <main className={`${coreStyles.routeMain} ${styles.home}`} id="main-content" tabIndex={-1}>
       <section aria-labelledby="home-heading" className={styles.introduction}>

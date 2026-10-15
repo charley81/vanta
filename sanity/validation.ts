@@ -175,10 +175,15 @@ export function validateEditorialImage(value: unknown): true | string {
     const alt = validateEditorialString(value.alt, EDITORIAL_LIMITS.alt);
     if (alt !== true) return `alt ${alt}`;
   }
-  if (value.presentation === "decorative" && value.alt !== undefined && value.alt !== "") {
+  if (
+    value.presentation === "decorative" &&
+    value.alt !== undefined &&
+    value.alt !== null &&
+    value.alt !== ""
+  ) {
     return "decorative images must use empty alternative text";
   }
-  if (value.caption !== undefined) {
+  if (value.caption !== undefined && value.caption !== null) {
     const caption = validateEditorialString(value.caption, EDITORIAL_LIMITS.caption);
     if (caption !== true) return `caption ${caption}`;
   }
