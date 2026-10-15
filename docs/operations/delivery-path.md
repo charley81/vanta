@@ -42,8 +42,7 @@ The deploy record's `commit_ref` must equal the Git commit under qualification. 
 GitHub branch protection for `main` enforces:
 
 - changes arrive through pull requests;
-- one approving review is required;
-- stale approvals are dismissed and the latest push must be approved by someone other than its author;
+- no approving review is required while the repository has a single maintainer;
 - the GitHub Actions `verify` check is required and must run against the latest base branch;
 - conversations must be resolved;
 - administrators are subject to the rule;
@@ -60,7 +59,7 @@ GitHub secret scanning, push protection, vulnerability alerts, and Dependabot se
 | GitHub repository and protected branch | `charley81`, repository administrator | No second collaborator was present at verification time | GitHub commit, pull request, Actions run, and branch-protection records |
 | Netlify project and deploy previews | `charley81`, Netlify team owner | No second project custodian was verified | Netlify project/deploy records; environment values stay in Netlify |
 
-The absent backup is an explicit operational gap, not fictional separation of duties. Because protected merges require an independent approval, a least-privilege backup reviewer must be granted appropriate repository access before another change can merge. Before launch, the accountable `operations_release` role must also confirm the named backup's Netlify access, individual MFA, recovery method, and escalation route in an access-controlled system.
+The absent backup is an explicit operational risk, not fictional separation of duties. It does not block the documented solo-maintainer pull-request and CI path. Before launch, the accountable `operations_release` role must either name a least-privilege backup and confirm their Netlify access, individual MFA, recovery method, and escalation route in an access-controlled system, or explicitly accept and record continued single-custodian coverage under the Handoff Baseline.
 
 Access and recovery expectations:
 
