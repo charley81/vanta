@@ -1,0 +1,309 @@
+.skipLink {
+  position: fixed;
+  z-index: 100;
+  top: var(--space-3);
+  left: var(--space-3);
+  display: inline-flex;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-cream);
+  color: var(--color-espresso);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  transform: translateY(calc(-100% - var(--space-6)));
+}
+
+.skipLink:focus {
+  transform: translateY(0);
+}
+
+.siteHeader {
+  position: sticky;
+  z-index: 30;
+  top: 0;
+  display: grid;
+  min-height: var(--shell-height);
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  border-bottom: 1px solid var(--rule);
+  padding-inline: var(--page-gutter);
+  background: color-mix(in srgb, var(--surface-foundation) 94%, transparent);
+  backdrop-filter: blur(16px);
+}
+
+.siteBrand {
+  display: inline-flex;
+  width: fit-content;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  align-items: center;
+  font-size: clamp(1.125rem, 2.4vw, 2rem);
+  font-weight: 560;
+  letter-spacing: 0.24em;
+  line-height: 1;
+}
+
+.navigation,
+.links {
+  display: flex;
+  align-items: center;
+}
+
+.navigation {
+  gap: clamp(var(--space-2), 2vw, var(--space-8));
+}
+
+.links {
+  gap: clamp(var(--space-2), 1.8vw, var(--space-6));
+}
+
+.navigation a,
+.navigation button {
+  position: relative;
+  display: inline-flex;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.navigation button,
+.dialog button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.links a {
+  color: var(--text-secondary);
+}
+
+.links a::after {
+  position: absolute;
+  right: var(--space-3);
+  bottom: 0.45rem;
+  left: var(--space-3);
+  height: 1px;
+  background: currentColor;
+  content: "";
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.links a:hover,
+.links a[aria-current="page"] {
+  color: var(--text-primary);
+}
+
+.links a[aria-current="page"]::after {
+  background: var(--color-signal);
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.navigation button[aria-expanded="true"] {
+  color: var(--color-signal);
+}
+
+.navigation .menuTrigger {
+  display: none;
+}
+
+.dialog {
+  width: min(100%, 31rem);
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0 0 0 auto;
+  border: 0;
+  border-left: 1px solid var(--rule);
+  padding: 0;
+  background: var(--surface-raised);
+  color: var(--text-primary);
+}
+
+.dialog::backdrop {
+  background: color-mix(in srgb, var(--color-espresso) 82%, transparent);
+}
+
+.dialogPanel {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  padding: var(--space-6);
+}
+
+.dialogHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: var(--space-6);
+}
+
+.dialogHeading h2,
+.dialogStatus {
+  margin: 0;
+}
+
+.dialogHeading h2 {
+  font-size: clamp(2rem, 10vw, 4rem);
+  font-weight: 500;
+  letter-spacing: -0.05em;
+}
+
+.dialogHeading button {
+  display: inline-flex;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  align-items: center;
+  padding: var(--space-3);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.dialogLinks {
+  display: flex;
+  flex-direction: column;
+  margin-top: var(--space-8);
+}
+
+.dialogLinks a {
+  display: flex;
+  min-height: 3.5rem;
+  align-items: center;
+  border-bottom: 1px solid var(--rule);
+  padding: var(--space-3) 0;
+  font-size: clamp(1.5rem, 8vw, 2.5rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  text-transform: none;
+}
+
+.dialogLinks a[aria-current="page"] {
+  color: var(--color-signal);
+}
+
+.dialogStatus {
+  padding-block: var(--space-8);
+  color: var(--text-secondary);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.siteFooter {
+  display: grid;
+  min-height: 7rem;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: var(--space-8);
+  border-top: 1px solid var(--rule);
+  padding: var(--space-6) var(--page-gutter);
+}
+
+.siteFooter p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+}
+
+.footerNavigation {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-1);
+}
+
+.footerNavigation a,
+.footerNavigation button {
+  display: inline-flex;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  align-items: center;
+  padding: var(--space-3);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.footerNavigation button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+@media (max-width: 47.999rem) {
+  .siteHeader {
+    padding-inline: var(--space-3);
+  }
+
+  .navigation {
+    gap: 0;
+  }
+
+  .wide {
+    display: none;
+  }
+
+  .navigation .menuTrigger {
+    display: inline-flex;
+  }
+
+  .siteFooter {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+    padding: var(--space-6) var(--space-3);
+  }
+
+  .footerNavigation {
+    justify-content: flex-start;
+  }
+}
+
+@media (forced-colors: active) {
+  .siteHeader,
+  .dialog {
+    background: Canvas;
+    color: CanvasText;
+  }
+
+  .dialog {
+    border-color: CanvasText;
+  }
+
+  .dialog::backdrop {
+    background: Canvas;
+    opacity: 0.72;
+  }
+
+  .links a[aria-current="page"],
+  .navigation button[aria-expanded="true"],
+  .dialogLinks a[aria-current="page"] {
+    color: LinkText;
+  }
+
+  .links a[aria-current="page"]::after {
+    background: LinkText;
+  }
+}
