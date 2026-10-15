@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">VANTA</title>
+  <desc id="desc">Sound, given mass.</desc>
+  <rect width="1200" height="630" fill="#0F0905"/>
+  <path d="M80 80H1120M80 550H1120" stroke="#604E43" stroke-width="2"/>
+  <text x="80" y="285" fill="#FEFCFB" font-family="Arial, Helvetica, sans-serif" font-size="112" letter-spacing="18">VANTA</text>
+  <text x="85" y="375" fill="#E7C5B1" font-family="Georgia, serif" font-size="38" font-style="italic">Sound, given mass.</text>
+</svg>

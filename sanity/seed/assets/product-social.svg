@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">MONOLITH</title>
+  <desc id="desc">Eight voices. One continuum.</desc>
+  <rect width="1200" height="630" fill="#0F0905"/>
+  <path d="M60 80H1140V550H60Z" fill="none" stroke="#604E43" stroke-width="2"/>
+  <text x="90" y="150" fill="#CA8054" font-family="monospace" font-size="22" letter-spacing="4">VANTA / INSTRUMENT 001</text>
+  <text x="80" y="345" fill="#FEFCFB" font-family="Arial, Helvetica, sans-serif" font-size="118" letter-spacing="9">MONOLITH</text>
+  <path d="M90 420H1110" stroke="#E7C5B1" stroke-width="3"/>
+  <text x="90" y="490" fill="#DED4CF" font-family="monospace" font-size="28" letter-spacing="3">EIGHT VOICES. ONE CONTINUUM.</text>
+</svg>

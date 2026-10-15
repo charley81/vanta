@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">VANTA MONOLITH</title>
+  <desc id="desc">Sound, given mass.</desc>
+  <rect width="1200" height="630" fill="#0F0905"/>
+  <rect x="610" y="90" width="460" height="450" fill="#17100C" stroke="#604E43" stroke-width="2"/>
+  <circle cx="840" cy="315" r="118" fill="none" stroke="#E7C5B1" stroke-width="5"/>
+  <circle cx="840" cy="315" r="14" fill="#7DE3D6"/>
+  <text x="80" y="145" fill="#DED4CF" font-family="monospace" font-size="22" letter-spacing="5">VANTA / INSTRUMENT 001</text>
+  <text x="80" y="295" fill="#FEFCFB" font-family="Arial, Helvetica, sans-serif" font-size="80">Sound,</text>
+  <text x="80" y="385" fill="#E7C5B1" font-family="Georgia, serif" font-size="80" font-style="italic">given mass.</text>
+</svg>

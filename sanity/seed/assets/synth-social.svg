@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">MORPH Lab</title>
+  <desc id="desc">One gesture. Endless change.</desc>
+  <rect width="1200" height="630" fill="#0F0905"/>
+  <text x="80" y="120" fill="#7DE3D6" font-family="monospace" font-size="22" letter-spacing="5">MORPH LAB</text>
+  <text x="80" y="275" fill="#FEFCFB" font-family="Arial, Helvetica, sans-serif" font-size="76">One gesture.</text>
+  <text x="80" y="370" fill="#E7C5B1" font-family="Georgia, serif" font-size="76" font-style="italic">Endless change.</text>
+  <text x="80" y="520" fill="#DED4CF" font-family="monospace" font-size="24">SUB</text>
+  <path d="M150 512H1030" stroke="#604E43" stroke-width="8"/>
+  <circle cx="590" cy="512" r="18" fill="#7DE3D6"/>
+  <text x="1050" y="520" fill="#DED4CF" font-family="monospace" font-size="24">FRACTURE</text>
+</svg>
