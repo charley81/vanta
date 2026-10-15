@@ -1,5 +1,12 @@
 import "server-only";
 
+import {
+  EDITORIAL_LIMITS,
+  validateApprovedLink,
+  validateEditorialString,
+  validateSeoDescription,
+  validateSocialImage,
+} from "@/sanity/validation";
 import { CATALOG } from "@/src/catalog/catalog";
 import { PRODUCT_TRUTH } from "@/src/product/product-truth";
 
@@ -61,30 +68,35 @@ function objectAt(
   return record;
 }
 
-function stringAt(record: UnknownRecord, key: string, path: string): string {
+function stringAt(
+  record: UnknownRecord,
+  key: string,
+  path: string,
+  maximum: number,
+): string {
   const value = record[key];
-  if (value === undefined) throw new Error(`${path}.${key} is required`);
-  if (typeof value !== "string" || value.trim() === "") {
-    throw new Error(`${path}.${key} must be a non-empty string`);
-  }
-  return value;
+  const result = validateEditorialString(value, maximum);
+  if (result !== true) throw new Error(`${path}.${key} ${result}`);
+  return value as string;
 }
 
 function seoDescriptionAt(record: UnknownRecord, path: string): string {
-  const description = stringAt(record, "seoDescription", path);
-  if (description.length < 120 || description.length > 160) {
-    throw new Error(
-      `${path}.seoDescription must contain 120–160 characters`,
-    );
-  }
-  return description;
+  const description = record.seoDescription;
+  const result = validateSeoDescription(description);
+  if (result !== true) throw new Error(`${path}.seoDescription ${result}`);
+  return description as string;
 }
 
 function sectionAt(value: unknown, path: string): EditorialSection {
   const section = objectAt(value, path, ["headline", "body"]);
   return {
-    headline: stringAt(section, "headline", path),
-    body: stringAt(section, "body", path),
+    headline: stringAt(
+      section,
+      "headline",
+      path,
+      EDITORIAL_LIMITS.headline,
+    ),
+    body: stringAt(section, "body", path, EDITORIAL_LIMITS.prose),
   };
 }
 
@@ -114,9 +126,24 @@ function parseHomeEditorial(input: unknown) {
   return {
     seoDescription: seoDescriptionAt(page, "homePage"),
     opening: {
-      kicker: stringAt(opening, "kicker", "homePage.opening"),
-      headline: stringAt(opening, "headline", "homePage.opening"),
-      body: stringAt(opening, "body", "homePage.opening"),
+      kicker: stringAt(
+        opening,
+        "kicker",
+        "homePage.opening",
+        EDITORIAL_LIMITS.label,
+      ),
+      headline: stringAt(
+        opening,
+        "headline",
+        "homePage.opening",
+        EDITORIAL_LIMITS.headline,
+      ),
+      body: stringAt(
+        opening,
+        "body",
+        "homePage.opening",
+        EDITORIAL_LIMITS.prose,
+      ),
     },
     chapters: HOME_CHAPTERS.map((id) => ({
       id,
@@ -127,13 +154,20 @@ function parseHomeEditorial(input: unknown) {
         labInvitation,
         "category",
         "homePage.labInvitation",
+        EDITORIAL_LIMITS.label,
       ),
       headline: stringAt(
         labInvitation,
         "headline",
         "homePage.labInvitation",
+        EDITORIAL_LIMITS.headline,
       ),
-      body: stringAt(labInvitation, "body", "homePage.labInvitation"),
+      body: stringAt(
+        labInvitation,
+        "body",
+        "homePage.labInvitation",
+        EDITORIAL_LIMITS.prose,
+      ),
     },
   };
 }
@@ -168,18 +202,53 @@ function parseProductEditorial(input: unknown) {
   return {
     seoDescription: seoDescriptionAt(page, "productPage"),
     hero: {
-      subtitle: stringAt(hero, "subtitle", "productPage.hero"),
-      body: stringAt(hero, "body", "productPage.hero"),
+      subtitle: stringAt(
+        hero,
+        "subtitle",
+        "productPage.hero",
+        EDITORIAL_LIMITS.headline,
+      ),
+      body: stringAt(
+        hero,
+        "body",
+        "productPage.hero",
+        EDITORIAL_LIMITS.prose,
+      ),
     },
     thesis: {
-      headline: stringAt(thesis, "headline", "productPage.thesis"),
-      support: stringAt(thesis, "support", "productPage.thesis"),
+      headline: stringAt(
+        thesis,
+        "headline",
+        "productPage.thesis",
+        EDITORIAL_LIMITS.headline,
+      ),
+      support: stringAt(
+        thesis,
+        "support",
+        "productPage.thesis",
+        EDITORIAL_LIMITS.prose,
+      ),
     },
     sonic: sectionAt(page.sonic, "productPage.sonic"),
     states: {
-      headline: stringAt(states, "headline", "productPage.states"),
-      sub: stringAt(states, "sub", "productPage.states"),
-      fracture: stringAt(states, "fracture", "productPage.states"),
+      headline: stringAt(
+        states,
+        "headline",
+        "productPage.states",
+        EDITORIAL_LIMITS.headline,
+      ),
+      sub: stringAt(
+        states,
+        "sub",
+        "productPage.states",
+        EDITORIAL_LIMITS.prose,
+      ),
+      fracture: stringAt(
+        states,
+        "fracture",
+        "productPage.states",
+        EDITORIAL_LIMITS.prose,
+      ),
     },
     morph: sectionAt(page.morph, "productPage.morph"),
     craft: sectionAt(page.craft, "productPage.craft"),
@@ -188,6 +257,7 @@ function parseProductEditorial(input: unknown) {
         labInvitation,
         "headline",
         "productPage.labInvitation",
+        EDITORIAL_LIMITS.headline,
       ),
     },
   };
@@ -202,9 +272,44 @@ function parseSynthEditorial(input: unknown) {
   ]);
   return {
     seoDescription: seoDescriptionAt(page, "synthPage"),
-    category: stringAt(page, "category", "synthPage"),
-    headline: stringAt(page, "headline", "synthPage"),
-    introduction: stringAt(page, "introduction", "synthPage"),
+    category: stringAt(
+      page,
+      "category",
+      "synthPage",
+      EDITORIAL_LIMITS.label,
+    ),
+    headline: stringAt(
+      page,
+      "headline",
+      "synthPage",
+      EDITORIAL_LIMITS.headline,
+    ),
+    introduction: stringAt(
+      page,
+      "introduction",
+      "synthPage",
+      EDITORIAL_LIMITS.prose,
+    ),
+  };
+}
+
+export function composeSiteSettingsViewModel(editorial: unknown) {
+  const settings = objectAt(editorial, "siteSettings", [
+    "privacyNoticeUrl",
+    "defaultSocialImage",
+  ]);
+  const privacyResult = validateApprovedLink(settings.privacyNoticeUrl);
+  if (privacyResult !== true) {
+    throw new Error(`siteSettings.privacyNoticeUrl ${privacyResult}`);
+  }
+  const imageResult = validateSocialImage(settings.defaultSocialImage);
+  if (imageResult !== true) {
+    throw new Error(`siteSettings.defaultSocialImage ${imageResult}`);
+  }
+
+  return {
+    privacyNoticeUrl: settings.privacyNoticeUrl as string,
+    defaultSocialImage: settings.defaultSocialImage,
   };
 }
 
@@ -355,6 +460,9 @@ export function composeCheckoutPreviewRouteViewModel() {
   };
 }
 
+export type SiteSettingsViewModel = ReturnType<
+  typeof composeSiteSettingsViewModel
+>;
 export type HomeRouteViewModel = ReturnType<typeof composeHomeRouteViewModel>;
 export type ProductRouteViewModel = ReturnType<
   typeof composeProductRouteViewModel

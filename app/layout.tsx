@@ -3,6 +3,8 @@ import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
 
+import { getPublishedSiteSettings } from "@/src/editorial/public-content.server";
+
 import { BagOverlayBoundary } from "./ui/bag-overlay-boundary";
 import {
   FooterBagTrigger,
@@ -38,7 +40,8 @@ export const metadata: Metadata = {
     "VANTA creates MONOLITH, an eight-voice hybrid desktop synthesizer shaped by continuous movement between SUB and FRACTURE.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const siteSettings = await getPublishedSiteSettings();
   return (
     <html
       lang="en"
@@ -61,6 +64,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <Link href="/">Home</Link>
             <Link href="/monolith">Product</Link>
             <Link href="/synth">Synth</Link>
+            <Link href={siteSettings.privacyNoticeUrl}>Privacy</Link>
             <FooterBagTrigger />
           </nav>
         </footer>

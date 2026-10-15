@@ -1,20 +1,21 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { EDITORIAL_FIXTURES } from "@/src/editorial/fixtures.server";
-import { composeSynthRouteViewModel } from "@/src/routes/view-models.server";
+import { getPublishedSynthRouteViewModel } from "@/src/editorial/public-content.server";
 
 import styles from "../ui/core-route.module.css";
 import { MediaPlaceholder } from "../ui/media-placeholder";
 
-const model = composeSynthRouteViewModel(EDITORIAL_FIXTURES.synthPage);
+export async function generateMetadata(): Promise<Metadata> {
+  const model = await getPublishedSynthRouteViewModel();
+  return {
+    title: { absolute: model.title },
+    description: model.seoDescription,
+  };
+}
 
-export const metadata: Metadata = {
-  title: { absolute: model.title },
-  description: model.seoDescription,
-};
-
-export default function SynthPage() {
+export default async function SynthPage() {
+  const model = await getPublishedSynthRouteViewModel();
   return (
     <main className={styles.routeMain} id="main-content" tabIndex={-1}>
       <section aria-labelledby="synth-heading" className={styles.routeHeader}>

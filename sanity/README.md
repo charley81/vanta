@@ -45,6 +45,18 @@ Validation blocks:
 - shared or non-1200×630 route social images;
 - Product, Catalog, navigation, controls, specifications, Bag, checkout, or behavior fields.
 
+## Published application delivery
+
+Public Server Components read the fixed projections directly through the server-only Sanity adapter; they do not call an application Route Handler. Configure deployed candidates with:
+
+- `SANITY_CONTENT_SOURCE=published`;
+- `SANITY_STUDIO_PROJECT_ID`;
+- `SANITY_STUDIO_DATASET`.
+
+Published reads use the Sanity API (not the Sanity CDN) inside document-specific Cache Component scopes with `cacheLife("max")`. A failed background refresh therefore leaves the last valid deployment-scoped value available. The design does not depend on in-process cache persistence across serverless requests, and cache entries do not survive deployments. Every hosted Netlify candidate rejects fixture mode and fails its build if a required singleton is absent or invalid.
+
+Local development and local builds use the deterministic seed projections when no source is selected. Automated jobs must opt in explicitly with `SANITY_CONTENT_SOURCE=fixture`; repository CI does this so it cannot accidentally depend on a mutable remote dataset.
+
 ## Seed a dataset
 
 The seed uploads four dedicated 1200×630 source social cards, validates the complete candidate dataset, and atomically creates or replaces the four fixed singleton IDs.

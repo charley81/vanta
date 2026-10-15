@@ -1,21 +1,22 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { EDITORIAL_FIXTURES } from "@/src/editorial/fixtures.server";
-import { composeProductRouteViewModel } from "@/src/routes/view-models.server";
+import { getPublishedProductRouteViewModel } from "@/src/editorial/public-content.server";
 
 import styles from "../ui/core-route.module.css";
 import { MediaPlaceholder } from "../ui/media-placeholder";
 import { BagTrigger } from "../ui/shell-navigation";
 
-const model = composeProductRouteViewModel(EDITORIAL_FIXTURES.productPage);
+export async function generateMetadata(): Promise<Metadata> {
+  const model = await getPublishedProductRouteViewModel();
+  return {
+    title: { absolute: model.title },
+    description: model.seoDescription,
+  };
+}
 
-export const metadata: Metadata = {
-  title: { absolute: model.title },
-  description: model.seoDescription,
-};
-
-export default function ProductPage() {
+export default async function ProductPage() {
+  const model = await getPublishedProductRouteViewModel();
   return (
     <main className={styles.routeMain} id="main-content" tabIndex={-1}>
       <section aria-labelledby="product-heading" className={styles.routeHeader} data-section="hero">

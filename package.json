@@ -20,7 +20,7 @@
     "validate:product-catalog": "tsx tooling/verification/cli.ts product-catalog",
     "validate:boundaries": "tsx tooling/verification/cli.ts boundaries",
     "validate:public-runtime": "tsx tooling/verification/cli.ts public-runtime",
-    "validate:editorial": "sanity schema validate && tsx scripts/validate-editorial.ts && vitest run tests/editorial/editorial-model.test.ts",
+    "validate:editorial": "sanity schema validate && tsx scripts/validate-editorial.ts && vitest run tests/editorial",
     "sanity:dev": "sanity dev",
     "sanity:deploy": "sanity deploy",
     "seed:editorial": "tsx scripts/seed-editorial.ts",
@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
+    "@next/env": "16.4.0",
     "@playwright/test": "^1.64.1",
     "@tailwindcss/turbopack": "^4",
     "@testing-library/dom": "^10.4.2",

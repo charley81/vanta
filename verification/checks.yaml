@@ -61,12 +61,12 @@ checks:
     command: pnpm test:unit
     tool: vitest
     report_path: artifacts/reports/unit-tests.json
-    requirement_ids: [PRODUCT-001, PRODUCT-002, PRODUCT-003, PRODUCT-004, PRODUCT-005, PRODUCT-006, ARCH-002, ARCH-003, ARCH-004, ARCH-005, ARCH-008, ARCH-010, SECURITY-005, SECURITY-007]
+    requirement_ids: [PRODUCT-001, PRODUCT-002, PRODUCT-003, PRODUCT-004, PRODUCT-005, PRODUCT-006, CONTENT-001, CONTENT-003, CONTENT-004, ARCH-002, ARCH-003, ARCH-004, ARCH-005, ARCH-006, ARCH-007, ARCH-008, ARCH-010, SECURITY-005, SECURITY-007]
   - id: production-build
     command: pnpm build:verified
     tool: next
     report_path: artifacts/reports/production-build.json
-    requirement_ids: [QUALITY-004, SECURITY-005]
+    requirement_ids: [CONTENT-004, ARCH-006, ARCH-007, QUALITY-004, SECURITY-005]
   - id: browser-tests
     command: pnpm test:browser
     tool: playwright
