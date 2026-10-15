@@ -36,4 +36,4 @@ pnpm check
 
 The check suite validates requirement references and evidence manifests, exercises the performance-regression gate, lints, generates route types, type-checks, runs unit/component tests, creates a production build, and runs Chromium browser/accessibility smoke tests. Generated reports use the stable locations documented in [the verification guide](verification/README.md).
 
-The production application is qualified through Netlify's Node-backed Next.js integration as specified in the Handoff Baseline. Local and branch reports do not become candidate Acceptance evidence until a release-specific manifest binds them to an immutable candidate.
+The production application is qualified through Netlify's Node-backed Next.js integration as specified in the Handoff Baseline. The shared project binding, protected merge path, and access/recovery status are documented in the [delivery path control record](docs/operations/delivery-path.md). Local and branch reports do not become candidate Acceptance evidence until a release-specific manifest binds them to an immutable candidate.
