@@ -1,0 +1,1538 @@
+.prototypeShell {
+  --espresso: #0f0905;
+  --ink: #070807;
+  --cream: #fefcfb;
+  --taupe: #ded4cf;
+  --peach: #e7c5b1;
+  --terracotta: #ca8054;
+  --brown: #604e43;
+  --signal: #7de3d6;
+  min-height: 100svh;
+  background: var(--ink);
+  color: var(--cream);
+  font-family: var(--font-geist-sans), Arial, sans-serif;
+}
+
+.prototypeShell *,
+.prototypeShell *::before,
+.prototypeShell *::after {
+  box-sizing: border-box;
+}
+
+.prototypeShell button,
+.prototypeShell a {
+  font: inherit;
+}
+
+.prototypeShell img {
+  pointer-events: none;
+}
+
+.prototypeShell button {
+  min-height: 44px;
+}
+
+.prototypeShell button:focus-visible,
+.prototypeShell a:focus-visible,
+.prototypeShell [tabindex="-1"]:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 4px;
+}
+
+.skipLink {
+  position: fixed;
+  z-index: 1000;
+  top: 0.75rem;
+  left: 0.75rem;
+  padding: 0.8rem 1rem;
+  background: var(--cream);
+  color: var(--espresso);
+  transform: translateY(-160%);
+}
+
+.skipLink:focus {
+  transform: translateY(0);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--signal);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.64rem;
+  font-weight: 560;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.siteHeader {
+  position: fixed;
+  z-index: 40;
+  top: 0;
+  right: 0;
+  left: 0;
+  display: grid;
+  height: 5.9rem;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  border-bottom: 1px solid rgb(254 252 251 / 13%);
+  padding: 0 clamp(1.25rem, 5vw, 5.5rem);
+  background: rgb(7 8 7 / 90%);
+  backdrop-filter: blur(18px);
+}
+
+.wordmark {
+  font-size: clamp(1.2rem, 2.5vw, 2.25rem);
+  font-weight: 560;
+  letter-spacing: 0.25em;
+  line-height: 1;
+}
+
+.siteHeader nav {
+  display: flex;
+  gap: clamp(1.2rem, 3vw, 3rem);
+}
+
+.siteHeader nav a,
+.bagAction {
+  border: 0;
+  padding: 0.8rem 0;
+  background: transparent;
+  color: var(--taupe);
+  font-size: 0.69rem;
+  letter-spacing: 0.13em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.siteHeader nav a[aria-current="page"] {
+  border-bottom: 1px solid var(--peach);
+  color: var(--cream);
+}
+
+.bagAction {
+  justify-self: end;
+  color: var(--peach);
+  cursor: pointer;
+}
+
+.productContext {
+  display: grid;
+  min-height: 100svh;
+  grid-template-columns: minmax(0, 1.08fr) minmax(25rem, 0.92fr);
+  padding-top: 5.9rem;
+  background: var(--espresso);
+}
+
+.productImage {
+  position: relative;
+  min-height: calc(100svh - 5.9rem);
+  overflow: hidden;
+  border-right: 1px solid rgb(254 252 251 / 13%);
+}
+
+.productImage::after {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgb(15 9 5 / 62%), transparent 55%);
+  content: "";
+}
+
+.productImage img {
+  object-fit: cover;
+  object-position: 54% center;
+  filter: saturate(0.48) contrast(1.08) brightness(0.72);
+  transform: scale(1.07);
+}
+
+.productImage > span {
+  position: absolute;
+  z-index: 2;
+  bottom: 2.5rem;
+  left: clamp(1.5rem, 4vw, 4rem);
+  color: var(--signal);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+}
+
+.productCopy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(2.5rem, 6vw, 6.5rem);
+}
+
+.productCopy h1 {
+  margin: 1.25rem 0 0;
+  font-size: clamp(4rem, 6vw, 7rem);
+  font-weight: 430;
+  letter-spacing: -0.075em;
+  line-height: 0.88;
+}
+
+.dek {
+  margin: 1.15rem 0 0;
+  color: var(--peach);
+  font-family: Georgia, serif;
+  font-size: clamp(1.4rem, 2vw, 2rem);
+}
+
+.productCopy > p:not(.eyebrow, .dek, .conceptNote) {
+  max-width: 32rem;
+  margin: 2rem 0 0;
+  color: var(--taupe);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.productPurchase {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  margin-top: 2.8rem;
+}
+
+.productPurchase strong,
+.productPurchase button {
+  display: flex;
+  min-height: 4rem;
+  align-items: center;
+  border: 1px solid var(--peach);
+  padding: 0 1.3rem;
+}
+
+.productPurchase strong {
+  color: var(--peach);
+  font-size: 1.15rem;
+}
+
+.productPurchase button {
+  justify-content: space-between;
+  background: var(--peach);
+  color: var(--espresso);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.conceptNote {
+  margin: 1rem 0 0;
+  color: #958a84;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.56rem;
+  letter-spacing: 0.1em;
+}
+
+.bagBackdrop {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: flex;
+  justify-content: flex-end;
+  background: rgb(3 4 3 / 68%);
+  backdrop-filter: blur(3px);
+}
+
+.backdropDismiss {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  border: 0;
+  background: transparent;
+}
+
+.bagDialog {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: min(39rem, 100%);
+  min-height: 100svh;
+  flex-direction: column;
+  overflow: auto;
+  border-left: 1px solid rgb(125 227 214 / 35%);
+  padding: 2.25rem clamp(1.5rem, 4vw, 3.5rem) 7.5rem;
+  background: #090b0a;
+  box-shadow: -2rem 0 6rem rgb(0 0 0 / 40%);
+}
+
+.bagDialog > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgb(254 252 251 / 13%);
+}
+
+.bagDialog h1 {
+  margin: 0.45rem 0 0;
+  font-size: clamp(3rem, 5vw, 4.6rem);
+  font-weight: 430;
+  letter-spacing: -0.065em;
+  line-height: 1;
+}
+
+.bagDialog h1:focus-visible,
+.productCopy h1:focus-visible,
+.srOnly:focus-visible {
+  outline: none;
+}
+
+.bagDialog > header > button {
+  border: 0;
+  background: transparent;
+  color: var(--taupe);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.bagDialog > header > button span {
+  margin-left: 0.55rem;
+  color: var(--signal);
+  font-size: 1.2rem;
+}
+
+.productMiniature {
+  display: grid;
+  grid-template-columns: 7.5rem 1fr auto;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.5rem 0;
+}
+
+.miniatureImage {
+  position: relative;
+  aspect-ratio: 1.24;
+  overflow: hidden;
+  background: #1b1714;
+}
+
+.miniatureImage img {
+  object-fit: cover;
+  filter: grayscale(0.35) contrast(1.05) brightness(0.72);
+}
+
+.productMiniature p {
+  margin: 0;
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+}
+
+.productMiniature span {
+  display: block;
+  margin-top: 0.45rem;
+  color: #a79e99;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.56rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.productMiniature strong {
+  color: var(--peach);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.removeAction {
+  align-self: flex-start;
+  border: 0;
+  border-bottom: 1px solid #736b67;
+  padding: 0;
+  background: transparent;
+  color: #aaa09b;
+  font-size: 0.67rem;
+  cursor: pointer;
+}
+
+.bagTotals {
+  margin: 2.25rem 0 0;
+  border-top: 1px solid rgb(254 252 251 / 13%);
+}
+
+.bagTotals div,
+.orderLedger dl div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgb(254 252 251 / 13%);
+  padding: 0.9rem 0;
+}
+
+.bagTotals dt,
+.bagTotals dd,
+.orderLedger dt,
+.orderLedger dd {
+  margin: 0;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.63rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.bagTotals dt,
+.orderLedger dt {
+  color: #908783;
+}
+
+.bagDisclosure {
+  margin-top: 2.2rem;
+  border-left: 2px solid var(--signal);
+  padding: 0.15rem 0 0.15rem 1rem;
+}
+
+.bagDisclosure strong {
+  font-size: 0.88rem;
+}
+
+.bagDisclosure p {
+  max-width: 28rem;
+  margin: 0.5rem 0 0;
+  color: var(--taupe);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+
+.checkoutAction {
+  display: flex;
+  min-height: 4rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2rem;
+  border: 1px solid var(--peach);
+  padding: 0 1.3rem;
+  background: var(--peach);
+  color: var(--espresso);
+  font-size: 0.68rem;
+  font-weight: 720;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.bagLinks {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.bagLinks button,
+.bagLinks a {
+  border: 0;
+  border-bottom: 1px solid #7f7672;
+  padding: 0.5rem 0;
+  background: transparent;
+  color: var(--taupe);
+  font-size: 0.65rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.emptyBag {
+  display: grid;
+  min-height: 28rem;
+  place-content: center;
+  text-align: center;
+}
+
+.emptyBag p {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.emptyBag span {
+  margin-top: 0.65rem;
+  color: var(--taupe);
+}
+
+.emptyBag button {
+  margin-top: 2rem;
+  border: 1px solid var(--peach);
+  padding: 0 1rem;
+  background: transparent;
+  color: var(--peach);
+  cursor: pointer;
+}
+
+.previewMain,
+.terminal {
+  min-height: 100svh;
+  padding-top: 5.9rem;
+  background:
+    linear-gradient(rgb(125 227 214 / 3%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(125 227 214 / 3%) 1px, transparent 1px),
+    var(--ink);
+  background-size: 7rem 7rem;
+}
+
+.previewHeader {
+  display: flex;
+  min-height: 5rem;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgb(254 252 251 / 13%);
+  padding: 0 clamp(1.25rem, 4vw, 4.5rem);
+}
+
+.previewHeader > div {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.previewHeader span {
+  color: var(--signal);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+}
+
+.previewHeader strong {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.previewHeader button,
+.interruptAction {
+  border: 0;
+  border-bottom: 1px solid #827975;
+  padding: 0;
+  background: transparent;
+  color: var(--taupe);
+  font-size: 0.65rem;
+  cursor: pointer;
+}
+
+.previewBoundary {
+  display: flex;
+  min-height: 3.5rem;
+  align-items: center;
+  gap: 1rem;
+  padding: 0 clamp(1.25rem, 4vw, 4.5rem);
+  background: var(--signal);
+  color: #06100e;
+}
+
+.previewBoundary span {
+  border: 1px solid currentColor;
+  padding: 0.28rem 0.45rem;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+}
+
+.previewBoundary p {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 560;
+}
+
+.progress {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.progress button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.7rem;
+  border: 0;
+  border-bottom: 1px solid rgb(254 252 251 / 13%);
+  padding: 0.8rem 0;
+  background: transparent;
+  color: #817976;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.progress button[aria-current="step"] {
+  border-color: var(--signal);
+  color: var(--cream);
+}
+
+.progress button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.progress button span {
+  color: var(--signal);
+}
+
+.ledgerLayout {
+  display: grid;
+  min-height: calc(100svh - 14.4rem);
+  grid-template-columns: minmax(0, 1.45fr) minmax(22rem, 0.55fr);
+}
+
+.ledgerStage {
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem clamp(1.5rem, 6vw, 7rem) 7.5rem;
+}
+
+.stepHeading {
+  margin-top: 2.2rem;
+}
+
+.stepHeading h1 {
+  margin: 0.75rem 0 0;
+  font-size: clamp(3.5rem, 6vw, 6.8rem);
+  font-weight: 430;
+  letter-spacing: -0.07em;
+  line-height: 0.9;
+}
+
+.stepHeading > p:last-child {
+  max-width: 32rem;
+  margin: 1rem 0 0;
+  color: var(--taupe);
+  font-family: Georgia, serif;
+  font-size: 1.1rem;
+}
+
+.syntheticPanel {
+  margin-top: 2rem;
+  border: 1px solid rgb(254 252 251 / 16%);
+  background: rgb(15 13 12 / 88%);
+}
+
+.panelTopline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgb(254 252 251 / 13%);
+  padding: 0.9rem 1.1rem;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.57rem;
+  letter-spacing: 0.1em;
+}
+
+.panelTopline p {
+  margin: 0;
+  color: var(--peach);
+}
+
+.panelTopline span {
+  color: var(--signal);
+}
+
+.syntheticDetails {
+  display: grid;
+  grid-template-columns: 0.75fr 1.35fr 0.8fr;
+  margin: 0;
+  padding: 1.5rem 1.1rem;
+}
+
+.syntheticDetails div + div {
+  border-left: 1px solid rgb(254 252 251 / 13%);
+  padding-left: 1.25rem;
+}
+
+.syntheticDetails dt,
+.deliveryService dt {
+  color: #8d8581;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.syntheticDetails dd,
+.deliveryService dd {
+  margin: 0.55rem 0 0;
+  font-size: 0.85rem;
+}
+
+.panelExplanation {
+  margin: 0;
+  border-top: 1px solid rgb(254 252 251 / 13%);
+  padding: 1rem 1.1rem;
+  color: #aaa19d;
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+.previewAddress {
+  padding: 1.5rem 1.1rem;
+  color: var(--cream);
+  font-family: Georgia, serif;
+  font-size: 1.15rem;
+  font-style: normal;
+  line-height: 1.6;
+}
+
+.deliveryService {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 0;
+  border-top: 1px solid rgb(254 252 251 / 13%);
+  padding: 1.25rem 1.1rem;
+}
+
+.reviewChecks {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  background: rgb(254 252 251 / 13%);
+  list-style: none;
+}
+
+.reviewChecks li {
+  display: grid;
+  grid-template-columns: 2rem 1fr;
+  align-items: center;
+  padding: 0.85rem 1.1rem;
+  background: #0f0d0c;
+  color: var(--taupe);
+  font-size: 0.76rem;
+  line-height: 1.45;
+}
+
+.reviewChecks li span {
+  color: var(--signal);
+}
+
+.stepActions,
+.terminalActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.6rem;
+}
+
+.primaryAction,
+.secondaryAction {
+  border: 1px solid var(--peach);
+  padding: 0 1.15rem;
+  font-size: 0.66rem;
+  font-weight: 660;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.primaryAction {
+  display: flex;
+  min-width: 13rem;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--peach);
+  color: var(--espresso);
+}
+
+.secondaryAction {
+  background: transparent;
+  color: var(--peach);
+}
+
+.orderLedger {
+  border-left: 1px solid rgb(254 252 251 / 13%);
+  padding: clamp(2rem, 4vw, 4rem) clamp(1.5rem, 3vw, 3.5rem) 7rem;
+  background: rgb(10 10 9 / 76%);
+}
+
+.orderLedger .productMiniature {
+  grid-template-columns: 5rem 1fr;
+  margin-top: 1.5rem;
+  border-top: 1px solid rgb(254 252 251 / 13%);
+}
+
+.orderLedger .productMiniature > strong {
+  grid-column: 2;
+}
+
+.orderLedger dl {
+  margin: 1rem 0 0;
+}
+
+.orderLedger .ledgerTotal {
+  padding-top: 1.35rem;
+  color: var(--cream);
+}
+
+.orderLedger .ledgerTotal dt,
+.orderLedger .ledgerTotal dd {
+  color: var(--cream);
+  font-size: 0.7rem;
+}
+
+.ledgerFootnote {
+  margin: 1.2rem 0 0;
+  color: #8f8783;
+  font-size: 0.66rem;
+  line-height: 1.55;
+}
+
+.orderLedgerCompact {
+  border: 1px solid rgb(254 252 251 / 14%);
+  padding: 1.5rem;
+}
+
+.interruptAction {
+  position: fixed;
+  z-index: 25;
+  right: 1.25rem;
+  bottom: 1.2rem;
+  min-height: 36px !important;
+}
+
+/* Variant B — the whole checkout as a legible document. */
+.variantB .previewMain {
+  background: #11100e;
+}
+
+.variantB .previewBoundary {
+  background: var(--peach);
+}
+
+.manifestLayout {
+  max-width: 86rem;
+  margin: 0 auto;
+  padding: clamp(2.5rem, 6vw, 6.5rem) clamp(1.25rem, 4vw, 4.5rem) 9rem;
+}
+
+.manifestIntro {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  align-items: end;
+  gap: 2rem 5vw;
+}
+
+.manifestIntro .eyebrow {
+  align-self: start;
+}
+
+.manifestIntro h1 {
+  margin: 0;
+  font-family: Georgia, serif;
+  font-size: clamp(3rem, 5vw, 5.8rem);
+  font-weight: 400;
+  letter-spacing: -0.06em;
+  line-height: 0.92;
+}
+
+.manifestIntro > p:last-child {
+  grid-column: 2;
+  max-width: 34rem;
+  margin: -1rem 0 0;
+  color: var(--taupe);
+  font-size: 0.85rem;
+  line-height: 1.65;
+}
+
+.manifestBody {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(20rem, 0.6fr);
+  gap: clamp(1.5rem, 4vw, 4rem);
+  margin-top: 4rem;
+}
+
+.manifestSections {
+  border-top: 1px solid rgb(254 252 251 / 25%);
+}
+
+.manifestSections > section {
+  border-bottom: 1px solid rgb(254 252 251 / 25%);
+}
+
+.manifestSections > section > button {
+  display: grid;
+  width: 100%;
+  grid-template-columns: 3rem 1fr auto;
+  align-items: center;
+  border: 0;
+  padding: 1rem 0;
+  background: transparent;
+  color: var(--taupe);
+  text-align: left;
+  cursor: pointer;
+}
+
+.manifestSections > section > button:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.manifestSections > section > button span,
+.manifestSections > section > button small {
+  color: var(--signal);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.57rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+}
+
+.manifestSections > section > button strong {
+  font-family: Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+}
+
+.manifestActive > button strong {
+  color: var(--cream);
+}
+
+.manifestPanel .syntheticPanel {
+  margin: 0 0 1.5rem 3rem;
+}
+
+.manifestContinue {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.manifestContinue p {
+  max-width: 24rem;
+  margin: 0;
+  color: #9e9692;
+  font-size: 0.72rem;
+}
+
+/* Variant C — operational milestones and a persistent dispatch brief. */
+.variantC .previewBoundary {
+  background: var(--terracotta);
+  color: var(--espresso);
+}
+
+.consoleLayout {
+  display: grid;
+  min-height: calc(100svh - 14.4rem);
+  grid-template-columns: minmax(12rem, 0.45fr) minmax(30rem, 1.3fr) minmax(19rem, 0.58fr);
+}
+
+.consoleRail {
+  border-right: 1px solid rgb(254 252 251 / 13%);
+  padding: 3rem 1.5rem 8rem clamp(1.5rem, 4vw, 4.5rem);
+}
+
+.consoleRail > p {
+  margin: 0 0 2rem;
+  color: #8e8581;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+}
+
+.consoleRail ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.consoleRail button {
+  position: relative;
+  display: grid;
+  width: 100%;
+  grid-template-columns: 2.2rem 1fr 0.8rem;
+  align-items: center;
+  border: 0;
+  border-bottom: 1px solid rgb(254 252 251 / 13%);
+  padding: 1rem 0;
+  background: transparent;
+  color: #857d79;
+  text-align: left;
+  cursor: pointer;
+}
+
+.consoleRail button:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.consoleRail button[aria-current="step"] {
+  color: var(--cream);
+}
+
+.consoleRail button span {
+  color: var(--terracotta);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.6rem;
+}
+
+.consoleRail button strong {
+  font-size: 0.73rem;
+  font-weight: 560;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.consoleRail button i {
+  width: 0.5rem;
+  height: 0.5rem;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+}
+
+.consoleRail button[aria-current="step"] i {
+  border-color: var(--signal);
+  background: var(--signal);
+  box-shadow: 0 0 1rem rgb(125 227 214 / 70%);
+}
+
+.consoleStage {
+  padding: clamp(2rem, 5vw, 5rem) clamp(1.5rem, 5vw, 5rem) 8rem;
+}
+
+.consoleHeading {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.25rem;
+}
+
+.consoleHeading > span {
+  color: var(--terracotta);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: clamp(3.5rem, 6vw, 6rem);
+  line-height: 0.8;
+}
+
+.consoleHeading h1 {
+  margin: 0.4rem 0 0;
+  font-size: clamp(3rem, 5vw, 5.6rem);
+  font-weight: 460;
+  letter-spacing: -0.065em;
+  line-height: 0.85;
+}
+
+/* Explicit terminal state. */
+.terminal {
+  display: grid;
+  grid-template-columns: minmax(5rem, 0.25fr) minmax(28rem, 1.25fr) minmax(20rem, 0.6fr);
+  align-items: center;
+  gap: clamp(2rem, 5vw, 6rem);
+  padding-right: clamp(1.5rem, 5vw, 5rem);
+  padding-bottom: 7rem;
+  padding-left: clamp(1.5rem, 5vw, 5rem);
+}
+
+.terminalSignal {
+  display: grid;
+  min-height: 28rem;
+  place-items: center;
+  border-right: 1px solid rgb(254 252 251 / 13%);
+}
+
+.terminalSignal span {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--terracotta);
+  border-radius: 50%;
+  box-shadow: 0 0 0 0.55rem rgb(202 128 84 / 12%);
+}
+
+.terminal h1 {
+  max-width: 46rem;
+  margin: 1rem 0 0;
+  font-size: clamp(4rem, 7vw, 8rem);
+  font-weight: 430;
+  letter-spacing: -0.075em;
+  line-height: 0.82;
+}
+
+.terminalStatement {
+  max-width: 42rem;
+  margin: 2rem 0 0;
+  color: var(--peach);
+  font-family: Georgia, serif;
+  font-size: clamp(1.2rem, 2vw, 1.65rem);
+  line-height: 1.35;
+}
+
+.terminalFacts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: 42rem;
+  margin: 2.5rem 0 0;
+  border-top: 1px solid rgb(254 252 251 / 13%);
+  border-left: 1px solid rgb(254 252 251 / 13%);
+}
+
+.terminalFacts div {
+  border-right: 1px solid rgb(254 252 251 / 13%);
+  border-bottom: 1px solid rgb(254 252 251 / 13%);
+  padding: 1rem;
+}
+
+.terminalFacts dt {
+  color: #8e8581;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.54rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.terminalFacts dd {
+  margin: 0.5rem 0 0;
+  color: var(--cream);
+  font-size: 0.78rem;
+}
+
+.terminalActions {
+  justify-content: flex-start;
+}
+
+/* Recovery and prototype-only controls. */
+.recoveryBackdrop {
+  position: fixed;
+  z-index: 200;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: rgb(2 3 2 / 78%);
+  backdrop-filter: blur(8px);
+}
+
+.recoveryDialog {
+  width: min(38rem, 100%);
+  border: 1px solid var(--signal);
+  padding: clamp(1.5rem, 4vw, 3.5rem);
+  background: #0b0d0c;
+  box-shadow: 0 2rem 8rem rgb(0 0 0 / 65%);
+}
+
+.recoveryDialog h2 {
+  margin: 0.8rem 0 0;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 450;
+  letter-spacing: -0.05em;
+}
+
+.recoveryDialog > p:not(.eyebrow) {
+  margin: 1.25rem 0 0;
+  color: var(--taupe);
+  font-size: 0.86rem;
+  line-height: 1.65;
+}
+
+.recoveryDialog > div {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 2rem;
+}
+
+.stateReadout {
+  position: fixed;
+  z-index: 60;
+  top: 6.45rem;
+  left: 0;
+  display: flex;
+  gap: 1px;
+  pointer-events: none;
+}
+
+.stateReadout span {
+  padding: 0.32rem 0.5rem;
+  background: rgb(2 3 2 / 86%);
+  color: #8c9694;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.45rem;
+  letter-spacing: 0.07em;
+}
+
+.prototypeSwitcher {
+  position: fixed;
+  z-index: 300;
+  bottom: 1.15rem;
+  left: 50%;
+  display: grid;
+  grid-template-columns: 5.5rem 2.8rem minmax(15rem, 26rem) 2.8rem;
+  border: 1px solid rgb(255 255 255 / 16%);
+  border-radius: 0.55rem;
+  background: rgb(10 10 10 / 95%);
+  box-shadow: 0 1rem 4rem rgb(0 0 0 / 48%);
+  color: white;
+  font-family: var(--font-geist-mono), monospace;
+  transform: translateX(-50%);
+  backdrop-filter: blur(18px);
+}
+
+.prototypeFlag {
+  display: grid;
+  place-items: center;
+  border-right: 1px solid rgb(255 255 255 / 12%);
+  padding: 0 0.7rem;
+  color: #8d8d8d;
+  font-size: 0.5rem;
+  letter-spacing: 0.1em;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.prototypeSwitcher > button {
+  border: 0;
+  background: transparent;
+  color: white;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.prototypeSwitcher > button:hover {
+  background: rgb(255 255 255 / 8%);
+}
+
+.prototypeSwitcher > div {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+  border-right: 1px solid rgb(255 255 255 / 12%);
+  border-left: 1px solid rgb(255 255 255 / 12%);
+  padding: 0.72rem 1rem;
+}
+
+.prototypeSwitcher strong {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.prototypeSwitcher div span {
+  overflow: hidden;
+  margin-top: 0.2rem;
+  color: #a2a2a2;
+  font-size: 0.58rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 1040px) {
+  .consoleLayout {
+    grid-template-columns: 11rem minmax(0, 1fr);
+  }
+
+  .consoleLayout > .orderLedger {
+    display: none;
+  }
+
+  .terminal {
+    grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.5fr);
+  }
+
+  .terminalSignal {
+    display: none;
+  }
+}
+
+@media (max-width: 820px) {
+  .siteHeader {
+    height: 4.75rem;
+    grid-template-columns: 1fr auto;
+    padding: 0 1rem;
+  }
+
+  .siteHeader nav {
+    display: none;
+  }
+
+  .wordmark {
+    font-size: 1.05rem;
+  }
+
+  .productContext {
+    display: block;
+    padding-top: 4.75rem;
+  }
+
+  .productImage {
+    min-height: 47svh;
+    border-right: 0;
+  }
+
+  .productCopy {
+    padding: 2.2rem 1.25rem 8rem;
+  }
+
+  .productCopy h1 {
+    font-size: clamp(3.4rem, 17vw, 5rem);
+  }
+
+  .bagDialog {
+    width: 100%;
+    border-left: 0;
+    padding: 1.25rem 1.25rem 8rem;
+  }
+
+  .bagDialog .productMiniature {
+    grid-template-columns: 6rem 1fr;
+  }
+
+  .bagDialog .productMiniature strong {
+    grid-column: 2;
+  }
+
+  .previewMain,
+  .terminal {
+    padding-top: 4.75rem;
+  }
+
+  .previewHeader {
+    min-height: 4.5rem;
+    padding: 0 1rem;
+  }
+
+  .previewHeader > div {
+    display: block;
+  }
+
+  .previewHeader span {
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+
+  .previewBoundary {
+    align-items: flex-start;
+    padding: 0.75rem 1rem;
+  }
+
+  .previewBoundary p {
+    line-height: 1.45;
+  }
+
+  .stateReadout {
+    display: none;
+  }
+
+  .ledgerLayout {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ledgerStage {
+    padding: 1rem 1rem 1.5rem;
+  }
+
+  .progress button {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+
+  .stepHeading {
+    margin-top: 2rem;
+  }
+
+  .stepHeading h1 {
+    font-size: clamp(3.3rem, 17vw, 5rem);
+  }
+
+  .syntheticDetails,
+  .deliveryService {
+    display: block;
+  }
+
+  .syntheticDetails div + div,
+  .deliveryService div + div {
+    margin-top: 1rem;
+    border-left: 0;
+    padding-top: 1rem;
+    padding-left: 0;
+    border-top: 1px solid rgb(254 252 251 / 13%);
+  }
+
+  .orderLedger {
+    border-top: 1px solid rgb(254 252 251 / 13%);
+    border-left: 0;
+    padding: 2rem 1rem 9rem;
+  }
+
+  .manifestLayout {
+    padding: 2.5rem 1rem 9rem;
+  }
+
+  .manifestIntro,
+  .manifestBody {
+    display: block;
+  }
+
+  .manifestIntro h1 {
+    margin-top: 1rem;
+    font-size: clamp(3rem, 14vw, 4.5rem);
+  }
+
+  .manifestIntro > p:last-child {
+    margin: 1rem 0 0;
+  }
+
+  .manifestBody {
+    margin-top: 2.5rem;
+  }
+
+  .manifestBody > .orderLedger {
+    margin-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .manifestPanel .syntheticPanel {
+    margin-left: 0;
+  }
+
+  .manifestContinue {
+    display: block;
+  }
+
+  .manifestContinue .primaryAction {
+    width: 100%;
+    margin-top: 1rem;
+  }
+
+  .consoleLayout {
+    display: block;
+  }
+
+  .consoleRail {
+    overflow-x: auto;
+    border-right: 0;
+    border-bottom: 1px solid rgb(254 252 251 / 13%);
+    padding: 1rem;
+  }
+
+  .consoleRail > p {
+    margin-bottom: 0.5rem;
+  }
+
+  .consoleRail ol {
+    display: grid;
+    min-width: 30rem;
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .consoleRail button {
+    grid-template-columns: 1.7rem 1fr;
+    border-right: 1px solid rgb(254 252 251 / 13%);
+    border-bottom: 0;
+    padding-right: 0.8rem;
+  }
+
+  .consoleRail button i {
+    display: none;
+  }
+
+  .consoleStage {
+    padding: 2.5rem 1rem 9rem;
+  }
+
+  .consoleHeading > span {
+    font-size: 3.25rem;
+  }
+
+  .terminal {
+    display: block;
+    padding: 8rem 1rem 9rem;
+  }
+
+  .terminal h1 {
+    font-size: clamp(4rem, 18vw, 6rem);
+  }
+
+  .terminalFacts {
+    display: block;
+    border-left: 0;
+  }
+
+  .terminal .orderLedger {
+    margin-top: 2rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .terminalActions,
+  .stepActions,
+  .recoveryDialog > div {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .primaryAction,
+  .secondaryAction {
+    width: 100%;
+  }
+
+  .interruptAction {
+    position: static;
+    display: block;
+    margin: 0 1rem 8rem auto;
+  }
+
+  .prototypeSwitcher {
+    bottom: 0.65rem;
+    width: calc(100vw - 1.3rem);
+    grid-template-columns: 2.8rem minmax(0, 1fr) 2.8rem;
+  }
+
+  .prototypeFlag {
+    display: none;
+  }
+}
+
+@media (max-width: 390px) {
+  .productMiniature {
+    grid-template-columns: 5rem 1fr;
+  }
+
+  .productMiniature strong {
+    grid-column: 2;
+  }
+
+  .panelTopline {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .bagLinks {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prototypeShell *,
+  .prototypeShell *::before,
+  .prototypeShell *::after {
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .prototypeShell button,
+  .prototypeShell a,
+  .syntheticPanel,
+  .orderLedger,
+  .bagDialog,
+  .recoveryDialog {
+    forced-color-adjust: auto;
+  }
+
+  .previewBoundary {
+    border: 2px solid CanvasText;
+  }
+}
