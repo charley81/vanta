@@ -1,0 +1,107 @@
+.routeMain {
+  width: 100%;
+  flex: 1;
+}
+
+.introduction {
+  position: relative;
+  display: grid;
+  min-height: max(38rem, calc(100svh - var(--shell-height)));
+  align-items: end;
+  overflow: hidden;
+  isolation: isolate;
+  padding: clamp(var(--space-16), 11vw, 10rem) var(--page-gutter);
+}
+
+.introduction::before {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  background:
+    radial-gradient(circle at 76% 34%, color-mix(in srgb, var(--color-brown) 30%, transparent), transparent 28%),
+    linear-gradient(118deg, var(--surface-foundation) 24%, color-mix(in srgb, var(--color-brown) 13%, var(--surface-foundation)) 100%);
+  content: "";
+}
+
+.grid {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--rule) 1px, transparent 1px),
+    linear-gradient(90deg, var(--rule) 1px, transparent 1px);
+  background-size: clamp(4rem, 9vw, 8rem) clamp(4rem, 9vw, 8rem);
+  mask-image: linear-gradient(90deg, black, transparent 82%);
+  opacity: 0.38;
+}
+
+.copy {
+  width: min(54rem, 88vw);
+  margin-inline: auto;
+}
+
+.telemetry {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.kicker {
+  margin: 0 0 var(--space-6);
+  color: var(--text-emphasis);
+}
+
+.introduction h1 {
+  max-width: 12ch;
+  margin: 0;
+  font-size: clamp(3.5rem, 10vw, 9rem);
+  font-weight: 470;
+  letter-spacing: -0.075em;
+  line-height: 0.86;
+  text-wrap: balance;
+}
+
+.body {
+  max-width: 34rem;
+  margin: var(--space-8) 0 0;
+  color: var(--text-secondary);
+  font-size: clamp(1rem, 1.4vw, 1.25rem);
+  line-height: 1.65;
+}
+
+.index {
+  position: absolute;
+  top: var(--space-8);
+  left: var(--page-gutter);
+  margin: 0;
+  color: var(--text-secondary);
+  writing-mode: vertical-rl;
+}
+
+@media (max-width: 47.999rem) {
+  .introduction {
+    min-height: max(35rem, calc(100svh - var(--shell-height)));
+    padding: var(--space-24) var(--space-4) var(--space-16);
+  }
+
+  .copy {
+    width: 100%;
+  }
+
+  .introduction h1 {
+    font-size: clamp(3.5rem, 19vw, 6rem);
+  }
+
+  .index {
+    top: var(--space-6);
+    left: var(--space-4);
+  }
+}
+
+@media (forced-colors: active) {
+  .grid {
+    display: none;
+  }
+}
