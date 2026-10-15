@@ -1,6 +1,6 @@
 schema_version: 1
-status: draft_pending_human_approval
-baseline_commit: null
+status: approved
+baseline_identity: containing_git_commit_linked_from_approving_decision
 
 sources:
   product_truth: https://github.com/charley81/vanta/issues/2

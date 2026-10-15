@@ -1,6 +1,6 @@
 # VANTA production specification
 
-Status: **Draft Handoff Baseline awaiting final human approval**
+Status: **Approved Handoff Baseline**
 
 This bundle consolidates the effective product, experience, technical, and acceptance decisions for the production VANTA experience. After approval, the immutable Git commit containing this bundle is the **Handoff Baseline**. Implementation may choose among the bounded options recorded as Implementation latitude, but it must not reopen or silently weaken settled requirements.
 
@@ -75,7 +75,7 @@ The baseline contains no unresolved product or technical `TBD`. Values that cann
 
 ## Approval and change control
 
-The first approved baseline is identified by its Git commit, not by an editable label. After approval:
+This approved baseline is identified by the Git commit containing these files, as linked from the resolution of [Define the final production specification and acceptance handoff](https://github.com/charley81/vanta/issues/38), not by an editable label. After approval:
 
 - clarifications may improve wording only when observable behavior and acceptance remain unchanged;
 - normative changes require a linked approving decision and a changelog entry in this file;
@@ -88,4 +88,4 @@ One person may hold multiple approval roles. Missing backup coverage is recorded
 
 ## Changelog
 
-- Draft: consolidated from the decisions and sources listed in `source-register.md`; awaiting final human approval and immutable commit identifier.
+- 2026-10-15: approved the first Handoff Baseline after human review; its immutable identity is the final Git commit linked from the approving decision.

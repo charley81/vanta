@@ -2,7 +2,7 @@
 
 ## Authority rule
 
-Use the precedence in [README](README.md#source-precedence). A source is authoritative only for its named domain. Repository links below pin implementation context; the approved Handoff Baseline commit will pin this consolidation.
+Use the precedence in [README](README.md#source-precedence). A source is authoritative only for its named domain. Repository links below pin implementation context; the Git commit containing this approved bundle pins the consolidation.
 
 ## Decision traceability
 
