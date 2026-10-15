@@ -9,6 +9,11 @@ import { join, relative } from "node:path";
 
 import { parse } from "yaml";
 
+import {
+  evaluateProductCatalogManifest,
+  evaluatePublicRuntime,
+  evaluateSourceBoundaries,
+} from "./architecture";
 import { validateEvidenceManifest } from "./evidence-manifest";
 import { evaluatePerformanceRegression } from "./performance-regression";
 import { writeVerificationReport } from "./report";
@@ -239,6 +244,22 @@ function validatePerformance(path: string): number {
   return result.status === "pass" ? 0 : 1;
 }
 
+function runArchitectureCheck(
+  checkId: string,
+  evaluate: (root: string) => {
+    status: "pass" | "fail";
+    summary: Record<string, unknown>;
+    issues: ValidationIssue[];
+  },
+): number {
+  const startedAt = new Date().toISOString();
+  const check = getCheck(checkId);
+  const result = evaluate(process.cwd());
+  reportResult({ check, startedAt, ...result });
+  printIssues(result.issues);
+  return result.status === "pass" ? 0 : 1;
+}
+
 function runCheck(checkId: string, command: string[]): number {
   if (command.length === 0) throw new Error("A command is required after --");
   const startedAt = new Date().toISOString();
@@ -275,7 +296,7 @@ function runCheck(checkId: string, command: string[]): number {
 
 function usage(): never {
   throw new Error(
-    "Usage: cli.ts requirements | evidence [manifest ...] | performance <input.json> | run <check-id> -- <command ...>",
+    "Usage: cli.ts requirements | evidence [manifest ...] | performance <input.json> | product-catalog | boundaries | public-runtime | run <check-id> -- <command ...>",
   );
 }
 
@@ -288,6 +309,18 @@ function main(): number {
       return validateEvidence(args);
     case "performance":
       return args[0] ? validatePerformance(args[0]) : usage();
+    case "product-catalog":
+      return runArchitectureCheck(
+        "product-catalog-manifest",
+        evaluateProductCatalogManifest,
+      );
+    case "boundaries":
+      return runArchitectureCheck(
+        "architecture-boundaries",
+        evaluateSourceBoundaries,
+      );
+    case "public-runtime":
+      return runArchitectureCheck("public-runtime-scan", evaluatePublicRuntime);
     case "run": {
       const separator = args.indexOf("--");
       if (!args[0] || separator === -1) return usage();

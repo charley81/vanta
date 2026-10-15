@@ -32,6 +32,21 @@ checks:
     tool: vanta-verification
     report_path: artifacts/reports/performance-regression.json
     requirement_ids: [QUALITY-003]
+  - id: product-catalog-manifest
+    command: pnpm validate:product-catalog
+    tool: vanta-verification
+    report_path: artifacts/reports/product-catalog-manifest.json
+    requirement_ids: [PRODUCT-001, PRODUCT-003, PRODUCT-004]
+  - id: architecture-boundaries
+    command: pnpm validate:boundaries
+    tool: typescript
+    report_path: artifacts/reports/architecture-boundaries.json
+    requirement_ids: [ARCH-002, ARCH-003, ARCH-004, ARCH-005, ARCH-008]
+  - id: public-runtime-scan
+    command: pnpm validate:public-runtime
+    tool: vanta-verification
+    report_path: artifacts/reports/public-runtime-scan.json
+    requirement_ids: [ARCH-010, SECURITY-005]
   - id: lint
     command: pnpm lint
     tool: eslint
@@ -46,7 +61,7 @@ checks:
     command: pnpm test:unit
     tool: vitest
     report_path: artifacts/reports/unit-tests.json
-    requirement_ids: [ARCH-002, ARCH-003, ARCH-004, SECURITY-005, SECURITY-007]
+    requirement_ids: [PRODUCT-001, PRODUCT-002, PRODUCT-003, PRODUCT-004, PRODUCT-005, PRODUCT-006, ARCH-002, ARCH-003, ARCH-004, ARCH-005, ARCH-008, ARCH-010, SECURITY-005, SECURITY-007]
   - id: production-build
     command: pnpm build:verified
     tool: next

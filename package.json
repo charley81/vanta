@@ -17,12 +17,16 @@
     "validate:requirements": "tsx tooling/verification/cli.ts requirements",
     "validate:evidence": "tsx tooling/verification/cli.ts evidence",
     "validate:performance": "tsx tooling/verification/cli.ts performance verification/fixtures/performance-regression.json",
-    "check": "pnpm validate:requirements && pnpm validate:evidence && pnpm validate:performance && pnpm lint && pnpm typecheck && pnpm test:unit && pnpm build:verified && pnpm test:browser"
+    "validate:product-catalog": "tsx tooling/verification/cli.ts product-catalog",
+    "validate:boundaries": "tsx tooling/verification/cli.ts boundaries",
+    "validate:public-runtime": "tsx tooling/verification/cli.ts public-runtime",
+    "check": "pnpm validate:requirements && pnpm validate:evidence && pnpm validate:performance && pnpm validate:product-catalog && pnpm validate:boundaries && pnpm validate:public-runtime && pnpm lint && pnpm typecheck && pnpm test:unit && pnpm build:verified && pnpm test:browser"
   },
   "dependencies": {
     "next": "16.4.0",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
