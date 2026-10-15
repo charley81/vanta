@@ -1,0 +1,108 @@
+{
+  "catalog": {
+    "category": "Desktop Synthesizer",
+    "finish": "Graphite",
+    "price": {
+      "amountMinor": 249900,
+      "currency": "USD",
+      "display": "$2,499 USD"
+    },
+    "product": "MONOLITH",
+    "quantity": 1,
+    "vendor": "VANTA"
+  },
+  "productTruth": {
+    "architecture": {
+      "envelope": "Per-voice ADSR envelope",
+      "filter": "Resonant analog filter",
+      "modulation": "LFO and modulation routing",
+      "morph": "Multi-parameter MORPH modulation",
+      "oscillators": "Two digital oscillators per voice",
+      "output": "Stereo drive and tone stages",
+      "polyphony": "Eight voices",
+      "storage": "Preset storage"
+    },
+    "claims": [
+      "Sound, given mass.",
+      "Two states. One continuum.",
+      "Made to be moved."
+    ],
+    "configuration": {
+      "accessories": "None",
+      "editions": "None",
+      "variants": "None"
+    },
+    "description": "A premium graphite desktop synthesizer built around continuous movement between SUB and FRACTURE.",
+    "identity": {
+      "brand": "VANTA",
+      "category": "Desktop Synthesizer",
+      "finish": "Graphite",
+      "model": "MONOLITH",
+      "productCount": 1,
+      "synthesis": "Hybrid polyphonic",
+      "voiceCount": 8
+    },
+    "physical": {
+      "connections": [
+        "Stereo L/R outputs",
+        "Headphones",
+        "Expression input",
+        "MIDI In",
+        "MIDI Out",
+        "USB",
+        "External power"
+      ],
+      "dimensions": {
+        "depthMm": 210,
+        "display": "360 × 210 × 80 mm (W × D × H)",
+        "heightMm": 80,
+        "widthMm": 360
+      },
+      "display": "High-contrast OLED",
+      "displayButtons": {
+        "count": 3,
+        "description": "Context-sensitive and unnamed in marketing copy"
+      },
+      "enclosure": "Bead-blasted graphite aluminum",
+      "panelControls": [
+        "MORPH",
+        "OSC",
+        "MIX",
+        "MOD",
+        "LFO",
+        "CUTOFF",
+        "RESONANCE",
+        "DRIVE",
+        "TONE",
+        "ATTACK",
+        "DECAY",
+        "SUSTAIN",
+        "RELEASE"
+      ]
+    },
+    "sound": {
+      "fracture": {
+        "character": [
+          "bright",
+          "harmonically dense",
+          "unstable",
+          "angular",
+          "textured"
+        ],
+        "name": "FRACTURE"
+      },
+      "morph": "MORPH continuously transforms multiple synthesis parameters between SUB and FRACTURE; it is not a preset switch, sample crossfade, volume blend, or renamed cutoff.",
+      "sub": {
+        "character": [
+          "deep",
+          "rounded",
+          "fundamental-forward",
+          "stable",
+          "spacious"
+        ],
+        "name": "SUB"
+      }
+    }
+  },
+  "schemaVersion": 1
+}
