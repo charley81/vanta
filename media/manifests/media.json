@@ -1,0 +1,179 @@
+{
+  "schemaVersion": 1,
+  "pipelineVersion": "1.0.0",
+  "sourceSha256": "ccbdb568548e154335b2d8eb147a8f39b9881eb930e2b290e098f419425ca261",
+  "ownership": {
+    "runtimeModel": "code",
+    "generatedStills": "code pipeline outputs prepared for reviewed Sanity publication",
+    "layoutAndCropAuthority": "Figma final regions via versioned crop specifications"
+  },
+  "routeUsage": {
+    "home": {
+      "poster": "/media/stills/home-poster-1440.avif",
+      "runtimeModel": "/media/models/VANTA_MONOLITH_runtime_meshopt.glb"
+    },
+    "product": {
+      "hero": "/media/stills/product-hero-1440.avif",
+      "morph": "/media/stills/product-morph-1440.avif",
+      "runtimeModel": null
+    },
+    "synth": {
+      "poster": "/media/stills/synth-poster-1440.avif",
+      "runtimeModel": "/media/models/VANTA_MONOLITH_runtime_meshopt.glb",
+      "activation": "explicit qualification boundary"
+    }
+  },
+  "assets": [
+    {
+      "id": "runtime-meshopt",
+      "path": "/media/models/VANTA_MONOLITH_runtime_meshopt.glb",
+      "sha256": "e764793bea736a369995ea1ee20a1a9bf263e52363e9db214f219d5b60552cc1",
+      "bytes": 2568220,
+      "mediaType": "model/gltf-binary"
+    },
+    {
+      "id": "home-poster-720-avif",
+      "path": "/media/stills/home-poster-720.avif",
+      "sha256": "9a61e610e3e22f870cd2d5e515181f98c2b9caa6296a89bbd663b28891b4c27a",
+      "bytes": 2870,
+      "mediaType": "image/avif",
+      "width": 720,
+      "height": 450
+    },
+    {
+      "id": "home-poster-1440-avif",
+      "path": "/media/stills/home-poster-1440.avif",
+      "sha256": "9576180f8c19b418f196beff30fbaab3a1e8e79fc8248d0cb2f9442f0a13337f",
+      "bytes": 7531,
+      "mediaType": "image/avif",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "id": "home-poster-720-webp",
+      "path": "/media/stills/home-poster-720.webp",
+      "sha256": "a349f2a8dd49524c70632cf0fb8917f4d1aa9ed355109982fd737078680e1a1f",
+      "bytes": 3126,
+      "mediaType": "image/webp",
+      "width": 720,
+      "height": 450
+    },
+    {
+      "id": "home-poster-1440-webp",
+      "path": "/media/stills/home-poster-1440.webp",
+      "sha256": "1d09d97a6d15bff6cc49b78e57d671763ec0f7d05c039634f7098aceab4d6630",
+      "bytes": 10592,
+      "mediaType": "image/webp",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "id": "product-hero-720-avif",
+      "path": "/media/stills/product-hero-720.avif",
+      "sha256": "a0e023939e4d8453ffc68c311b1a37c1948f4dcf0eceff716800f3df292d29b0",
+      "bytes": 7611,
+      "mediaType": "image/avif",
+      "width": 720,
+      "height": 900
+    },
+    {
+      "id": "product-hero-1440-avif",
+      "path": "/media/stills/product-hero-1440.avif",
+      "sha256": "be9fe9dc32163ad60d1fe12c5275f31ba889ba4e97c06f9c4a4d8f70e64e207c",
+      "bytes": 18195,
+      "mediaType": "image/avif",
+      "width": 1440,
+      "height": 1800
+    },
+    {
+      "id": "product-hero-720-webp",
+      "path": "/media/stills/product-hero-720.webp",
+      "sha256": "edfc90457a7ab2af9d9526da4176d4407b2dced49b3aa6a075776f97f778ea7a",
+      "bytes": 9670,
+      "mediaType": "image/webp",
+      "width": 720,
+      "height": 900
+    },
+    {
+      "id": "product-hero-1440-webp",
+      "path": "/media/stills/product-hero-1440.webp",
+      "sha256": "de97c02d118bc1678f337779acf9d256aedee6df1fa92319cc8e9c8cb1618c00",
+      "bytes": 29330,
+      "mediaType": "image/webp",
+      "width": 1440,
+      "height": 1800
+    },
+    {
+      "id": "product-morph-720-avif",
+      "path": "/media/stills/product-morph-720.avif",
+      "sha256": "3c2e4a7345fdcb6c39dfa4c3539e88fc17551d7ff3206beb56dc338de4f37f63",
+      "bytes": 6280,
+      "mediaType": "image/avif",
+      "width": 720,
+      "height": 450
+    },
+    {
+      "id": "product-morph-1440-avif",
+      "path": "/media/stills/product-morph-1440.avif",
+      "sha256": "740af683dae27c68790b0180f5ae3a660a27e20fbb53323625b30224d63b4022",
+      "bytes": 16735,
+      "mediaType": "image/avif",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "id": "product-morph-720-webp",
+      "path": "/media/stills/product-morph-720.webp",
+      "sha256": "fee7e78df39156464ec1590b5cc8180497e931bdb00cd89df8969a4590f4dc5a",
+      "bytes": 7548,
+      "mediaType": "image/webp",
+      "width": 720,
+      "height": 450
+    },
+    {
+      "id": "product-morph-1440-webp",
+      "path": "/media/stills/product-morph-1440.webp",
+      "sha256": "c11e9cc96b19e3ecad394f96e951ed8c0fd5db312d4b5c7901304001b0d78bfe",
+      "bytes": 23530,
+      "mediaType": "image/webp",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "id": "synth-poster-720-avif",
+      "path": "/media/stills/synth-poster-720.avif",
+      "sha256": "132fe1536971a47137d336f56ebabd2c1da7735829e9d931886844321f5d0127",
+      "bytes": 4614,
+      "mediaType": "image/avif",
+      "width": 720,
+      "height": 405
+    },
+    {
+      "id": "synth-poster-1440-avif",
+      "path": "/media/stills/synth-poster-1440.avif",
+      "sha256": "74bade0eadb240c812d3232e9741e3b02e71436569e70ef6b467cc340320edf6",
+      "bytes": 11863,
+      "mediaType": "image/avif",
+      "width": 1440,
+      "height": 810
+    },
+    {
+      "id": "synth-poster-720-webp",
+      "path": "/media/stills/synth-poster-720.webp",
+      "sha256": "b9b79c96fd9a6572acfbf77f849e4b07c66e86678fcceaa92db7a436ab0b9657",
+      "bytes": 5316,
+      "mediaType": "image/webp",
+      "width": 720,
+      "height": 405
+    },
+    {
+      "id": "synth-poster-1440-webp",
+      "path": "/media/stills/synth-poster-1440.webp",
+      "sha256": "a0a0c42407d7c6265033b99a51ea42b0be911aabfc6cfa8ec4e0dd70437bb821",
+      "bytes": 15696,
+      "mediaType": "image/webp",
+      "width": 1440,
+      "height": 810
+    }
+  ]
+}
