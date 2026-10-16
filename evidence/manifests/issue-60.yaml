@@ -1,9 +1,11 @@
 schema_version: 1
 status: draft
 notice: >-
-  This is a qualification scaffold for issue 60. Machine artifacts may provide
-  supporting evidence, but the candidate identity and named product/design
-  decision remain unbound. This file makes no Acceptance or launch claim.
+  Issue-level qualification is complete at
+  https://github.com/charley81/vanta/issues/60#issuecomment-6223203927. This
+  separate release-candidate scaffold remains unpromoted: every artifact is
+  not_run, the full release identity is intentionally unbound, and this file
+  makes no release-wide candidate or launch claim.
 
 candidate:
   baseline_commit: 8177d60995fcce30fad51663b8c8e8fc5c7fceb9

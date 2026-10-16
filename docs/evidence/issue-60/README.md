@@ -8,7 +8,7 @@ Baseline: approved Handoff Baseline `8177d60995fcce30fad51663b8c8e8fc5c7fceb9`.
 
 ## Recorded qualification
 
-Chris Harley (`@charley81`, `product_design`) approved every visual-latitude choice on 2026-10-16. The review was bound to application commit `d5119f1311cb3bcbc0f8c5c1ab0452d045c0df54`, Netlify deployment `6ad279967999c4a2203f2c4c`, and its [immutable URL](https://6ad279967999c4a2203f2c4c--vanta-monolith.netlify.app).
+Chris Harley (`@charley81`, `product_design`) approved every visual-latitude choice on 2026-10-16 in the [signed issue record](https://github.com/charley81/vanta/issues/60#issuecomment-6223203927). The review was bound to application commit `d5119f1311cb3bcbc0f8c5c1ab0452d045c0df54`, Netlify deployment `6ad279967999c4a2203f2c4c`, and its [immutable URL](https://6ad279967999c4a2203f2c4c--vanta-monolith.netlify.app).
 
 The review environment was a MacBook Pro running macOS Tahoe 26.6.2 and Google Chrome 154.0.8037.98 Official Build x86_64. Geist, Geist Mono, Instrument Serif italic, signal cyan `#7DE3D6`, all four generated masters, the runtime GLB comparison, and the current-contract authored-motion disposition were approved without caveat, refinement, waiver, or normative change.
 
