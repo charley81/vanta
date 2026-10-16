@@ -278,7 +278,23 @@ function sameOrigin(request: Request): boolean {
   const origin = request.headers.get("origin");
   if (!origin) return false;
   try {
-    return origin === new URL(request.url).origin;
+    const requestUrl = new URL(request.url);
+    const originUrl = new URL(origin);
+    if (origin !== originUrl.origin) return false;
+    if (originUrl.origin === requestUrl.origin) return true;
+
+    const deploymentSuffix = `--${requestUrl.hostname}`;
+    if (
+      requestUrl.protocol !== "https:" ||
+      !requestUrl.hostname.endsWith(".netlify.app") ||
+      originUrl.protocol !== "https:" ||
+      originUrl.port ||
+      !originUrl.hostname.endsWith(deploymentSuffix)
+    ) {
+      return false;
+    }
+    const deploymentId = originUrl.hostname.slice(0, -deploymentSuffix.length);
+    return /^[a-f0-9]{24}$/u.test(deploymentId);
   } catch {
     return false;
   }

@@ -221,6 +221,24 @@ describe("Bag Route Handler contract", () => {
     });
   });
 
+  it("accepts an exact same-site mutation through an immutable Netlify deployment origin", async () => {
+    const { POST: add } = await import("@/app/api/bag/add/route");
+    const response = await add(
+      new Request("https://vanta-monolith.netlify.app/api/bag/add", {
+        body: "{}",
+        headers: {
+          "content-type": "application/json",
+          origin:
+            "https://6ad23527145efd4f202ec5c8--vanta-monolith.netlify.app",
+        },
+        method: "POST",
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ item: { name: "MONOLITH" } });
+  });
+
   it("keeps add and remove idempotent without extending an existing lifetime", async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-10-15T12:00:00.000Z"));
