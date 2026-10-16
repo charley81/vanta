@@ -30,10 +30,25 @@ export const DEFAULT_REALTIME_LIGHTING: RealtimeSceneLighting = {
   ],
 };
 
+export type ThreeRealtimeSceneExtension = {
+  beforeRender?(timestampMs: number): void;
+  dispose(): void;
+};
+
+export type ThreeRealtimeSceneExtensionContext = {
+  canvas: HTMLCanvasElement;
+  camera: import("three").PerspectiveCamera;
+  model: import("three").Object3D;
+  renderer: import("three").WebGLRenderer;
+};
+
 export type ThreeRealtimeSceneOptions = {
   canvas: HTMLCanvasElement;
   camera: RealtimeCamera;
   lighting: RealtimeSceneLighting;
   background: number;
   exposure?: number;
+  createExtension?(
+    context: ThreeRealtimeSceneExtensionContext,
+  ): ThreeRealtimeSceneExtension;
 };

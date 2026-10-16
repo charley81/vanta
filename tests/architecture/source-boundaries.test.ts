@@ -127,6 +127,21 @@ describe("audio/render dependency isolation", () => {
     expect(scene).toMatch(/from "three"/);
     expect(scene).toContain("MeshoptDecoder");
     expect(scene).not.toMatch(/AudioContext|AudioNode|engine\.client/);
+
+    const synthLoader = readFileSync(
+      "src/synth/realtime-loader.client.ts",
+      "utf8",
+    );
+    const synthScene = readFileSync(
+      "src/synth/synth-three-scene.client.ts",
+      "utf8",
+    );
+    expect(synthLoader).toMatch(
+      /import\(\s*"\.\/synth-three-scene\.client"\s*\)/,
+    );
+    expect(synthLoader).not.toMatch(/^import .*synth-three-scene\.client/m);
+    expect(synthLoader).not.toMatch(/from ["']three(?:\/|["'])/);
+    expect(synthScene).not.toMatch(/AudioContext|AudioNode|engine\.client/);
   });
 });
 

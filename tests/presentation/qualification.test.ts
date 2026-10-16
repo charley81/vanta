@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   downgradePresentation,
+  qualifyDataSavingOptIn,
   qualifyPresentation,
   type PresentationSignals,
 } from "@/src/presentation/qualification";
@@ -65,6 +66,33 @@ describe("Presentation qualification", () => {
       session.adaptation.dataSaving,
       session.adaptation.input,
     ]).toEqual(expected);
+  });
+
+  it("allows explicit Save-Data opt-in without bypassing other Realtime gates", () => {
+    const optedIn = qualifyDataSavingOptIn({
+      ...capableSignals,
+      realtimePurpose: "direct-manipulation",
+      saveData: true,
+    });
+    const incapable = qualifyDataSavingOptIn({
+      ...capableSignals,
+      realtimePurpose: "direct-manipulation",
+      saveData: true,
+      webgl2: false,
+    });
+
+    expect(optedIn).toMatchObject({
+      adaptation: { dataSaving: true },
+      eligibility: { motion: false, realtime: true },
+      fallbackReason: null,
+      selectedTier: "realtime",
+    });
+    expect(incapable).toMatchObject({
+      adaptation: { dataSaving: true },
+      eligibility: { motion: false, realtime: false },
+      fallbackReason: "capability",
+      selectedTier: "core",
+    });
   });
 
   it("keeps reduced-motion separate from directly manipulated realtime", () => {

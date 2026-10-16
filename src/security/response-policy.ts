@@ -18,13 +18,13 @@ function policy(directives: readonly string[]): string {
 export function publicContentSecurityPolicy(development = false): string {
   return policy([
     "default-src 'self'",
-    `script-src 'self' 'unsafe-inline'${development ? " 'unsafe-eval'" : ""}`,
+    `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'${development ? " 'unsafe-eval'" : ""}`,
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https://cdn.sanity.io",
     "font-src 'self' data:",
     "media-src 'self' blob:",
     "worker-src 'self' blob:",
-    "connect-src 'self'",
+    "connect-src 'self' blob:",
     "frame-src 'none'",
     "object-src 'none'",
     "base-uri 'self'",
@@ -39,13 +39,13 @@ export function previewContentSecurityPolicy(
 ): string {
   return policy([
     "default-src 'self'",
-    `script-src 'self' 'unsafe-inline'${development ? " 'unsafe-eval'" : ""}`,
+    `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'${development ? " 'unsafe-eval'" : ""}`,
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https://cdn.sanity.io",
     "font-src 'self' data:",
     "media-src 'self' blob:",
     "worker-src 'self' blob:",
-    "connect-src 'self'",
+    "connect-src 'self' blob:",
     "frame-src 'none'",
     "object-src 'none'",
     "base-uri 'self'",

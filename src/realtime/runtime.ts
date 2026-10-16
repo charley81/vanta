@@ -57,8 +57,10 @@ export type RealtimeRuntimeSnapshot = {
 export type RealtimeRuntime = {
   dispose(): void;
   getSnapshot(): RealtimeRuntimeSnapshot;
+  invalidate(): void;
   recordFrameWindow(window: { durationMs: number; frames: number }): void;
   recordTask(kind: "startup" | "interaction", durationMs: number): void;
+  resize(): void;
   setActivity(activity: Partial<RealtimeActivity>): void;
   start(): Promise<void>;
   subscribe(listener: () => void): () => void;
@@ -130,6 +132,8 @@ export function createRealtimeRuntime(options: RuntimeOptions): RealtimeRuntime 
   let generation = 0;
   let frameWindowStartedAt: number | null = null;
   let framesInWindow = 0;
+  let pendingFrame = false;
+  let hasRenderedFrame = false;
 
   function publish(patch: Partial<RealtimeRuntimeSnapshot>): void {
     snapshot = { ...snapshot, ...patch };
@@ -163,6 +167,7 @@ export function createRealtimeRuntime(options: RuntimeOptions): RealtimeRuntime 
     clearStartupTimer();
     startupAbort?.abort();
     startupAbort = null;
+    pendingFrame = false;
     cancelLoop();
     disposeScene();
     publish({ phase: "fallback", fallbackReason: reason });
@@ -233,10 +238,11 @@ export function createRealtimeRuntime(options: RuntimeOptions): RealtimeRuntime 
       snapshot.phase !== "ready" ||
       !scene ||
       isExternallySuspended(activity) ||
-      !activity.requiresFrames
+      (!activity.requiresFrames && !pendingFrame)
     ) {
       return;
     }
+    pendingFrame = false;
     const startedAt = now();
     try {
       scene.render(timestamp);
@@ -245,7 +251,11 @@ export function createRealtimeRuntime(options: RuntimeOptions): RealtimeRuntime 
       return;
     }
     const duration = Math.max(0, now() - startedAt);
-    if (duration > REALTIME_BUDGETS.maxInteractionTaskMs) {
+    const frameTaskCeiling = hasRenderedFrame
+      ? REALTIME_BUDGETS.maxInteractionTaskMs
+      : REALTIME_BUDGETS.maxStartupTaskMs;
+    hasRenderedFrame = true;
+    if (duration > frameTaskCeiling) {
       fallback("performance");
       return;
     }
@@ -259,7 +269,7 @@ export function createRealtimeRuntime(options: RuntimeOptions): RealtimeRuntime 
       snapshot.phase !== "ready" ||
       !scene ||
       isExternallySuspended(activity) ||
-      !activity.requiresFrames
+      (!activity.requiresFrames && !pendingFrame)
     ) {
       return;
     }
@@ -274,7 +284,7 @@ export function createRealtimeRuntime(options: RuntimeOptions): RealtimeRuntime 
       return;
     }
     if (snapshot.phase !== "ready") publish({ phase: "ready" });
-    if (activity.requiresFrames) scheduleLoop();
+    if (activity.requiresFrames || pendingFrame) scheduleLoop();
     else cancelLoop();
   }
 
@@ -345,6 +355,7 @@ export function createRealtimeRuntime(options: RuntimeOptions): RealtimeRuntime 
           fallbackReason: null,
           resources: loadedScene.resources,
         });
+        pendingFrame = true;
         scheduleLoop();
       })
       .catch(() => {
@@ -365,6 +376,23 @@ export function createRealtimeRuntime(options: RuntimeOptions): RealtimeRuntime 
       listeners.add(listener);
       return () => listeners.delete(listener);
     },
+    invalidate() {
+      if (snapshot.phase !== "ready" && snapshot.phase !== "suspended") return;
+      pendingFrame = true;
+      synchronizeActivity();
+    },
+    resize() {
+      if (!scene || (snapshot.phase !== "ready" && snapshot.phase !== "suspended")) {
+        return;
+      }
+      try {
+        scene.resize({ dpr: snapshot.quality.dpr });
+        pendingFrame = true;
+        synchronizeActivity();
+      } catch {
+        fallback("runtime-failure");
+      }
+    },
     setActivity(patch) {
       Object.assign(activity, patch);
       synchronizeActivity();
@@ -377,6 +405,7 @@ export function createRealtimeRuntime(options: RuntimeOptions): RealtimeRuntime 
       clearStartupTimer();
       startupAbort?.abort();
       startupAbort = null;
+      pendingFrame = false;
       cancelLoop();
       disposeScene();
       publish({ phase: "disposed" });

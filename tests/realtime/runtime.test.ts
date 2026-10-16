@@ -199,6 +199,42 @@ describe("route-neutral Realtime runtime", () => {
     expect(loadedScene.dispose).toHaveBeenCalledOnce();
   });
 
+  it("renders once on readiness and invalidation without retaining an idle loop", async () => {
+    const scheduler = frameScheduler();
+    const loadedScene = scene();
+    const runtime = createRealtimeRuntime({
+      cancelFrame: scheduler.cancelFrame,
+      loadScene: async () => loadedScene,
+      presentation: presentation(),
+      requestFrame: scheduler.requestFrame,
+    });
+    await runtime.start();
+
+    expect(scheduler.callbacks).toHaveLength(1);
+    scheduler.run(16);
+    expect(loadedScene.render).toHaveBeenCalledOnce();
+    expect(scheduler.callbacks).toHaveLength(0);
+
+    runtime.invalidate();
+    runtime.invalidate();
+    expect(scheduler.callbacks).toHaveLength(1);
+    scheduler.run(32);
+    expect(loadedScene.render).toHaveBeenCalledTimes(2);
+    expect(scheduler.callbacks).toHaveLength(0);
+
+    runtime.resize();
+    expect(loadedScene.resize).toHaveBeenCalledTimes(2);
+    expect(scheduler.callbacks).toHaveLength(1);
+    scheduler.run(48);
+    expect(loadedScene.render).toHaveBeenCalledTimes(3);
+
+    runtime.setActivity({ hidden: true });
+    runtime.invalidate();
+    expect(scheduler.callbacks).toHaveLength(0);
+    runtime.setActivity({ hidden: false });
+    expect(scheduler.callbacks).toHaveLength(1);
+  });
+
   it("suspends one frame loop for every inactive reason and disposes idempotently", async () => {
     const scheduler = frameScheduler();
     const loadedScene = scene();

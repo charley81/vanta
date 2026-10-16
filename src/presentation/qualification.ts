@@ -92,6 +92,35 @@ export function qualifyPresentation(
   };
 }
 
+/**
+ * Requalifies an explicit Save-Data override without bypassing network,
+ * processor, WebGL, reduced-motion, or sticky runtime constraints.
+ */
+export function qualifyDataSavingOptIn(
+  signals: PresentationSignals,
+  previous?: PresentationSession,
+): PresentationSession {
+  const actual = qualifyPresentation(signals, previous);
+  if (!signals.saveData || actual.realtimeDeclined) return actual;
+
+  const withoutDataSaving = qualifyPresentation(
+    { ...signals, saveData: false },
+    previous,
+  );
+  if (!withoutDataSaving.eligibility.realtime) {
+    return {
+      ...actual,
+      fallbackReason: withoutDataSaving.fallbackReason,
+    };
+  }
+  return {
+    ...actual,
+    eligibility: { motion: false, realtime: true },
+    selectedTier: "realtime",
+    fallbackReason: null,
+  };
+}
+
 /** Persists a one-way Realtime decline while preserving independent adaptations. */
 export function downgradePresentation(
   session: PresentationSession,

@@ -10,8 +10,10 @@ describe("public and Editorial preview response policy", () => {
   it("denies public framing with an allowlisted static CSP", () => {
     const policy = publicContentSecurityPolicy();
     expect(policy).toContain("frame-ancestors 'none'");
-    expect(policy).toContain("connect-src 'self'");
+    expect(policy).toContain("connect-src 'self' blob:");
     expect(policy).toContain("object-src 'none'");
+    expect(policy).toContain("'wasm-unsafe-eval'");
+    expect(policy).not.toContain("'unsafe-eval'");
     expect(policy).not.toContain("nonce-");
     expect(policy).not.toContain("*");
   });
@@ -25,7 +27,7 @@ describe("public and Editorial preview response policy", () => {
     expect(previewPolicy).toContain(
       "frame-ancestors https://studio.example",
     );
-    expect(previewPolicy).toContain("connect-src 'self'");
+    expect(previewPolicy).toContain("connect-src 'self' blob:");
     expect(previewPolicy).not.toContain("*.sanity.io");
     expect(previewPolicy.replace("https://studio.example", "'none'")).toBe(
       publicPolicy,

@@ -9,24 +9,9 @@ import {
 import routeStyles from "../ui/core-route.module.css";
 import { EditorialPreviewBanner } from "../ui/editorial-preview-banner";
 import { SynthControlDeck } from "./synth-control-deck";
+import { SynthInstrument } from "./synth-instrument";
 import styles from "./synth.module.css";
 import { SynthTransport } from "./synth-transport";
-
-const PHYSICAL_CONTROLS = [
-  { name: "OSC", supported: false },
-  { name: "MIX", supported: false },
-  { name: "MOD", supported: false },
-  { name: "MORPH", supported: true },
-  { name: "CUTOFF", supported: true },
-  { name: "RESONANCE", supported: true },
-  { name: "LFO", supported: false },
-  { name: "TONE", supported: false },
-  { name: "DRIVE", supported: true },
-  { name: "ATTACK", supported: true },
-  { name: "DECAY", supported: false },
-  { name: "SUSTAIN", supported: false },
-  { name: "RELEASE", supported: true },
-] as const;
 
 export async function generateMetadata(): Promise<Metadata> {
   const model = await getPublishedSynthMetadataForRequest();
@@ -34,45 +19,6 @@ export async function generateMetadata(): Promise<Metadata> {
     title: { absolute: model.title },
     description: model.seoDescription,
   };
-}
-
-function InstrumentShell() {
-  return (
-    <figure className={styles.instrumentFigure}>
-      <div aria-hidden="true" className={styles.instrumentFace}>
-        <div className={styles.instrumentDisplay}>
-          <span>A · C · D · E · D · C</span>
-          <span>SOUND OFF</span>
-        </div>
-        <div className={styles.physicalControls}>
-          {PHYSICAL_CONTROLS.map((control) => (
-            <span
-              className={
-                control.supported
-                  ? styles.physicalControlSupported
-                  : styles.physicalControlUnavailable
-              }
-              key={control.name}
-            >
-              <i />
-              {control.name}
-            </span>
-          ))}
-          <span className={styles.displayButtons}>
-            <i />
-            <i />
-          </span>
-        </div>
-      </div>
-      <figcaption>
-        <span>MONOLITH / SILENT SHELL</span>
-        <span>
-          Authored instrument view. Lit labels identify the six controls exposed
-          in the semantic Control deck.
-        </span>
-      </figcaption>
-    </figure>
-  );
 }
 
 export default async function SynthPage() {
@@ -92,7 +38,7 @@ export default async function SynthPage() {
             <p className={routeStyles.lede}>{model.introduction}</p>
             <SynthTransport enableLabel={model.enableSoundLabel} />
           </div>
-          <InstrumentShell />
+          <SynthInstrument />
         </section>
 
         <section
