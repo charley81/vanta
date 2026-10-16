@@ -109,10 +109,17 @@ test.describe("Core route walking skeleton", () => {
     await expect(page).toHaveURL(/\/synth$/);
     await expect(bag).toBeHidden();
 
-    await expect(page.getByRole("button", { name: "Enable Sound" })).toBeDisabled();
-    await expect(page.getByRole("slider")).toHaveCount(6);
-    for (const slider of await page.getByRole("slider").all()) {
-      await expect(slider).toBeDisabled();
+    await page.getByRole("button", { name: "Enable Sound" }).click();
+    await expect(page.locator('[data-audio-state="unavailable"]')).toContainText(
+      "Sound is unavailable in this build.",
+    );
+    const synthRanges = page.locator('main input[type="range"]');
+    await expect(synthRanges).toHaveCount(6);
+    for (const slider of await synthRanges.all()) {
+      await expect(slider).toHaveAttribute("min", "0");
+      await expect(slider).toHaveAttribute("max", "100");
+      await expect(slider).toHaveAttribute("step", "1");
+      await expect(slider).toBeEnabled();
     }
 
     await page.goto("/checkout-preview");

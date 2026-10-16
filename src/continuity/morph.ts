@@ -1,3 +1,10 @@
+import {
+  DEFAULT_MORPH_VALUES,
+  MORPH_CONTROLS,
+  type MorphControl,
+  type MorphValues,
+} from "@/src/synth/controls";
+
 import { createBoundedStore, type BoundedStore } from "./store";
 import {
   hasExactKeys,
@@ -8,17 +15,8 @@ import {
   type ParseResult,
 } from "./value";
 
-export const MORPH_CONTROLS = [
-  "morph",
-  "cutoff",
-  "resonance",
-  "drive",
-  "attack",
-  "release",
-] as const;
+export { MORPH_CONTROLS, type MorphControl, type MorphValues };
 
-export type MorphControl = (typeof MORPH_CONTROLS)[number];
-export type MorphValues = Record<MorphControl, number>;
 export type MorphSession = {
   selectedControl: MorphControl;
   values: MorphValues;
@@ -26,14 +24,7 @@ export type MorphSession = {
 
 export const DEFAULT_MORPH_SESSION: Readonly<MorphSession> = Object.freeze({
   selectedControl: "morph",
-  values: Object.freeze({
-    morph: 50,
-    cutoff: 54,
-    resonance: 32,
-    drive: 24,
-    attack: 18,
-    release: 42,
-  }),
+  values: DEFAULT_MORPH_VALUES,
 });
 
 function isMorphControl(value: unknown): value is MorphControl {
