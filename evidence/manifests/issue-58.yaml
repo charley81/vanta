@@ -1,9 +1,11 @@
 schema_version: 1
 status: draft
 notice: >-
-  This is an unexecuted qualification record for issue 58. Every artifact is
-  not_run, candidate identity is intentionally unbound, and this file makes no
-  verification, Acceptance, or launch claim.
+  Issue-level qualification is complete at
+  https://github.com/charley81/vanta/issues/58#issuecomment-6221294500. This
+  separate release-candidate scaffold remains unpromoted: every artifact is
+  not_run, the full release identity is intentionally unbound, and this file
+  makes no release-wide candidate or launch claim.
 
 candidate:
   baseline_commit: 8177d60995fcce30fad51663b8c8e8fc5c7fceb9

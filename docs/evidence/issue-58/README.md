@@ -1,10 +1,16 @@
 # Issue 58 — MORPH sound and target-device acceptance
 
-Status: **awaiting human qualification**
+Status: **approved on the identified representative target**
 
-This record is the runbook and evidence index for `SYNTH-006`, `QUALITY-007`, and `QUALITY-008`. It does not approve the sound, claim target-device results, or turn local/branch checks into candidate Acceptance evidence.
+This record is the runbook and evidence index for `SYNTH-006`, `QUALITY-007`, and `QUALITY-008`. The signed issue record—not this procedural copy—is the Acceptance authority.
 
 Baseline: approved Handoff Baseline `8177d60995fcce30fad51663b8c8e8fc5c7fceb9`.
+
+## Recorded qualification
+
+Chris Harley (`@charley81`, `product_design`) approved the result on 2026-10-16. The review was bound to application commit `04b69cea3525c9f5dbbc2b2129a213409a85bcf8`, Netlify deployment `6ad25ca573b503b1b673931a`, and its immutable Synth URL.
+
+The selected representative target was a MacBook Pro running macOS Tahoe 26.6.2 and Google Chrome 154.0.8037.98 x86_64 through built-in speakers. The sound review, calibration values, three raw latency runs, medians, real-output ten-minute stress result, and explicit approval are preserved in the [signed issue record](https://github.com/charley81/vanta/issues/58#issuecomment-6221294500). Issue 58 is closed with no waiver or normative change.
 
 ## Completion gate
 
@@ -121,22 +127,20 @@ Record any click with its timestamp and preceding action. Reject any application
 
 ## 6. Evidence index
 
-Populate this table only with artifacts from the bound identity.
+| Artifact | Record | Result | Custodian |
+|---|---|---|---|
+| Calibration manifest | [Signed issue record](https://github.com/charley81/vanta/issues/58#issuecomment-6221294500) | pass | `@charley81` |
+| Audio/render isolation report | [Signed issue record](https://github.com/charley81/vanta/issues/58#issuecomment-6221294500) | pass | `@charley81` |
+| Sound-review notes | [Signed issue record](https://github.com/charley81/vanta/issues/58#issuecomment-6221294500) | pass | `@charley81` |
+| Target-device latency trace | [Three raw runs and medians](https://github.com/charley81/vanta/issues/58#issuecomment-6221294500) | pass | `@charley81` |
+| Ten-minute real-output stress notes | [Signed issue record](https://github.com/charley81/vanta/issues/58#issuecomment-6221294500) | pass | `@charley81` |
+| Signed audio acceptance record | [Explicit approval](https://github.com/charley81/vanta/issues/58#issuecomment-6221294500) | approve | `@charley81` |
 
-| Artifact | URI | SHA-256 | Result | Custodian |
-|---|---|---|---|---|
-| Calibration manifest | | | not run | |
-| Audio/render isolation report | | | not run | |
-| Sound-review notes | | | not run | |
-| Target-device latency traces | | | not run | |
-| Ten-minute real-output stress traces/notes | | | not run | |
-| Signed audio acceptance record | | | not run | |
+The machine-readable draft at [`evidence/manifests/issue-58.yaml`](../../../evidence/manifests/issue-58.yaml) remains an unpromoted release-candidate scaffold. It intentionally makes no release-wide candidate claim because the full release identity and pre-launch bindings are outside issue 58.
 
-The machine-readable draft at [`evidence/manifests/issue-58.yaml`](../../../evidence/manifests/issue-58.yaml) reserves these evidence slots without making a pass claim.
+## 7. Signed decision template
 
-## 7. Signed decision
-
-Post the completed record to issue 58 with this explicit decision block:
+The completed decision is linked above. Future requalification uses this explicit decision block:
 
 ```text
 Decision: APPROVE | REJECT
