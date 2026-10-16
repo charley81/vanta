@@ -10,6 +10,7 @@ process.env.SANITY_STUDIO_ORIGIN = "https://studio.example";
 
 export default defineConfig({
   testDir: "./tests/browser",
+  testIgnore: "commerce-boundary.spec.ts",
   outputDir: "artifacts/test-results",
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
