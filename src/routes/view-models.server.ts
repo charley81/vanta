@@ -10,6 +10,7 @@ import {
 import { CATALOG } from "@/src/catalog/catalog";
 import { composeCheckoutPreviewRouteViewModel } from "@/src/checkout-preview/model";
 import { PRODUCT_TRUTH } from "@/src/product/product-truth";
+import { SYNTH_CONTROL_DEFINITIONS } from "@/src/synth/controls";
 
 export { composeCheckoutPreviewRouteViewModel };
 
@@ -393,44 +394,7 @@ export function composeSynthRouteViewModel(editorial: unknown) {
     headline: page.headline,
     introduction: page.introduction,
     enableSoundLabel: "Enable Sound" as const,
-    supportedControls: [
-      {
-        name: "MORPH",
-        value: 50,
-        purpose: "Move continuously from SUB weight to FRACTURE texture.",
-        endpoints: ["SUB", "FRACTURE"],
-      },
-      {
-        name: "CUTOFF",
-        value: 54,
-        purpose: "Offset the voice toward darker or brighter filtering.",
-        endpoints: ["DARK", "BRIGHT"],
-      },
-      {
-        name: "RESONANCE",
-        value: 32,
-        purpose: "Emphasize the filter edge without changing the phrase.",
-        endpoints: ["SOFT", "FOCUSED"],
-      },
-      {
-        name: "DRIVE",
-        value: 24,
-        purpose: "Add bounded post-filter saturation.",
-        endpoints: ["CLEAN", "SATURATED"],
-      },
-      {
-        name: "ATTACK",
-        value: 18,
-        purpose: "Shape the onset from immediate to swelling.",
-        endpoints: ["IMMEDIATE", "SWELLING"],
-      },
-      {
-        name: "RELEASE",
-        value: 42,
-        purpose: "Shape the tail from clipped to overlapping.",
-        endpoints: ["CLIPPED", "OVERLAPPING"],
-      },
-    ] as const,
+    supportedControls: SYNTH_CONTROL_DEFINITIONS,
   };
 }
 
