@@ -30,11 +30,12 @@
     "build:media": "tsx tooling/media/cli.ts build",
     "validate:media": "tsx tooling/media/cli.ts verify",
     "test:audio-latency": "tsx tooling/verification/cli.ts run audio-latency -- pnpm exec playwright test tests/browser/synth.spec.ts --grep loads.native.audio",
+    "test:realtime": "tsx tooling/verification/cli.ts run realtime-runtime -- pnpm exec vitest run tests/presentation tests/realtime",
     "validate:editorial": "sanity schema validate && tsx scripts/validate-editorial.ts && vitest run tests/editorial",
     "sanity:dev": "sanity dev",
     "sanity:deploy": "sanity deploy",
     "seed:editorial": "tsx scripts/seed-editorial.ts",
-    "check": "pnpm validate:requirements && pnpm validate:evidence && pnpm validate:performance && pnpm validate:product-catalog && pnpm validate:boundaries && pnpm validate:public-runtime && pnpm validate:audio-calibration && pnpm validate:audio-stress && pnpm validate:audio-isolation && pnpm validate:media && pnpm validate:editorial && pnpm lint && pnpm typecheck && pnpm test:unit && pnpm build:verified && pnpm test:browser"
+    "check": "pnpm validate:requirements && pnpm validate:evidence && pnpm validate:performance && pnpm validate:product-catalog && pnpm validate:boundaries && pnpm validate:public-runtime && pnpm validate:audio-calibration && pnpm validate:audio-stress && pnpm validate:audio-isolation && pnpm validate:media && pnpm test:realtime && pnpm validate:editorial && pnpm lint && pnpm typecheck && pnpm test:unit && pnpm build:verified && pnpm test:browser"
   },
   "dependencies": {
     "@sanity/client": "8.9.0",
@@ -44,7 +45,8 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "sanity": "6.19.0",
-    "server-only": "^0.0.1"
+    "server-only": "^0.0.1",
+    "three": "0.186.1"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.14.0",
@@ -58,6 +60,7 @@
     "@types/node": "^22.20.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "0.186.0",
     "@vitejs/plugin-react": "^6.1.2",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
@@ -67,7 +70,7 @@
     "groq-js": "1.29.0",
     "image-size": "2.0.2",
     "jsdom": "^30.1.3",
-    "sharp": "0.35.5",
+    "sharp": "0.34.4",
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
     "typescript": "^5",

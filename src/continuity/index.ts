@@ -57,8 +57,10 @@ export {
   PRESENTATION_VERSION,
   createDefaultPresentationSession,
   createPresentationSessionRecord,
+  isStickyPresentationFallback,
   parsePresentationSession,
   type PresentationFallbackReason,
+  type PresentationInput,
   type PresentationSession,
   type PresentationTier,
 } from "./presentation";
