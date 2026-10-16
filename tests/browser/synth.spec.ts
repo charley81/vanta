@@ -99,16 +99,18 @@ test.describe("Synth shell and semantic Control deck", () => {
     context,
     page,
   }) => {
-    await page.goto("/synth");
+    await page.goto("/monolith");
+    await page
+      .getByRole("navigation", { name: "Primary navigation" })
+      .getByRole("link", { name: "Synth" })
+      .click();
     await page.locator('[data-control-selector="drive"]').click();
     await page.getByRole("slider", { name: "DRIVE value" }).fill("87");
     await page.getByRole("button", { name: "Close" }).click();
 
-    await page
-      .getByRole("navigation", { name: "Primary navigation" })
-      .getByRole("link", { name: "Product" })
-      .click();
     await page.goBack();
+    await expect(page).toHaveURL(/\/monolith$/);
+    await page.goForward();
     await expect(page).toHaveURL(/\/synth$/);
     await expect(page.locator('[data-control-selector="drive"]')).toHaveAccessibleName(
       "Open DRIVE control, current value 87 percent",
