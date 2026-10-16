@@ -25,6 +25,7 @@ export type BagCoordinator = {
   add(): Promise<boolean>;
   cancelPendingOpen(): void;
   close(): void;
+  confirm(): Promise<boolean>;
   getSnapshot(): BagCoordinatorState;
   invalidate(): void;
   open(): Promise<boolean>;
@@ -94,6 +95,7 @@ export function createBagCoordinator(client: BagClient): BagCoordinator {
       openIntentVersion += 1;
       if (state.open) publish({ ...state, open: false });
     },
+    confirm: () => run("read"),
     getSnapshot: () => state,
     invalidate() {
       if (!state.stale) publish({ ...state, stale: true });

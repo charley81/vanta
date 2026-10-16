@@ -8,7 +8,10 @@ import {
   validateSocialImage,
 } from "@/sanity/validation";
 import { CATALOG } from "@/src/catalog/catalog";
+import { composeCheckoutPreviewRouteViewModel } from "@/src/checkout-preview/model";
 import { PRODUCT_TRUTH } from "@/src/product/product-truth";
+
+export { composeCheckoutPreviewRouteViewModel };
 
 const HOME_CHAPTERS = [
   "philosophy",
@@ -427,35 +430,6 @@ export function composeSynthRouteViewModel(editorial: unknown) {
         purpose: "Shape the tail from clipped to overlapping.",
         endpoints: ["CLIPPED", "OVERLAPPING"],
       },
-    ] as const,
-  };
-}
-
-export function composeCheckoutPreviewRouteViewModel() {
-  return {
-    route: "/checkout-preview" as const,
-    title: "Checkout Preview | VANTA" as const,
-    seoDescription:
-      "Review the VANTA Checkout Preview boundary for MONOLITH using predefined synthetic details without payment, ordering, or visitor data.",
-    banner:
-      "Preview — Synthetic details only. Nothing is entered, submitted, stored, or sent to Shopify.",
-    unavailable: {
-      heading: "Checkout Preview needs a confirmed Bag.",
-      body: "Bag persistence and mutation are not enabled in this Core build. Return to MONOLITH to review the instrument or open MORPH Lab.",
-      productAction: {
-        label: "RETURN TO MONOLITH" as const,
-        href: "/monolith" as const,
-      },
-      synthAction: {
-        label: "OPEN MORPH LAB" as const,
-        href: "/synth" as const,
-      },
-    },
-    boundaries: [
-      "No payment information",
-      "No order or reservation",
-      "No visitor data",
-      "No transaction",
     ] as const,
   };
 }

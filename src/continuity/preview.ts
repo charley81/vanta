@@ -9,6 +9,7 @@ import {
 } from "./value";
 
 export const PREVIEW_STORAGE_KEY = "vanta:checkout-preview:v1";
+export const PREVIEW_HISTORY_KEY = "__vantaCheckoutPreview";
 export const PREVIEW_VERSION = 1;
 export const PREVIEW_INACTIVITY_MS = 30 * 60 * 1_000;
 export const PREVIEW_STAGES = ["contact", "delivery", "review"] as const;
@@ -20,6 +21,12 @@ export type PreviewSession = {
   activeStage: PreviewStage;
   completed: boolean;
   lastMeaningfulActivityAt: number;
+};
+export type PreviewVisibleStage = PreviewStage | "terminal";
+export type PreviewHistoryEntry = {
+  version: 1;
+  stage: PreviewVisibleStage;
+  depth: number;
 };
 
 function isPreviewStage(value: unknown): value is PreviewStage {
@@ -120,8 +127,38 @@ export function advancePreviewSession(
     ...session,
     activeStage: stage,
     reachedStage: PREVIEW_STAGES[Math.max(reachedIndex, nextIndex)],
-    completed: false,
     lastMeaningfulActivityAt: now,
+  });
+}
+
+export function parsePreviewHistoryEntry(
+  value: unknown,
+  session: PreviewSession,
+): ParseResult<PreviewHistoryEntry> {
+  if (
+    !isRecord(value) ||
+    !hasExactKeys(value, ["version", "stage", "depth"]) ||
+    value.version !== PREVIEW_VERSION ||
+    !(isPreviewStage(value.stage) || value.stage === "terminal") ||
+    !Number.isSafeInteger(value.depth) ||
+    (value.depth as number) < 0 ||
+    (value.depth as number) > 64
+  ) {
+    return invalid("Preview history state is malformed or has an unknown version");
+  }
+
+  if (
+    (value.stage === "terminal" && !session.completed) ||
+    (isPreviewStage(value.stage) &&
+      stageIndex(value.stage) > stageIndex(session.reachedStage))
+  ) {
+    return invalid("Preview history state contains unreachable progress");
+  }
+
+  return valid({
+    version: PREVIEW_VERSION,
+    stage: value.stage,
+    depth: value.depth as number,
   });
 }
 

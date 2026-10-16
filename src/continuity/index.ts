@@ -68,6 +68,7 @@ export {
   resolveContinuity,
 } from "./precedence";
 export {
+  PREVIEW_HISTORY_KEY,
   PREVIEW_INACTIVITY_MS,
   PREVIEW_STAGES,
   PREVIEW_STORAGE_KEY,
@@ -75,10 +76,13 @@ export {
   advancePreviewSession,
   createDefaultPreviewSession,
   createPreviewSessionRecord,
+  parsePreviewHistoryEntry,
   parsePreviewSession,
+  type PreviewHistoryEntry,
   type PreviewSession,
   type PreviewSessionRecord,
   type PreviewStage,
+  type PreviewVisibleStage,
 } from "./preview";
 export {
   createRestorationController,

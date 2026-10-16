@@ -107,6 +107,18 @@ describe("Bag coordinator", () => {
     });
   });
 
+  it("confirms membership without opening the Bag disclosure", async () => {
+    const request = vi.fn<typeof fetch>().mockResolvedValue(response(populated));
+    const coordinator = createBagCoordinator(createBagClient({ request }));
+
+    await expect(coordinator.confirm()).resolves.toBe(true);
+    expect(coordinator.getSnapshot()).toMatchObject({
+      confirmed: populated,
+      open: false,
+      pending: null,
+    });
+  });
+
   it("revalidates confirmed membership whenever Bag is reopened", async () => {
     const request = vi
       .fn<typeof fetch>()
