@@ -5,7 +5,7 @@ import "./globals.css";
 
 import { getSiteSettingsForRequest } from "@/src/editorial/preview-content.server";
 
-import { BagOverlayBoundary } from "./ui/bag-overlay-boundary";
+import { BagProvider } from "./ui/bag-provider";
 import { ContinuityBoundary } from "./ui/continuity-boundary";
 import {
   FooterBagTrigger,
@@ -52,24 +52,26 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <a className={shellStyles.skipLink} href="#main-content">
           Skip to main content
         </a>
-        <header className={shellStyles.siteHeader}>
-          <Link aria-label="VANTA home" className={shellStyles.siteBrand} href="/">
-            VANTA
-          </Link>
-          <ShellNavigation bagContent={<BagOverlayBoundary />} />
-        </header>
-        <ContinuityBoundary />
-        {children}
-        <footer className={shellStyles.siteFooter}>
-          <p>VANTA / MONOLITH</p>
-          <nav aria-label="Footer navigation" className={shellStyles.footerNavigation}>
-            <Link href="/">Home</Link>
-            <Link href="/monolith">Product</Link>
-            <Link href="/synth">Synth</Link>
-            <Link href={siteSettings.privacyNoticeUrl}>Privacy</Link>
-            <FooterBagTrigger />
-          </nav>
-        </footer>
+        <BagProvider>
+          <header className={shellStyles.siteHeader}>
+            <Link aria-label="VANTA home" className={shellStyles.siteBrand} href="/">
+              VANTA
+            </Link>
+            <ShellNavigation />
+          </header>
+          <ContinuityBoundary />
+          {children}
+          <footer className={shellStyles.siteFooter}>
+            <p>VANTA / MONOLITH</p>
+            <nav aria-label="Footer navigation" className={shellStyles.footerNavigation}>
+              <Link href="/">Home</Link>
+              <Link href="/monolith">Product</Link>
+              <Link href="/synth">Synth</Link>
+              <Link href={siteSettings.privacyNoticeUrl}>Privacy</Link>
+              <FooterBagTrigger />
+            </nav>
+          </footer>
+        </BagProvider>
       </body>
     </html>
   );
