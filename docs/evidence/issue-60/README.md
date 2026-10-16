@@ -1,28 +1,34 @@
 # Issue 60 — visual-latitude qualification
 
-Status: **awaiting named product/design decision**
+Status: **approved on the identified immutable candidate**
 
-This record qualifies the bounded typography, signal-cyan, camera, lighting, crop, and generated-media choices for `PRODUCT-007`, `PRODUCT-008`, `MEDIA-001`, `MEDIA-004`, and the relevant `QUALITY-004` budgets. It does not approve them. The signed issue record is the Acceptance authority.
+This record indexes the qualification and approved bounded typography, signal-cyan, camera, lighting, crop, and generated-media choices for `PRODUCT-007`, `PRODUCT-008`, `MEDIA-001`, `MEDIA-004`, and the relevant `QUALITY-004` budgets. The signed issue record—not this procedural copy—is the Acceptance authority.
 
 Baseline: approved Handoff Baseline `8177d60995fcce30fad51663b8c8e8fc5c7fceb9`.
 
+## Recorded qualification
+
+Chris Harley (`@charley81`, `product_design`) approved every visual-latitude choice on 2026-10-16. The review was bound to application commit `d5119f1311cb3bcbc0f8c5c1ab0452d045c0df54`, Netlify deployment `6ad279967999c4a2203f2c4c`, and its [immutable URL](https://6ad279967999c4a2203f2c4c--vanta-monolith.netlify.app).
+
+The review environment was a MacBook Pro running macOS Tahoe 26.6.2 and Google Chrome 154.0.8037.98 Official Build x86_64. Geist, Geist Mono, Instrument Serif italic, signal cyan `#7DE3D6`, all four generated masters, the runtime GLB comparison, and the current-contract authored-motion disposition were approved without caveat, refinement, waiver, or normative change.
+
 ## Completion boundary
 
-Issue 60 can close only when a named `product_design` reviewer approves or rejects every row in the decision tables against one immutable application commit and deployment. A machine pass is supporting evidence, not a design decision. A rejected row must be refined within documented Implementation latitude and reviewed again, or escalated through baseline change control.
+Issue-level qualification is complete. Future requalification still requires a named `product_design` reviewer to approve or reject every row against one immutable application commit and deployment. A machine pass is supporting evidence, not a design decision. A rejected row must be refined within documented Implementation latitude and reviewed again, or escalated through baseline change control.
 
 ## Candidate identities
 
 | Candidate | Identity | Acceptance state |
 |---|---|---|
-| Typography | Geist variable, Geist Mono variable, Instrument Serif italic 400 | Pending human review |
-| Signal cyan | `#7DE3D6` | Pending human review |
-| Media pipeline | `media/pipeline.json` version `1.0.0`, SHA-256 `03a91d959c816491714ff7d7072ddd21224b1a35d7165a0ab6d56465db4ae35e` | Pending human review |
+| Typography | Geist variable, Geist Mono variable, Instrument Serif italic 400 | Approved |
+| Signal cyan | `#7DE3D6` | Approved |
+| Media pipeline | `media/pipeline.json` version `1.0.0`, SHA-256 `03a91d959c816491714ff7d7072ddd21224b1a35d7165a0ab6d56465db4ae35e` | Approved |
 | Approved geometry | `ccbdb568548e154335b2d8eb147a8f39b9881eb930e2b290e098f419425ca261` | Fixed baseline input |
 | Derivative manifest | `media/manifests/derivatives.json`, SHA-256 `20ea020786e240a3bdf96e90dca255b26a789004d222d5ab219441a2536881f7` | Engineering evidence from issue 59 |
 | Public media manifest | `media/manifests/media.json`, SHA-256 `6e289ba5eb5a3554b0741e3815ec442c5c9b5584d48cb10fbebce90f10a815c0` | Engineering evidence from issue 59 |
-| Application/deployment | Bind after the review branch is an immutable deployed commit | Unbound; approval blocked |
+| Application/deployment | `d5119f1311cb3bcbc0f8c5c1ab0452d045c0df54` / `6ad279967999c4a2203f2c4c` | Bound and approved |
 
-The pending acceptance overlay is [`accepted-media-candidates.json`](accepted-media-candidates.json), currently SHA-256 `cf744de0763ef1bbe9abdeffbc8bb972c0159f89b669ebec748ca4fe3dd709dd`. Its `acceptanceClaim` remains `false` until every row is decided and the signed issue record names the same immutable commit.
+The accepted overlay is [`accepted-media-candidates.json`](accepted-media-candidates.json), SHA-256 `eadb17238cc6af0e3854d41765e8656bf908f81a9d5219b11d2e1f8cbff1b732`. It binds every decision to the same immutable application candidate.
 
 ## Typography and license report
 
@@ -80,20 +86,18 @@ The comparison intentionally exposes material differences rather than declaring 
 
 ## Product/design decision table
 
-Complete every row with **approve** or **reject** and exact notes. Do not infer approval from a passing command.
-
 | Choice | Acceptance questions | Decision/notes |
 |---|---|---|
-| Geist grotesk | Does declaration/identity copy preserve hierarchy, wrapping, character, readability, and route composition? | Pending |
-| Geist Mono | Is telemetry/navigation legible without overpowering declarations, including narrow and zoomed layouts? | Pending |
-| Instrument Serif italic | Is emphasis restrained, readable, and limited to the approved physical/sonic role? | Pending |
-| Signal cyan `#7DE3D6` | Is it visibly operational—not decorative—with acceptable focus, state, contrast, and forced-colors behavior? | Pending |
-| Home poster | Do camera, silhouette, graphite lighting, negative space, and 8:5 center crop preserve the Home reveal role? | Pending |
-| Product hero | Do camera, Cream background, 4:5 contain crop, and object scale preserve Signal Black and the pinned hero relationship? | Pending |
-| Product MORPH | Does the close camera keep MORPH primary across its 8:5 delivery crop and the pinned tall composition? | Pending |
-| Synth poster | Does the overhead camera preserve instrument context, MORPH prominence, copy/control clearance, and the 16:9 viewport role? | Pending |
-| Runtime GLB | Is the source/runtime comparison visually acceptable while preserving hierarchy and the `2,700,000`-byte ceiling? | Pending |
-| Authored motion | Is “not applicable for current contracts” accepted, with stills before Home/Synth realtime readiness? | Pending |
+| Geist grotesk | Does declaration/identity copy preserve hierarchy, wrapping, character, readability, and route composition? | Approved |
+| Geist Mono | Is telemetry/navigation legible without overpowering declarations, including narrow and zoomed layouts? | Approved |
+| Instrument Serif italic | Is emphasis restrained, readable, and limited to the approved physical/sonic role? | Approved |
+| Signal cyan `#7DE3D6` | Is it visibly operational—not decorative—with acceptable focus, state, contrast, and forced-colors behavior? | Approved |
+| Home poster | Do camera, silhouette, graphite lighting, negative space, and 8:5 center crop preserve the Home reveal role? | Approved |
+| Product hero | Do camera, Cream background, 4:5 contain crop, and object scale preserve Signal Black and the pinned hero relationship? | Approved, including the Cream-background difference |
+| Product MORPH | Does the close camera keep MORPH primary across its 8:5 delivery crop and the pinned tall composition? | Approved, including the landscape-crop difference |
+| Synth poster | Does the overhead camera preserve instrument context, MORPH prominence, copy/control clearance, and the 16:9 viewport role? | Approved |
+| Runtime GLB | Is the source/runtime comparison visually acceptable while preserving hierarchy and the `2,700,000`-byte ceiling? | Approved |
+| Authored motion | Is “not applicable for current contracts” accepted, with stills before Home/Synth realtime readiness? | Approved as not applicable to current contracts |
 
 ## Branch-level verification
 

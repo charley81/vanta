@@ -1,9 +1,13 @@
 {
   "schemaVersion": 1,
-  "status": "pending-product-design-review",
-  "acceptanceClaim": false,
+  "status": "approved",
+  "acceptanceClaim": true,
   "baselineCommit": "8177d60995fcce30fad51663b8c8e8fc5c7fceb9",
-  "applicationCommit": null,
+  "applicationCommit": "d5119f1311cb3bcbc0f8c5c1ab0452d045c0df54",
+  "deployment": {
+    "id": "6ad279967999c4a2203f2c4c",
+    "immutableUrl": "https://6ad279967999c4a2203f2c4c--vanta-monolith.netlify.app"
+  },
   "pipeline": {
     "version": "1.0.0",
     "specificationPath": "media/pipeline.json",
@@ -17,7 +21,7 @@
   "outputs": [
     {
       "id": "home-poster",
-      "decision": "pending",
+      "decision": "approve",
       "masterPath": "media/masters/home-poster.png",
       "masterSha256": "563c92fa322753c6b760f581cea62da4a6ec7a177e62a23164317791d19d1a41",
       "figmaNodeId": "129:616",
@@ -27,7 +31,7 @@
     },
     {
       "id": "product-hero",
-      "decision": "pending",
+      "decision": "approve",
       "masterPath": "media/masters/product-hero.png",
       "masterSha256": "f73cd77eef3953e61a3df3fa5be85310eded8e136afd82c90f522da87721d049",
       "figmaNodeId": "129:477",
@@ -37,7 +41,7 @@
     },
     {
       "id": "product-morph",
-      "decision": "pending",
+      "decision": "approve",
       "masterPath": "media/masters/product-morph.png",
       "masterSha256": "75deaddae376717030cacfa39e5be811935f6249c6c251a7d83950d961edde76",
       "figmaNodeId": "129:521",
@@ -47,7 +51,7 @@
     },
     {
       "id": "synth-poster",
-      "decision": "pending",
+      "decision": "approve",
       "masterPath": "media/masters/synth-poster.png",
       "masterSha256": "a9eebccf2c9969421778c19713763edd778e36db8a757496b1d552c202470577",
       "figmaNodeId": "129:693",
@@ -57,7 +61,7 @@
     },
     {
       "id": "runtime-meshopt",
-      "decision": "pending",
+      "decision": "approve",
       "path": "public/media/models/VANTA_MONOLITH_runtime_meshopt.glb",
       "sha256": "e764793bea736a369995ea1ee20a1a9bf263e52363e9db214f219d5b60552cc1",
       "bytes": 2568220,
@@ -65,8 +69,8 @@
     }
   ],
   "authoredMotion": {
-    "decision": "pending",
-    "proposedDisposition": "not-applicable-current-contract",
+    "decision": "approve",
+    "acceptedDisposition": "not-applicable-current-contract",
     "reason": "Home and Synth use the candidate still before realtime readiness; no current route contract requires authored motion.",
     "singleVariantCeilingBytes": 1500000
   },
@@ -75,8 +79,10 @@
     "sha256": "461c813fedbe1f94fd90a4d6756fcffe7ad650de0da9c7bf7ac8e19493fdecbb",
     "notice": "Figma captures are comparison evidence only and are not approved production assets."
   },
-  "reviewer": null,
+  "reviewer": "Chris Harley (@charley81)",
   "reviewerRole": "product_design",
-  "signedAt": null,
-  "notes": "Every pending decision must become approve or reject in the signed issue record. Approval must bind this file to the immutable application commit; this draft makes no Acceptance claim."
+  "reviewEnvironment": "MacBook Pro; macOS Tahoe 26.6.2; Google Chrome 154.0.8037.98 Official Build x86_64",
+  "signedAt": "2026-10-16T19:32:30Z",
+  "waivers": [],
+  "notes": "The named reviewer approved every typography, signal-cyan, media, runtime-model, and current-contract motion disposition against the bound immutable candidate. No caveat, refinement, waiver, or normative change remains."
 }
