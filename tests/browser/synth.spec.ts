@@ -283,34 +283,186 @@ test.describe("Synth shell and semantic Control deck", () => {
     );
   });
 
-  test("pauses for Bag and route intent without automatically resuming", async ({
+  test("coalesces lifecycle and platform interruptions, disposes on commit, and requires explicit resume", async ({
     page,
   }) => {
+    await page.addInitScript(() => {
+      const NativeAudioContext = window.AudioContext;
+      const state: {
+        closed: number;
+        created: number;
+        latest: AudioContext | null;
+      } = { closed: 0, created: 0, latest: null };
+      class TrackedAudioContext extends NativeAudioContext {
+        constructor(options?: AudioContextOptions) {
+          super(options);
+          state.created += 1;
+          state.latest = this;
+        }
+
+        override async close() {
+          state.closed += 1;
+          return super.close();
+        }
+      }
+      Object.defineProperty(window, "AudioContext", {
+        configurable: true,
+        value: TrackedAudioContext,
+      });
+      Object.defineProperty(window, "__vantaAudioTestState", {
+        configurable: true,
+        value: state,
+      });
+    });
     await page.goto("/synth");
+    await page.locator('[data-control-selector="drive"]').click();
+    await page.getByRole("slider", { name: "DRIVE value" }).fill("79");
     await page.getByRole("button", { name: "Enable Sound" }).click();
     await expect(page.locator('[data-audio-state="playing"]')).toBeVisible();
 
-    await page
-      .getByRole("banner")
-      .getByRole("button", { name: /Open Bag/ })
-      .click();
+    await page.evaluate(() => {
+      Object.defineProperty(document, "visibilityState", {
+        configurable: true,
+        value: "hidden",
+      });
+      document.dispatchEvent(new Event("visibilitychange"));
+      document.dispatchEvent(new Event("visibilitychange"));
+      document.dispatchEvent(new Event("freeze"));
+      window.dispatchEvent(
+        new PageTransitionEvent("pagehide", { persisted: true }),
+      );
+    });
     await expect(page.locator('[data-audio-state="interrupted"]')).toContainText(
       "will not resume automatically",
     );
-    await page.getByRole("button", { name: "Close Bag" }).click();
+    await page.evaluate(() => {
+      Object.defineProperty(document, "visibilityState", {
+        configurable: true,
+        value: "visible",
+      });
+      window.dispatchEvent(
+        new PageTransitionEvent("pageshow", { persisted: true }),
+      );
+    });
+    await expect(page.locator('[data-audio-state="interrupted"]')).toBeVisible();
+    await expect(page.getByRole("slider", { name: "DRIVE value" })).toHaveValue(
+      "79",
+    );
+
+    await page.getByRole("button", { name: "Resume Sound" }).click();
+    await expect(page.locator('[data-audio-state="playing"]')).toBeVisible();
+    await page.evaluate(() => {
+      document.dispatchEvent(new Event("freeze"));
+      window.dispatchEvent(
+        new PageTransitionEvent("pagehide", { persisted: true }),
+      );
+      window.dispatchEvent(
+        new PageTransitionEvent("pageshow", { persisted: true }),
+      );
+    });
     await expect(page.locator('[data-audio-state="interrupted"]')).toBeVisible();
 
     await page.getByRole("button", { name: "Resume Sound" }).click();
     await expect(page.locator('[data-audio-state="playing"]')).toBeVisible();
+    await page.evaluate(async () => {
+      const state = (
+        window as Window & {
+          __vantaAudioTestState?: { latest: AudioContext | null };
+        }
+      ).__vantaAudioTestState;
+      await state?.latest?.suspend();
+    });
+    await expect(page.locator('[data-audio-state="interrupted"]')).toBeVisible();
+
+    await page.getByRole("button", { name: "Resume Sound" }).click();
+    await expect(page.locator('[data-audio-state="playing"]')).toBeVisible();
+    await page
+      .getByRole("banner")
+      .getByRole("button", { name: /Open Bag/ })
+      .click();
+    await expect(page.locator('[data-audio-state="interrupted"]')).toBeVisible();
+    await page.getByRole("button", { name: "Close Bag" }).click();
+    await expect(page.locator('[data-audio-state="interrupted"]')).toBeVisible();
+
+    await page.getByRole("button", { name: "Resume Sound" }).click();
     await page
       .getByRole("navigation", { name: "Primary navigation" })
       .getByRole("link", { name: "Product" })
       .click();
     await expect(page).toHaveURL(/\/monolith$/);
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () =>
+            (
+              window as Window & {
+                __vantaAudioTestState?: { closed: number };
+              }
+            ).__vantaAudioTestState?.closed ?? -1,
+        ),
+      )
+      .toBe(1);
+
     await page.goBack();
     await expect(page.locator('[data-audio-state="interrupted"]')).toBeVisible();
+    await expect(page.locator('[data-control-selector="drive"]')).toHaveAccessibleName(
+      "Open DRIVE control, current value 79 percent",
+    );
     await page.getByRole("button", { name: "Resume Sound" }).click();
     await expect(page.locator('[data-audio-state="playing"]')).toBeVisible();
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () =>
+            (
+              window as Window & {
+                __vantaAudioTestState?: { created: number };
+              }
+            ).__vantaAudioTestState?.created ?? -1,
+        ),
+      )
+      .toBe(2);
+  });
+
+  test("keeps the Control deck useful through audio failure and targeted Retry", async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      const NativeAudioContext = window.AudioContext;
+      let failNextConstruction = true;
+      const FaultInjectedAudioContext = new Proxy(NativeAudioContext, {
+        construct(target, argumentsList) {
+          if (failNextConstruction) {
+            failNextConstruction = false;
+            throw new DOMException("Injected audio failure", "NotSupportedError");
+          }
+          return Reflect.construct(target, argumentsList, target);
+        },
+      });
+      Object.defineProperty(window, "AudioContext", {
+        configurable: true,
+        value: FaultInjectedAudioContext,
+      });
+    });
+    await page.goto("/synth");
+
+    await page.getByRole("button", { name: "Enable Sound" }).click();
+    await expect(page.locator('[data-audio-state="unavailable"]')).toContainText(
+      "Every control and its normalized value remains available",
+    );
+    await page.locator('[data-control-selector="cutoff"]').click();
+    await page.getByRole("slider", { name: "CUTOFF value" }).fill("91");
+    await expect(page.locator('[data-control-selector="cutoff"]')).toHaveAccessibleName(
+      "Open CUTOFF control, current value 91 percent",
+    );
+
+    await page.getByRole("button", { name: "Retry sound" }).click();
+    await expect(page.locator('[data-audio-state="playing"]')).toContainText(
+      "Sound is playing.",
+    );
+    await expect(page.getByRole("slider", { name: "CUTOFF value" })).toHaveValue(
+      "91",
+    );
   });
 
   test("reflows at 320 CSS pixels with accessible targets and no serious findings", async ({

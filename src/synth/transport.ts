@@ -48,7 +48,10 @@ export type EnableSoundResult =
     }
   | {
       ok: false;
-      reason: "audio-engine-unavailable" | "preparation-timeout";
+      reason:
+        | "audio-engine-unavailable"
+        | "interrupted"
+        | "preparation-timeout";
     };
 
 export type AudioEngineModule = {
@@ -78,11 +81,18 @@ export function createAudioTransportController({
   now?: () => number;
   preparationTimeoutMs?: number;
 }): AudioTransportController {
+  type PreparationAttempt = {
+    cancellation: Promise<EnableSoundResult>;
+    cancel(result: EnableSoundResult): void;
+    engine: MorphAudioEngine | null;
+  };
+
   let state: AudioTransportState = "off";
   let engine: MorphAudioEngine | null = null;
   let disposed = false;
-  let attempt = 0;
+  let activeAttempt: PreparationAttempt | null = null;
   let pending: Promise<EnableSoundResult> | null = null;
+  const disposalOperations = new WeakMap<MorphAudioEngine, Promise<void>>();
   const listeners = new Set<() => void>();
 
   function publish(action: AudioTransportAction): void {
@@ -92,23 +102,112 @@ export function createAudioTransportController({
     listeners.forEach((listener) => listener());
   }
 
+  function disposeEngine(target: MorphAudioEngine): Promise<void> {
+    const existing = disposalOperations.get(target);
+    if (existing) return existing;
+    target.pause();
+    const operation = Promise.resolve()
+      .then(() => target.dispose())
+      // Teardown failure belongs to the already unavailable optional audio
+      // subsystem. It must not escape and replace otherwise useful route UI.
+      .catch(() => undefined);
+    disposalOperations.set(target, operation);
+    return operation;
+  }
+
+  function detachEngine(target: MorphAudioEngine): Promise<void> {
+    if (engine === target) engine = null;
+    return disposeEngine(target);
+  }
+
+  function cancelAttempt(
+    attempt: PreparationAttempt,
+    result: EnableSoundResult,
+  ): Promise<void> {
+    if (activeAttempt === attempt) {
+      activeAttempt = null;
+      pending = null;
+    }
+    attempt.cancel(result);
+    return attempt.engine ? detachEngine(attempt.engine) : Promise.resolve();
+  }
+
+  function isCurrent(attempt: PreparationAttempt): boolean {
+    return !disposed && activeAttempt === attempt;
+  }
+
   async function prepareEngine(
-    currentAttempt: number,
+    attempt: PreparationAttempt,
   ): Promise<MorphAudioEngine> {
-    if (engine) return engine;
+    if (engine) {
+      attempt.engine = engine;
+      return engine;
+    }
     const loadedModule = await loadEngine();
-    if (disposed || currentAttempt !== attempt) {
+    if (!isCurrent(attempt)) {
       throw new Error("Audio preparation was superseded");
     }
+    const ownership: { current: MorphAudioEngine | null } = { current: null };
     const prepared = loadedModule.createMorphAudioEngine({
       onEvent(event) {
-        if (event.type === "interrupted" && engine === prepared) {
-          publish({ type: "interrupt" });
+        if (event.type === "interrupted" && engine === ownership.current) {
+          interrupt("interruption");
         }
       },
     });
+    ownership.current = prepared;
+    attempt.engine = prepared;
     engine = prepared;
     return prepared;
+  }
+
+  async function runAttempt(
+    attempt: PreparationAttempt,
+    startedAt: number,
+    warm: boolean,
+  ): Promise<EnableSoundResult> {
+    try {
+      const prepared = await prepareEngine(attempt);
+      const measurement = await prepared.play(readValues());
+      if (!isCurrent(attempt)) {
+        await detachEngine(prepared);
+        return { ok: false, reason: "interrupted" };
+      }
+      activeAttempt = null;
+      pending = null;
+      publish({ type: "play" });
+      return {
+        ok: true,
+        firstSoundLatencyMs: Math.max(
+          0,
+          measurement.firstSoundScheduledAtMs - startedAt,
+        ),
+        warm,
+      };
+    } catch {
+      if (!isCurrent(attempt)) {
+        return { ok: false, reason: "interrupted" };
+      }
+      if (attempt.engine) await detachEngine(attempt.engine);
+      if (!isCurrent(attempt)) {
+        return { ok: false, reason: "interrupted" };
+      }
+      activeAttempt = null;
+      pending = null;
+      publish({ type: "fail" });
+      return { ok: false, reason: "audio-engine-unavailable" };
+    }
+  }
+
+  function interrupt(reason: "interruption" | "user"): void {
+    if (state !== "playing" && state !== "preparing") return;
+    const attempt = activeAttempt;
+    if (attempt) {
+      void cancelAttempt(attempt, { ok: false, reason: "interrupted" });
+    } else {
+      engine?.pause();
+    }
+    publish({ type: reason === "interruption" ? "interrupt" : "pause" });
   }
 
   async function enable(): Promise<EnableSoundResult> {
@@ -117,62 +216,48 @@ export function createAudioTransportController({
     // trusted gesture; never resume as part of restoration itself.
     if (disposed) disposed = false;
     if (state === "playing") {
-      engine?.pause();
-      publish({ type: "pause" });
+      interrupt("user");
       return { ok: true, firstSoundLatencyMs: 0, warm: true };
     }
-    if (pending) return pending;
+    if (pending && activeAttempt) return pending;
 
-    const currentAttempt = ++attempt;
+    let resolveCancellation!: (result: EnableSoundResult) => void;
+    const attempt: PreparationAttempt = {
+      cancellation: new Promise((resolve) => {
+        resolveCancellation = resolve;
+      }),
+      cancel: resolveCancellation,
+      engine: null,
+    };
     const startedAt = now();
     const warm = engine !== null;
+    activeAttempt = attempt;
     publish({ type: "prepare" });
-    let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
 
-    const operation = Promise.race([
-      prepareEngine(currentAttempt).then(async (prepared) => {
-        const measurement = await prepared.play(readValues());
-        if (disposed || currentAttempt !== attempt) {
-          if (engine === prepared) engine = null;
-          await prepared.dispose();
-          throw new Error("Audio preparation was superseded");
+    let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
+    const timeout = new Promise<EnableSoundResult>((resolve) => {
+      timeoutHandle = setTimeout(() => {
+        if (!isCurrent(attempt)) {
+          resolve({ ok: false, reason: "interrupted" });
+          return;
         }
-        publish({ type: "play" });
-        return {
-          ok: true,
-          firstSoundLatencyMs: Math.max(
-            0,
-            measurement.firstSoundScheduledAtMs - startedAt,
-          ),
-          warm,
-        } satisfies EnableSoundResult;
-      }),
-      new Promise<EnableSoundResult>((resolve) => {
-        timeoutHandle = setTimeout(() => {
-          if (currentAttempt !== attempt) return;
-          attempt += 1;
-          const timedOutEngine = engine;
-          engine = null;
-          void timedOutEngine?.dispose();
-          publish({ type: "fail" });
-          resolve({ ok: false, reason: "preparation-timeout" });
-        }, preparationTimeoutMs);
-      }),
-    ]).catch(async () => {
-      if (!disposed && currentAttempt === attempt) {
-        const failedEngine = engine;
-        engine = null;
-        await failedEngine?.dispose();
+        void cancelAttempt(attempt, {
+          ok: false,
+          reason: "preparation-timeout",
+        });
         publish({ type: "fail" });
-      }
-      return {
-        ok: false,
-        reason: "audio-engine-unavailable",
-      } satisfies EnableSoundResult;
+        resolve({ ok: false, reason: "preparation-timeout" });
+      }, preparationTimeoutMs);
     });
+    const operation = Promise.race([
+      runAttempt(attempt, startedAt, warm),
+      attempt.cancellation,
+      timeout,
+    ]);
     pending = operation;
     return operation.finally(() => {
       if (timeoutHandle !== undefined) clearTimeout(timeoutHandle);
+      if (activeAttempt === attempt) activeAttempt = null;
       if (pending === operation) pending = null;
     });
   }
@@ -181,21 +266,19 @@ export function createAudioTransportController({
     async dispose() {
       if (disposed) return;
       disposed = true;
-      attempt += 1;
-      pending = null;
+      const attempt = activeAttempt;
       const activeEngine = engine;
+      if (attempt) {
+        await cancelAttempt(attempt, { ok: false, reason: "interrupted" });
+      }
       engine = null;
       publish({ type: "interrupt" });
-      await activeEngine?.dispose();
+      if (activeEngine) await disposeEngine(activeEngine);
     },
     enableFromTrustedGesture: enable,
     getSnapshot: () => state,
     pause(reason = "user") {
-      if (state !== "playing" && state !== "preparing") return;
-      attempt += 1;
-      pending = null;
-      engine?.pause();
-      publish({ type: reason === "interruption" ? "interrupt" : "pause" });
+      interrupt(reason);
     },
     subscribe(listener) {
       listeners.add(listener);
