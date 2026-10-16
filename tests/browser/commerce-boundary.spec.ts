@@ -422,11 +422,12 @@ test.describe.serial("commerce-shaped journey boundary", () => {
       (cookie) => cookie.name === "__Host-vanta_bag",
     );
     expect(bagCookie).toBeDefined();
-    const finalCharacter = bagCookie!.value.at(-1);
+    const [payload, signature] = bagCookie!.value.split(".");
+    const tamperedSignature = `${signature.at(0) === "A" ? "B" : "A"}${signature.slice(1)}`;
     await context.addCookies([
       {
         ...bagCookie!,
-        value: `${bagCookie!.value.slice(0, -1)}${finalCharacter === "A" ? "B" : "A"}`,
+        value: `${payload}.${tamperedSignature}`,
       },
     ]);
     await page.goto("/checkout-preview");
