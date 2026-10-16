@@ -15,6 +15,8 @@ const eslintConfig = defineConfig([
     // Generated browser-test traces contain vendored, minified JavaScript.
     "artifacts/playwright/**",
     "artifacts/test-results/**",
+    "artifacts/commerce-playwright/**",
+    "artifacts/commerce-results/**",
   ]),
 ]);
 

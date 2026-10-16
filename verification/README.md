@@ -26,11 +26,14 @@ pnpm validate:public-runtime
 pnpm test:unit
 pnpm build:verified
 pnpm test:browser
+pnpm test:commerce
 pnpm check
 ```
 
 `validate:evidence` checks the normative template and every YAML file below `evidence/manifests/` by default. Pass explicit manifest paths to validate another location. The schema permits null example values only for `status: template` or an in-progress `status: draft`; `status: candidate` requires candidate identity. Draft/template manifests cannot record passing or waived candidate/launch artifacts, and the `OPS-015` mappings in `checks.yaml` cannot appear in waivers.
 
 `validate:performance` exercises the regression gate with the deterministic scaffold fixture. Later measurement jobs can call `tsx tooling/verification/cli.ts performance <input.json>` with at least three baseline and candidate samples. A median regression above 10% fails unless its input records an explicit approve decision for `QUALITY-003`, the Release Approver's identity and role, timestamp, and an HTTPS approval-record link.
+
+`test:browser` runs the production-build journey suite followed by the focused commerce boundary suite. `test:commerce` can run independently against a local temporary HTTPS proxy, or against an immutable Netlify deployment when `COMMERCE_QUALIFICATION_BASE_URL`, `COMMERCE_QUALIFICATION_DEPLOYMENT_ID`, and `COMMERCE_QUALIFICATION_APPLICATION_COMMIT` are all supplied. The deployed config rejects mutable aliases and verifies the public deploy record before exercising the journey.
 
 `validate:product-catalog` compares the code-owned Product truth and Catalog values with the reviewed deterministic manifest and records its SHA-256. `validate:boundaries` rejects missing environment markers, server/client poisoning, local Route Handler calls from Server Components, and heavy runtime leakage into the root or Product route. `validate:public-runtime` scans public source and production configuration for forbidden commerce-platform dependencies, modes, endpoints, identifiers, and secret-shaped public variables.
