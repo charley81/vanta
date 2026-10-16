@@ -107,7 +107,7 @@ describe("audio transport controller", () => {
     expect(harness.counts().playCount).toBe(2);
   });
 
-  it("reports platform interruption and never resumes automatically", async () => {
+  it("reports duplicate platform interruptions once and never resumes automatically", async () => {
     const harness = engineHarness(() => 0);
     const controller = createAudioTransportController({
       loadEngine: async () => harness.module,
@@ -117,12 +117,79 @@ describe("audio transport controller", () => {
 
     await controller.enableFromTrustedGesture();
     harness.emit({ type: "interrupted" });
+    harness.emit({ type: "interrupted" });
     expect(controller.getSnapshot()).toBe("interrupted");
-    expect(harness.counts().playCount).toBe(1);
+    expect(harness.counts()).toMatchObject({ pauseCount: 1, playCount: 1 });
 
     await controller.enableFromTrustedGesture();
     expect(controller.getSnapshot()).toBe("playing");
     expect(harness.counts().playCount).toBe(2);
+  });
+
+  it("keeps a newer resume isolated from a superseded preparation", async () => {
+    let finishFirstPlay: (value: { firstSoundScheduledAtMs: number }) => void =
+      () => undefined;
+    const firstPlay = new Promise<{ firstSoundScheduledAtMs: number }>(
+      (resolve) => {
+        finishFirstPlay = resolve;
+      },
+    );
+    const first = engineHarness(() => 0);
+    const second = engineHarness(() => 0);
+    let engineNumber = 0;
+    const controller = createAudioTransportController({
+      loadEngine: async () => ({
+        createMorphAudioEngine(options) {
+          engineNumber += 1;
+          const selected = engineNumber === 1 ? first : second;
+          const created = selected.module.createMorphAudioEngine(options);
+          return engineNumber === 1
+            ? { ...created, play: () => firstPlay }
+            : created;
+        },
+      }),
+      now: () => 0,
+      readValues: () => DEFAULT_MORPH_VALUES,
+    });
+
+    const superseded = controller.enableFromTrustedGesture();
+    await Promise.resolve();
+    await Promise.resolve();
+    controller.pause("interruption");
+    await expect(superseded).resolves.toEqual({
+      ok: false,
+      reason: "interrupted",
+    });
+
+    await expect(controller.enableFromTrustedGesture()).resolves.toEqual({
+      ok: true,
+      firstSoundLatencyMs: 10,
+      warm: false,
+    });
+    finishFirstPlay({ firstSoundScheduledAtMs: 10 });
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(controller.getSnapshot()).toBe("playing");
+    expect(first.counts().disposeCount).toBe(1);
+    expect(second.counts()).toMatchObject({ disposeCount: 0, playCount: 1 });
+  });
+
+  it("publishes playing only after preparation ownership is released", async () => {
+    const harness = engineHarness(() => 0);
+    const controller = createAudioTransportController({
+      loadEngine: async () => harness.module,
+      now: () => 0,
+      readValues: () => DEFAULT_MORPH_VALUES,
+    });
+    controller.subscribe(() => {
+      if (controller.getSnapshot() === "playing") controller.pause();
+    });
+
+    await controller.enableFromTrustedGesture();
+
+    expect(controller.getSnapshot()).toBe("paused");
+    expect(harness.counts()).toMatchObject({ disposeCount: 0, pauseCount: 1 });
   });
 
   it("schedules accepted control changes synchronously only while playing", async () => {
@@ -146,6 +213,24 @@ describe("audio transport controller", () => {
     expect(controller.update(DEFAULT_MORPH_VALUES, 47)).toBeNull();
   });
 
+  it("settles canceled preparation immediately even when the loader never does", async () => {
+    const never = new Promise<never>(() => undefined);
+    const controller = createAudioTransportController({
+      loadEngine: () => never,
+      now: () => 0,
+      readValues: () => DEFAULT_MORPH_VALUES,
+    });
+
+    const result = controller.enableFromTrustedGesture();
+    controller.pause("interruption");
+
+    await expect(result).resolves.toEqual({
+      ok: false,
+      reason: "interrupted",
+    });
+    expect(controller.getSnapshot()).toBe("interrupted");
+  });
+
   it("fails locally when preparation times out and ignores the stale loader", async () => {
     vi.useFakeTimers();
     const never = new Promise<never>(() => undefined);
@@ -163,6 +248,47 @@ describe("audio transport controller", () => {
       reason: "preparation-timeout",
     });
     expect(controller.getSnapshot()).toBe("unavailable");
+  });
+
+  it("disposes a timed-out engine and recovers only after explicit Retry", async () => {
+    vi.useFakeTimers();
+    const stalled = engineHarness(() => 0);
+    const recovered = engineHarness(() => 0);
+    let engineNumber = 0;
+    const controller = createAudioTransportController({
+      loadEngine: async () => ({
+        createMorphAudioEngine(options) {
+          engineNumber += 1;
+          const selected = engineNumber === 1 ? stalled : recovered;
+          const created = selected.module.createMorphAudioEngine(options);
+          return engineNumber === 1
+            ? {
+                ...created,
+                play: () => new Promise<never>(() => undefined),
+              }
+            : created;
+        },
+      }),
+      now: () => 0,
+      preparationTimeoutMs: 100,
+      readValues: () => DEFAULT_MORPH_VALUES,
+    });
+
+    const timedOut = controller.enableFromTrustedGesture();
+    await vi.advanceTimersByTimeAsync(100);
+    await expect(timedOut).resolves.toEqual({
+      ok: false,
+      reason: "preparation-timeout",
+    });
+    expect(controller.getSnapshot()).toBe("unavailable");
+
+    await expect(controller.enableFromTrustedGesture()).resolves.toEqual({
+      ok: true,
+      firstSoundLatencyMs: 10,
+      warm: false,
+    });
+    expect(stalled.counts().disposeCount).toBe(1);
+    expect(recovered.counts().playCount).toBe(1);
   });
 
   it("keeps engine failure local and allows an explicit retry", async () => {

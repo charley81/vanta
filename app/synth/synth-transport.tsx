@@ -6,6 +6,7 @@ import {
   morphSessionStore,
   subscribeMorphControlInput,
 } from "@/src/synth/session.client";
+import { bindSynthPageLifecycle } from "@/src/synth/lifecycle.client";
 import { createBrowserAudioTransport } from "@/src/synth/transport.client";
 import type { AudioTransportState } from "@/src/synth/transport";
 
@@ -59,48 +60,12 @@ export function SynthTransport({ enableLabel }: { enableLabel: string }) {
   }, [transport]);
 
   useEffect(() => {
-    const interrupt = () => transport.pause("interruption");
-    const pauseWhenHidden = () => {
-      if (document.visibilityState === "hidden") interrupt();
-    };
-    const pauseForRouteIntent = (event: MouseEvent) => {
-      if (
-        event.defaultPrevented ||
-        event.button !== 0 ||
-        event.metaKey ||
-        event.ctrlKey ||
-        event.shiftKey ||
-        event.altKey
-      ) {
-        return;
-      }
-      const target = event.target;
-      const anchor =
-        target instanceof Element
-          ? target.closest<HTMLAnchorElement>("a[href]")
-          : null;
-      if (!anchor || anchor.target || anchor.download) return;
-      const destination = new URL(anchor.href, window.location.href);
-      if (
-        destination.origin === window.location.origin &&
-        destination.pathname !== window.location.pathname
-      ) {
-        interrupt();
-      }
-    };
-
-    document.addEventListener("visibilitychange", pauseWhenHidden);
-    document.addEventListener("vanta:bag-opened", interrupt);
-    document.addEventListener("click", pauseForRouteIntent, true);
-    document.addEventListener("freeze", interrupt);
-    window.addEventListener("pagehide", interrupt);
+    const unbindLifecycle = bindSynthPageLifecycle(transport);
     return () => {
-      document.removeEventListener("visibilitychange", pauseWhenHidden);
-      document.removeEventListener("vanta:bag-opened", interrupt);
-      document.removeEventListener("click", pauseForRouteIntent, true);
-      document.removeEventListener("freeze", interrupt);
-      window.removeEventListener("pagehide", interrupt);
+      unbindLifecycle();
       transport.pause("interruption");
+      // React removes this route-owned boundary only after navigation commits.
+      // Values remain in the independent tab-local MORPH session store.
       void transport.dispose();
     };
   }, [transport]);
