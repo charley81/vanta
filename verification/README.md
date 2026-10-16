@@ -26,6 +26,9 @@ pnpm validate:public-runtime
 pnpm validate:audio-calibration
 pnpm validate:audio-stress
 pnpm validate:audio-isolation
+pnpm validate:media-source
+pnpm build:media
+pnpm validate:media
 pnpm test:audio-latency
 pnpm test:unit
 pnpm build:verified
@@ -43,3 +46,5 @@ pnpm check
 `validate:product-catalog` compares the code-owned Product truth and Catalog values with the reviewed deterministic manifest and records its SHA-256. `validate:boundaries` rejects missing environment markers, server/client poisoning, local Route Handler calls from Server Components, and heavy runtime leakage into the root or Product route. `validate:public-runtime` scans public source and production configuration for forbidden commerce-platform dependencies, modes, endpoints, identifiers, and secret-shaped public variables.
 
 The audio checks produce non-Acceptance engineering reports under `artifacts/reports/`. `validate:audio-calibration` records the five-point continuum, endpoint fingerprints, secondary-control deltas, and predicted compensation spread. `validate:audio-stress` runs the authored phrase scheduler and bounded mappings through a deterministic simulated ten-minute session; candidate qualification must still pair it with a reviewed real-output stress trace. `validate:audio-isolation` proves that audio and rendering source do not import each other and that Web Audio stays behind the trusted-gesture dynamic import. `test:audio-latency` measures cold, warm, and control-to-schedule budgets in Chromium.
+
+The media checks govern the immutable approved GLB and all current derivatives. `validate:media-source` verifies the source hash, glTF report, bounds, material/texture inventory, named-control hierarchy, and decoded texture/GPU estimates. `build:media` performs the conservative Meshopt derivation and offline authored-media render from `media/pipeline.json`. `validate:media` regenerates every model, master, responsive still, comparison image, and manifest in a clean temporary tree and requires byte-identical output while enforcing model, motion, texture, and GPU ceilings. See `media/README.md` for the exact hash-scoped source finding policy.

@@ -67,6 +67,26 @@ checks:
     tool: playwright
     report_path: artifacts/reports/audio-latency.json
     requirement_ids: [SYNTH-001, SYNTH-005, QUALITY-007]
+  - id: media-source-validation
+    command: pnpm validate:media-source
+    tool: vanta-media
+    report_path: artifacts/reports/glb-validation.json
+    requirement_ids: [MEDIA-002]
+  - id: media-derivative-manifests
+    command: pnpm validate:media
+    tool: vanta-media
+    report_path: artifacts/reports/media-derivatives.json
+    requirement_ids: [MEDIA-001, MEDIA-003, MEDIA-004]
+  - id: media-reproducibility
+    command: pnpm validate:media
+    tool: vanta-media
+    report_path: artifacts/reports/media-reproducibility.json
+    requirement_ids: [MEDIA-001, MEDIA-003]
+  - id: media-resource-budgets
+    command: pnpm validate:media
+    tool: vanta-media
+    report_path: artifacts/reports/media-resource-budgets.json
+    requirement_ids: [QUALITY-004, QUALITY-006]
   - id: lint
     command: pnpm lint
     tool: eslint
@@ -81,7 +101,7 @@ checks:
     command: pnpm test:unit
     tool: vitest
     report_path: artifacts/reports/unit-tests.json
-    requirement_ids: [PRODUCT-001, PRODUCT-002, PRODUCT-003, PRODUCT-004, PRODUCT-005, PRODUCT-006, CONTENT-001, CONTENT-003, CONTENT-004, SYNTH-008, SYNTH-009, BAG-001, BAG-004, BAG-005, BAG-009, PREVIEW-008, PREVIEW-009, STATE-001, STATE-002, STATE-003, STATE-005, STATE-006, STATE-007, STATE-008, ARCH-002, ARCH-003, ARCH-004, ARCH-005, ARCH-006, ARCH-007, ARCH-008, ARCH-009, ARCH-010, QUALITY-013, SECURITY-005, SECURITY-006, SECURITY-007]
+    requirement_ids: [PRODUCT-001, PRODUCT-002, PRODUCT-003, PRODUCT-004, PRODUCT-005, PRODUCT-006, CONTENT-001, CONTENT-003, CONTENT-004, SYNTH-008, SYNTH-009, BAG-001, BAG-004, BAG-005, BAG-009, PREVIEW-008, PREVIEW-009, STATE-001, STATE-002, STATE-003, STATE-005, STATE-006, STATE-007, STATE-008, ARCH-002, ARCH-003, ARCH-004, ARCH-005, ARCH-006, ARCH-007, ARCH-008, ARCH-009, ARCH-010, MEDIA-001, MEDIA-002, MEDIA-003, MEDIA-004, QUALITY-006, QUALITY-013, SECURITY-005, SECURITY-006, SECURITY-007]
   - id: production-build
     command: pnpm build:verified
     tool: next
