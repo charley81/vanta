@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   DEFAULT_MORPH_SESSION,
+  PREVIEW_HISTORY_KEY,
   PREVIEW_INACTIVITY_MS,
   PREVIEW_STORAGE_KEY,
   PRESENTATION_STORAGE_KEY,
@@ -13,6 +14,7 @@ import {
   createPreviewSessionRecord,
   parseMorphSession,
   parsePresentationSession,
+  parsePreviewHistoryEntry,
   parsePreviewSession,
   parseReturnContext,
   readReturnContext,
@@ -134,6 +136,70 @@ describe("bounded continuity parsers", () => {
     expect(advancePreviewSession(revisitContact.value, "review", now + 4).ok).toBe(true);
     expect(advancePreviewSession(contact, "review", now + 1).ok).toBe(false);
     expect(advancePreviewSession(contact, "terminal", now + 1).ok).toBe(false);
+  });
+
+  it("validates same-URL Preview history against legally reached progress", () => {
+    const contact = createDefaultPreviewSession(10_000);
+    const delivery = advancePreviewSession(contact, "delivery", 10_001);
+    expect(delivery.ok).toBe(true);
+    if (!delivery.ok) return;
+
+    expect(
+      parsePreviewHistoryEntry(
+        { version: 1, stage: "contact", depth: 0 },
+        delivery.value,
+      ),
+    ).toMatchObject({ ok: true });
+    expect(
+      parsePreviewHistoryEntry(
+        { version: 1, stage: "delivery", depth: 1 },
+        delivery.value,
+      ),
+    ).toMatchObject({ ok: true });
+    expect(
+      parsePreviewHistoryEntry(
+        { version: 1, stage: "review", depth: 2 },
+        delivery.value,
+      ).ok,
+    ).toBe(false);
+    expect(
+      parsePreviewHistoryEntry(
+        { version: 1, stage: "terminal", depth: 3 },
+        delivery.value,
+      ).ok,
+    ).toBe(false);
+    expect(
+      parsePreviewHistoryEntry(
+        { version: 99, stage: "contact", depth: 0 },
+        delivery.value,
+      ).ok,
+    ).toBe(false);
+    expect(PREVIEW_HISTORY_KEY).toBe("__vantaCheckoutPreview");
+  });
+
+  it("keeps completed reachability while revisiting a reached stage", () => {
+    const delivery = advancePreviewSession(
+      createDefaultPreviewSession(10_000),
+      "delivery",
+      10_001,
+    );
+    expect(delivery.ok).toBe(true);
+    if (!delivery.ok) return;
+    const review = advancePreviewSession(delivery.value, "review", 10_002);
+    expect(review.ok).toBe(true);
+    if (!review.ok) return;
+    const terminal = advancePreviewSession(review.value, "terminal", 10_003);
+    expect(terminal.ok).toBe(true);
+    if (!terminal.ok) return;
+    const revisited = advancePreviewSession(terminal.value, "contact", 10_004);
+    expect(revisited).toMatchObject({
+      ok: true,
+      value: {
+        activeStage: "contact",
+        reachedStage: "review",
+        completed: true,
+      },
+    });
   });
 
   it("validates and namespaces Return context without replacing router state", () => {

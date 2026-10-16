@@ -29,6 +29,7 @@ type BagContextValue = {
   activeInvokerId: string | null;
   addToBag(invoker: HTMLButtonElement, invokerId: string): Promise<void>;
   closeBag(): void;
+  confirmBag(): Promise<boolean>;
   consumeBagHistory(): void;
   openBag(invoker: HTMLButtonElement, invokerId: string): void;
   removeFromBag(): Promise<void>;
@@ -132,6 +133,8 @@ export function BagProvider({ children }: { children: ReactNode }) {
     },
     [coordinator, enterBagHistory, publishInvalidation],
   );
+
+  const confirmBag = useCallback(() => coordinator.confirm(), [coordinator]);
 
   const removeFromBag = useCallback(async () => {
     if (await coordinator.remove()) publishInvalidation();
@@ -238,6 +241,7 @@ export function BagProvider({ children }: { children: ReactNode }) {
       activeInvokerId,
       addToBag,
       closeBag,
+      confirmBag,
       consumeBagHistory,
       openBag,
       removeFromBag,
@@ -248,6 +252,7 @@ export function BagProvider({ children }: { children: ReactNode }) {
       activeInvokerId,
       addToBag,
       closeBag,
+      confirmBag,
       consumeBagHistory,
       openBag,
       removeFromBag,

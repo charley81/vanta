@@ -63,6 +63,7 @@ const PUBLIC_SECRET_REFERENCE =
   /NEXT_PUBLIC_[A-Z0-9_]*(TOKEN|SECRET|PASSWORD|PRIVATE_KEY|API_KEY)/;
 const APPROVED_PUBLIC_DISCLOSURES = [
   "Nothing is entered, submitted, stored, or sent to Shopify.",
+  "No Shopify Checkout, orders, fulfillment, or notifications",
 ] as const;
 
 function containsForbiddenPublicReference(text: string): boolean {
