@@ -3,8 +3,8 @@
   min-height: calc(100svh - var(--shell-height));
   flex: 1;
   background:
-    linear-gradient(color-mix(in srgb, var(--color-signal) 4%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--color-signal) 4%, transparent) 1px, transparent 1px),
+    linear-gradient(color-mix(in srgb, var(--color-taupe) 4%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--color-taupe) 4%, transparent) 1px, transparent 1px),
     var(--surface-foundation);
   background-size: 7rem 7rem;
 }
@@ -78,7 +78,7 @@
 
 .eyebrow {
   margin: 0;
-  color: var(--color-signal);
+  color: var(--text-emphasis);
 }
 
 .ledgerLayout {
@@ -128,6 +128,10 @@
 }
 
 .progress button span {
+  color: var(--text-secondary);
+}
+
+.progress button[aria-current="step"] span {
   color: var(--color-signal);
 }
 
@@ -294,7 +298,7 @@
   aspect-ratio: 1;
   place-items: center;
   background: var(--surface-raised);
-  color: var(--color-signal);
+  color: var(--text-emphasis);
   font-size: 1.5rem;
 }
 

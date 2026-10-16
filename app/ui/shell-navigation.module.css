@@ -315,7 +315,7 @@
   aspect-ratio: 1.24;
   place-items: center;
   background: color-mix(in srgb, var(--color-brown) 28%, var(--surface-foundation));
-  color: var(--color-signal);
+  color: var(--text-emphasis);
   font-size: 1.5rem;
   letter-spacing: 0.12em;
 }

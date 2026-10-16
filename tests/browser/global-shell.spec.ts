@@ -180,6 +180,37 @@ test.describe("global shell", () => {
     expect(fontBytes).toBeLessThanOrEqual(120 * 1024);
   });
 
+  for (const route of ["/", "/monolith", "/synth", "/checkout-preview"]) {
+    test(`keeps ${route} first-render fonts within budget`, async ({ page }) => {
+      await page.goto(route);
+      await page.evaluate(() => document.fonts.ready);
+
+      const fontUrls = await page.evaluate(() =>
+        performance
+          .getEntriesByType("resource")
+          .map((entry) => entry.name)
+          .filter(
+            (name) =>
+              name.includes("/_next/static/media/") && name.includes(".woff2"),
+          ),
+      );
+      const fontBodies = await Promise.all(
+        [...new Set(fontUrls)].map(async (url) => {
+          const response = await page.request.get(url);
+          expect(response.ok(), `${url} loaded successfully`).toBe(true);
+          return response.body();
+        }),
+      );
+      const fontBytes = fontBodies.reduce(
+        (total, body) => total + body.byteLength,
+        0,
+      );
+
+      expect(fontBytes).toBeGreaterThan(0);
+      expect(fontBytes).toBeLessThanOrEqual(120 * 1024);
+    });
+  }
+
   test("keeps the 320px server-rendered shell navigable without JavaScript", async ({
     browser,
   }) => {

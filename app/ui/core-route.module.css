@@ -172,7 +172,7 @@
   aspect-ratio: 1.75;
   border: 1px solid var(--text-secondary);
   background:
-    radial-gradient(circle at 50% 45%, var(--color-signal) 0 2px, transparent 3px),
+    radial-gradient(circle at 50% 45%, var(--text-emphasis) 0 2px, transparent 3px),
     linear-gradient(150deg, color-mix(in srgb, var(--color-taupe) 16%, transparent), transparent 55%);
   box-shadow: 0 1.25rem 4rem color-mix(in srgb, black 55%, transparent);
   content: "";
