@@ -167,7 +167,10 @@ test.describe("Core route walking skeleton", () => {
     await expect(page.getByRole("main").getByText("$2,499 USD")).toHaveCount(2);
     await expect(page.getByRole("link", { name: "TRY MORPH LAB" })).toBeVisible();
     await expect(
-      page.getByText(/Bag stores one MONOLITH in this browser for up to 30 days/),
+      page.getByText(/Bag stores one MONOLITH in this browser for up to 30 days/).first(),
+    ).toBeVisible();
+    await expect(
+      page.getByText(/Add to Bag is unavailable without JavaScript/).first(),
     ).toBeVisible();
 
     await context.close();

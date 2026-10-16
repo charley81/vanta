@@ -1,0 +1,636 @@
+.productMain {
+  width: 100%;
+  flex: 1;
+  overflow: clip;
+  background: var(--surface-foundation);
+}
+
+.productMain h1,
+.productMain h2,
+.productMain h3,
+.productMain p {
+  margin-top: 0;
+}
+
+.hero,
+.thesis,
+.sonic,
+.states,
+.morph,
+.craft,
+.specifications,
+.labInvitation,
+.finalAction {
+  position: relative;
+}
+
+.hero {
+  display: grid;
+  min-height: min(64rem, calc(100svh - var(--shell-height)));
+  grid-template-columns: minmax(0, 1fr) minmax(26rem, 1.08fr);
+  align-items: stretch;
+}
+
+.heroMedia {
+  min-height: 44rem;
+  background: var(--color-cream);
+}
+
+.productMedia {
+  position: relative;
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.productMedia img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.heroMedia img {
+  object-position: center;
+}
+
+.heroCopy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(4rem, 9vw, 9rem) var(--page-gutter);
+}
+
+.eyebrow,
+.index,
+.status,
+.specifications dt,
+.mediaCaption,
+.navigationStatus,
+.noScriptMessage {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.eyebrow,
+.index {
+  margin-bottom: clamp(1.5rem, 4vw, 3rem);
+  color: var(--text-emphasis);
+}
+
+.hero h1,
+.statement,
+.sectionHeading,
+.splitHeading,
+.specifications h2,
+.labInvitation h2,
+.finalAction h2 {
+  margin-bottom: 0;
+  font-weight: 450;
+  letter-spacing: -0.06em;
+  line-height: 0.95;
+  text-wrap: balance;
+}
+
+.hero h1 {
+  max-width: 9ch;
+  font-size: clamp(3.6rem, 7.4vw, 7.5rem);
+}
+
+.subtitle {
+  margin: clamp(1rem, 2vw, 1.5rem) 0 0;
+  color: var(--text-primary);
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
+  line-height: 1.35;
+}
+
+.body,
+.support,
+.sectionBody,
+.stateCard p,
+.specifications dd,
+.labInvitationBody,
+.finalAction p {
+  color: var(--text-secondary);
+  font-size: clamp(1rem, 1.35vw, 1.2rem);
+  line-height: 1.65;
+}
+
+.body {
+  max-width: 34rem;
+  margin: 1rem 0 0;
+}
+
+.commerce {
+  display: grid;
+  max-width: 35rem;
+  gap: 1rem;
+  margin-top: clamp(2.5rem, 6vw, 5rem);
+}
+
+.price {
+  margin-bottom: 0;
+  color: var(--text-emphasis);
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  line-height: 1.2;
+}
+
+.actionButton,
+.finalActionButton {
+  display: inline-flex;
+  min-height: 3.5rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-terracotta);
+  border-radius: 0.25rem;
+  padding: 0.9rem 1.5rem;
+  background: var(--color-terracotta);
+  color: var(--color-espresso);
+  cursor: pointer;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.actionButton {
+  width: 100%;
+}
+
+.actionButton:disabled,
+.finalActionButton:disabled {
+  border-color: var(--rule);
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  cursor: not-allowed;
+}
+
+.status,
+.noScriptMessage {
+  max-width: 38rem;
+  margin-bottom: 0;
+  color: var(--text-secondary);
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+
+.noScriptMessage {
+  color: var(--text-emphasis);
+}
+
+.thesis,
+.sonicInner,
+.statesInner,
+.specificationsInner,
+.labInvitationInner,
+.finalActionInner {
+  padding-inline: var(--page-gutter);
+}
+
+.thesis {
+  display: flex;
+  min-height: clamp(38rem, 64vw, 54rem);
+  flex-direction: column;
+  justify-content: center;
+  background: var(--color-cream);
+  color: var(--color-espresso);
+}
+
+.thesis .eyebrow {
+  color: var(--color-brown);
+}
+
+.statement {
+  max-width: 12ch;
+  font-size: clamp(3.5rem, 8.5vw, 8rem);
+}
+
+.support {
+  max-width: 58rem;
+  margin: clamp(1.5rem, 4vw, 3rem) 0 0;
+  color: var(--color-brown);
+  font-size: clamp(1.1rem, 2vw, 1.5rem);
+}
+
+.sonic {
+  background:
+    radial-gradient(circle at 84% 40%, color-mix(in srgb, var(--color-brown) 24%, transparent), transparent 28rem),
+    var(--surface-foundation);
+}
+
+.sonicInner,
+.statesInner,
+.specificationsInner,
+.labInvitationInner,
+.finalActionInner {
+  width: min(100%, var(--content-max));
+  margin-inline: auto;
+  padding-block: clamp(6rem, 14vw, 14rem);
+}
+
+.sonicInner {
+  min-height: clamp(38rem, 60vw, 54rem);
+}
+
+.sectionHeading {
+  max-width: 13ch;
+  font-size: clamp(3.25rem, 7.5vw, 7rem);
+}
+
+.sectionBody {
+  max-width: 40rem;
+  margin: clamp(1.5rem, 3vw, 2.5rem) 0 0;
+}
+
+.states {
+  border-top: 1px solid var(--rule);
+}
+
+.statesHeading {
+  max-width: 46rem;
+}
+
+.stateGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1.5rem, 4vw, 4rem);
+  margin-top: clamp(4rem, 9vw, 8rem);
+}
+
+.stateCard {
+  min-width: 0;
+}
+
+.stateMedia {
+  aspect-ratio: 8 / 5;
+  border: 1px solid var(--rule);
+  background: var(--surface-raised);
+}
+
+.stateMediaLight {
+  background: var(--color-cream);
+}
+
+.stateMedia img {
+  object-position: center 48%;
+}
+
+.stateMediaLight img {
+  object-fit: cover;
+  object-position: center 54%;
+}
+
+.stateCard h3 {
+  margin: 1.75rem 0 0;
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+}
+
+.stateCard p {
+  margin: 0.75rem 0 0;
+}
+
+.morph,
+.craft {
+  display: grid;
+  min-height: min(68rem, 86vw);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid var(--rule);
+}
+
+.splitMedia {
+  min-height: 42rem;
+}
+
+.splitCopy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(5rem, 10vw, 10rem) var(--page-gutter);
+}
+
+.splitHeading {
+  max-width: 11ch;
+  font-size: clamp(3.25rem, 6.25vw, 6rem);
+}
+
+.craftMedia {
+  grid-column: 2;
+  grid-row: 1;
+  background: var(--color-cream);
+}
+
+.craftMedia img {
+  object-position: center 42%;
+}
+
+.craftCopy {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.specifications {
+  border-top: 1px solid var(--rule);
+}
+
+.specifications h2 {
+  max-width: 15ch;
+  font-size: clamp(3rem, 6.5vw, 6rem);
+}
+
+.specifications dl {
+  margin: clamp(4rem, 9vw, 8rem) 0 0;
+  border-top: 1px solid var(--rule);
+}
+
+.specifications dl > div {
+  display: grid;
+  grid-template-columns: minmax(10rem, 0.38fr) minmax(0, 1fr);
+  gap: clamp(1rem, 4vw, 4rem);
+  border-bottom: 1px solid var(--rule);
+  padding-block: 1.25rem;
+}
+
+.specifications dt,
+.specifications dd {
+  min-width: 0;
+  margin: 0;
+}
+
+.specifications dt {
+  color: var(--text-emphasis);
+}
+
+.specList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.specList li:not(:last-child)::after {
+  margin-left: 1.25rem;
+  color: var(--text-emphasis);
+  content: "/";
+}
+
+.labInvitation {
+  background: var(--color-peach);
+  color: var(--color-espresso);
+}
+
+.labInvitationInner {
+  min-height: 40rem;
+}
+
+.labInvitation .eyebrow {
+  color: var(--color-brown);
+}
+
+.labInvitation h2 {
+  max-width: 12ch;
+  font-size: clamp(3.5rem, 8vw, 7.5rem);
+}
+
+.labInvitationBody {
+  max-width: 44rem;
+  margin: 1.5rem 0 0;
+  color: var(--color-brown);
+}
+
+.labLink {
+  position: relative;
+  display: inline-grid;
+  min-width: min(100%, 19rem);
+  min-height: 3.875rem;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: clamp(2.5rem, 6vw, 5rem);
+  border: 1px solid var(--color-espresso);
+  border-radius: 0.25rem;
+  padding: 1rem 1.25rem;
+  color: var(--color-espresso);
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.linkArrow {
+  font-size: 1rem;
+}
+
+.navigationStatus {
+  position: absolute;
+  top: calc(100% + 0.75rem);
+  left: 0;
+  min-height: 1rem;
+  color: var(--color-espresso);
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+
+.navigationStatus[data-navigation-state="pending"]::before {
+  display: inline-block;
+  width: 0.55rem;
+  height: 0.55rem;
+  margin-right: 0.5rem;
+  border-radius: 50%;
+  background: var(--color-signal);
+  content: "";
+}
+
+.finalAction {
+  border-top: 1px solid var(--rule);
+}
+
+.finalActionInner {
+  display: grid;
+  min-height: 30rem;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.38fr);
+  align-items: end;
+  gap: clamp(3rem, 10vw, 10rem);
+  padding-block: clamp(5rem, 10vw, 9rem);
+}
+
+.finalAction h2 {
+  max-width: 13ch;
+  font-size: clamp(3.25rem, 7vw, 7rem);
+}
+
+.finalCommerce {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.finalCommerce .price {
+  color: var(--text-primary);
+}
+
+@media (hover: hover) {
+  .actionButton:hover:not(:disabled),
+  .finalActionButton:hover:not(:disabled) {
+    border-color: var(--color-peach);
+    background: var(--color-peach);
+  }
+
+  .labLink:hover {
+    background: var(--color-espresso);
+    color: var(--color-cream);
+  }
+}
+
+@media (max-width: 63.999rem) {
+  .hero {
+    grid-template-columns: minmax(0, 0.95fr) minmax(24rem, 1.05fr);
+  }
+
+  .heroMedia {
+    min-height: 38rem;
+  }
+
+  .morph,
+  .craft {
+    min-height: 48rem;
+  }
+}
+
+@media (max-width: 47.999rem) {
+  .hero,
+  .morph,
+  .craft,
+  .finalActionInner {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    min-height: auto;
+  }
+
+  .heroMedia {
+    min-height: 0;
+    aspect-ratio: 4 / 5;
+  }
+
+  .heroCopy {
+    padding-block: 4.5rem 5rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(3.35rem, 18vw, 5rem);
+  }
+
+  .thesis {
+    min-height: 36rem;
+    padding-block: 6rem;
+  }
+
+  .sonicInner,
+  .statesInner,
+  .specificationsInner,
+  .labInvitationInner {
+    padding-block: 6rem;
+  }
+
+  .stateGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .morph,
+  .craft {
+    min-height: auto;
+  }
+
+  .splitMedia {
+    min-height: 0;
+    aspect-ratio: 8 / 5;
+  }
+
+  .splitCopy {
+    padding-block: 5rem;
+  }
+
+  .craftMedia,
+  .craftCopy {
+    grid-column: 1;
+  }
+
+  .craftMedia {
+    grid-row: 1;
+    aspect-ratio: 4 / 5;
+  }
+
+  .craftCopy {
+    grid-row: 2;
+  }
+
+  .specifications dl > div {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .specList {
+    display: grid;
+    gap: 0.4rem;
+  }
+
+  .specList li:not(:last-child)::after {
+    content: none;
+  }
+
+  .labInvitationInner {
+    min-height: 36rem;
+  }
+
+  .finalActionInner {
+    min-height: 32rem;
+    align-content: end;
+    align-items: initial;
+  }
+}
+
+@media (forced-colors: active) {
+  .hero,
+  .sonic,
+  .states,
+  .morph,
+  .craft,
+  .specifications,
+  .finalAction,
+  .stateMedia {
+    background: Canvas;
+    color: CanvasText;
+  }
+
+  .thesis,
+  .labInvitation,
+  .heroMedia,
+  .craftMedia,
+  .stateMediaLight {
+    background: Canvas;
+    color: CanvasText;
+  }
+
+  .actionButton,
+  .finalActionButton,
+  .labLink {
+    border: 2px solid ButtonText;
+    background: ButtonFace;
+    color: ButtonText;
+  }
+
+  .navigationStatus[data-navigation-state="pending"]::before {
+    background: Highlight;
+  }
+}
