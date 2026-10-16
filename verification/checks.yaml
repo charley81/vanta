@@ -47,6 +47,26 @@ checks:
     tool: vanta-verification
     report_path: artifacts/reports/public-runtime-scan.json
     requirement_ids: [BAG-009, PREVIEW-002, ARCH-010, SECURITY-005]
+  - id: audio-calibration
+    command: pnpm validate:audio-calibration
+    tool: vanta-verification
+    report_path: artifacts/reports/audio-calibration.json
+    requirement_ids: [SYNTH-002, SYNTH-005, SYNTH-006]
+  - id: audio-stress
+    command: pnpm validate:audio-stress
+    tool: vanta-verification
+    report_path: artifacts/reports/audio-stress.json
+    requirement_ids: [SYNTH-002, QUALITY-008]
+  - id: audio-render-isolation
+    command: pnpm validate:audio-isolation
+    tool: vanta-verification
+    report_path: artifacts/reports/audio-render-isolation.json
+    requirement_ids: [SYNTH-001, ARCH-005]
+  - id: audio-latency
+    command: pnpm test:audio-latency
+    tool: playwright
+    report_path: artifacts/reports/audio-latency.json
+    requirement_ids: [SYNTH-001, SYNTH-005, QUALITY-007]
   - id: lint
     command: pnpm lint
     tool: eslint

@@ -64,9 +64,9 @@ if (certificate.status !== 0) {
 }
 
 let nextServer: ChildProcess | null = spawn(
-  "pnpm",
+  process.execPath,
   [
-    "next",
+    join(process.cwd(), "node_modules", "next", "dist", "bin", "next"),
     "start",
     "--hostname",
     "127.0.0.1",

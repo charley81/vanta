@@ -23,6 +23,10 @@ pnpm validate:performance
 pnpm validate:product-catalog
 pnpm validate:boundaries
 pnpm validate:public-runtime
+pnpm validate:audio-calibration
+pnpm validate:audio-stress
+pnpm validate:audio-isolation
+pnpm test:audio-latency
 pnpm test:unit
 pnpm build:verified
 pnpm test:browser
@@ -37,3 +41,5 @@ pnpm check
 `test:browser` runs the production-build journey suite followed by the focused commerce boundary suite. `test:commerce` can run independently against a local temporary HTTPS proxy, or against an immutable Netlify deployment when `COMMERCE_QUALIFICATION_BASE_URL`, `COMMERCE_QUALIFICATION_DEPLOYMENT_ID`, and `COMMERCE_QUALIFICATION_APPLICATION_COMMIT` are all supplied. The deployed config rejects mutable aliases and verifies the public deploy record before exercising the journey. The manually triggered `Commerce qualification` GitHub Actions workflow accepts the deployment ID and deployed commit, checks out that commit, runs the deployed suite, and retains the sanitized Acceptance evidence for 30 days.
 
 `validate:product-catalog` compares the code-owned Product truth and Catalog values with the reviewed deterministic manifest and records its SHA-256. `validate:boundaries` rejects missing environment markers, server/client poisoning, local Route Handler calls from Server Components, and heavy runtime leakage into the root or Product route. `validate:public-runtime` scans public source and production configuration for forbidden commerce-platform dependencies, modes, endpoints, identifiers, and secret-shaped public variables.
+
+The audio checks produce non-Acceptance engineering reports under `artifacts/reports/`. `validate:audio-calibration` records the five-point continuum, endpoint fingerprints, secondary-control deltas, and predicted compensation spread. `validate:audio-stress` runs the authored phrase scheduler and bounded mappings through a deterministic simulated ten-minute session; candidate qualification must still pair it with a reviewed real-output stress trace. `validate:audio-isolation` proves that audio and rendering source do not import each other and that Web Audio stays behind the trusted-gesture dynamic import. `test:audio-latency` measures cold, warm, and control-to-schedule budgets in Chromium.

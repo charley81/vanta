@@ -152,8 +152,8 @@ export function SynthControlDeck({ controls }: SynthControlDeckProps) {
             <p className={styles.deckKicker}>Control detail</p>
             <h3>Select one of the six controls.</h3>
             <p>
-              Its native range opens here. Sound remains off while values can be
-              inspected and adjusted.
+              Its native range opens here. Values can be inspected and adjusted
+              whether sound is off or playing.
             </p>
           </div>
         ) : null}
