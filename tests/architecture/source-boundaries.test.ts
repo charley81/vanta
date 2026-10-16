@@ -115,6 +115,19 @@ describe("audio/render dependency isolation", () => {
     expect(transport).toContain('import("@/src/audio/engine.client")');
     expect(transport).not.toMatch(/^import .*engine\.client/m);
   });
+
+  it("keeps Three.js and Meshopt behind the Realtime eligibility loader", () => {
+    const loader = readFileSync("src/realtime/browser-loader.client.ts", "utf8");
+    const scene = readFileSync("src/realtime/three-scene.client.ts", "utf8");
+    expect(loader).toContain('import("./three-scene.client")');
+    expect(loader).toContain("GOVERNED_REALTIME_MODEL_URL");
+    expect(loader).toContain("GOVERNED_REALTIME_RESOURCES");
+    expect(loader).not.toMatch(/^import .*three-scene\.client/m);
+    expect(loader).not.toMatch(/from ["']three(?:\/|["'])/);
+    expect(scene).toMatch(/from "three"/);
+    expect(scene).toContain("MeshoptDecoder");
+    expect(scene).not.toMatch(/AudioContext|AudioNode|engine\.client/);
+  });
 });
 
 describe("public Bag surface", () => {

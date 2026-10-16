@@ -87,6 +87,11 @@ checks:
     tool: vanta-media
     report_path: artifacts/reports/media-resource-budgets.json
     requirement_ids: [QUALITY-004, QUALITY-006]
+  - id: realtime-runtime
+    command: pnpm test:realtime
+    tool: vitest
+    report_path: artifacts/reports/realtime-runtime.json
+    requirement_ids: [MEDIA-005, MEDIA-006, MEDIA-007, ARCH-008, ARCH-009, QUALITY-005, QUALITY-006, QUALITY-013]
   - id: lint
     command: pnpm lint
     tool: eslint

@@ -62,18 +62,42 @@ describe("bounded continuity parsers", () => {
   it("rejects unknown, contradictory Presentation versions", () => {
     expect(
       parsePresentationSession({
-        version: 2,
+        version: 3,
         eligibility: { motion: true, realtime: true },
+        adaptation: { dataSaving: false, input: "fine" },
         selectedTier: "realtime",
         fallbackReason: null,
+        realtimeDeclined: false,
       }).ok,
     ).toBe(false);
     expect(
       parsePresentationSession({
-        version: 1,
+        version: 2,
         eligibility: { motion: false, realtime: false },
+        adaptation: { dataSaving: false, input: "fine" },
         selectedTier: "realtime",
         fallbackReason: null,
+        realtimeDeclined: false,
+      }).ok,
+    ).toBe(false);
+    expect(
+      parsePresentationSession({
+        version: 2,
+        eligibility: { motion: true, realtime: true },
+        adaptation: { dataSaving: false, input: "fine" },
+        selectedTier: "core",
+        fallbackReason: null,
+        realtimeDeclined: false,
+      }).ok,
+    ).toBe(false);
+    expect(
+      parsePresentationSession({
+        version: 2,
+        eligibility: { motion: true, realtime: false },
+        adaptation: { dataSaving: false, input: "fine" },
+        selectedTier: "motion",
+        fallbackReason: "performance",
+        realtimeDeclined: false,
       }).ok,
     ).toBe(false);
   });
@@ -82,10 +106,12 @@ describe("bounded continuity parsers", () => {
     const storage = createStorage({
       [PREVIEW_STORAGE_KEY]: "{not-json",
       [PRESENTATION_STORAGE_KEY]: JSON.stringify({
-        version: 1,
+        version: 2,
         eligibility: { motion: true, realtime: false },
+        adaptation: { dataSaving: false, input: "fine" },
         selectedTier: "motion",
-        fallbackReason: null,
+        fallbackReason: "capability",
+        realtimeDeclined: false,
       }),
       unrelated: "retained",
     });
