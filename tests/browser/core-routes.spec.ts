@@ -93,9 +93,18 @@ test.describe("Core route walking skeleton", () => {
     await page.goto("/monolith");
     await page.getByRole("button", { name: "Add MONOLITH to Bag" }).first().click();
     const bag = page.getByRole("dialog", { name: "Bag" });
-    await expect(bag).toBeVisible();
-    await expect(bag.getByText("Bag service unavailable")).toBeVisible();
+    await expect(bag).toBeHidden();
+    await expect(
+      page.getByRole("button", { name: "Retry", exact: true }).locator(".."),
+    ).toContainText("Bag is temporarily unavailable.");
     await expect(page.getByRole("heading", { level: 1, name: "MONOLITH" })).toBeVisible();
+
+    await page
+      .getByRole("banner")
+      .getByRole("button", { name: "Open Bag" })
+      .click();
+    await expect(bag).toBeVisible();
+    await expect(bag.getByText("Bag is temporarily unavailable.")).toBeVisible();
     await bag.getByRole("link", { name: "Open MORPH Lab" }).click();
     await expect(page).toHaveURL(/\/synth$/);
     await expect(bag).toBeHidden();
@@ -150,7 +159,9 @@ test.describe("Core route walking skeleton", () => {
     await expect(page.getByRole("heading", { name: "MONOLITH" })).toBeVisible();
     await expect(page.getByRole("main").getByText("$2,499 USD")).toHaveCount(2);
     await expect(page.getByRole("link", { name: "TRY MORPH LAB" })).toBeVisible();
-    await expect(page.getByText(/Bag storage is not enabled/)).toBeVisible();
+    await expect(
+      page.getByText(/Bag stores one MONOLITH in this browser for up to 30 days/),
+    ).toBeVisible();
 
     await context.close();
   });

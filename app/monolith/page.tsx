@@ -38,6 +38,7 @@ export default async function ProductPage() {
               ariaLabel="Add MONOLITH to Bag"
               className={styles.actionButton}
               disabled={Boolean(preview)}
+              operation="add"
             >
               {model.hero.addToBagLabel}
             </BagTrigger>
@@ -45,7 +46,7 @@ export default async function ProductPage() {
           <p className={styles.status} id="bag-core-status">
             {preview
               ? "Bag mutation is disabled in Editorial preview."
-              : "Bag storage is not enabled in this Core build. The Bag overlay explains the available routes without changing product state."}
+              : "Bag stores one MONOLITH in this browser for up to 30 days."}
           </p>
         </div>
         <MediaPlaceholder label="MONOLITH / GRAPHITE" detail="AUTHORED STILL PENDING" />
@@ -168,6 +169,7 @@ export default async function ProductPage() {
             ariaLabel="Add MONOLITH to Bag"
             className={styles.secondaryAction}
             disabled={Boolean(preview)}
+            operation="add"
           >
             {model.hero.addToBagLabel}
           </BagTrigger>

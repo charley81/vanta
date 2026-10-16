@@ -2,24 +2,25 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import styles from "./shell-navigation.module.css";
 import {
+  Fragment,
   type KeyboardEvent,
   type ReactNode,
   useEffect,
+  useId,
   useRef,
   useState,
 } from "react";
+
+import { BagOverlayBoundary } from "./bag-overlay-boundary";
+import { useBag } from "./bag-provider";
+import styles from "./shell-navigation.module.css";
 
 const destinations = [
   { href: "/", label: "Home" },
   { href: "/monolith", label: "Product" },
   { href: "/synth", label: "Synth" },
 ] as const;
-
-type Disclosure = "bag" | "menu";
-
-const OPEN_BAG_EVENT = "vanta:open-bag";
 
 function NavigationLinks({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
@@ -36,53 +37,38 @@ function NavigationLinks({ onNavigate }: { onNavigate?: () => void }) {
   ));
 }
 
-export function ShellNavigation({ bagContent }: { bagContent: ReactNode }) {
-  const [activeDisclosure, setActiveDisclosure] =
-    useState<Disclosure | null>(null);
+export function ShellNavigation() {
+  const { closeBag, state } = useBag();
+  const [menuOpen, setMenuOpen] = useState(false);
   const bagDialogRef = useRef<HTMLDialogElement>(null);
+  const bagHeadingRef = useRef<HTMLHeadingElement>(null);
   const menuDialogRef = useRef<HTMLDialogElement>(null);
-  const invokerRef = useRef<HTMLButtonElement>(null);
+  const menuInvokerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    function openBagFromShell(event: Event) {
-      const invoker = (event as CustomEvent<HTMLButtonElement>).detail;
-      if (invoker instanceof HTMLButtonElement) {
-        invokerRef.current = invoker;
-        setActiveDisclosure("bag");
-      }
-    }
-
-    window.addEventListener(OPEN_BAG_EVENT, openBagFromShell);
-    return () => window.removeEventListener(OPEN_BAG_EVENT, openBagFromShell);
-  }, []);
+    const dialog = menuDialogRef.current;
+    if (menuOpen && dialog && !dialog.open) dialog.showModal();
+    if (!menuOpen && dialog?.open) dialog.close();
+  }, [menuOpen]);
 
   useEffect(() => {
-    const dialogs = {
-      bag: bagDialogRef.current,
-      menu: menuDialogRef.current,
-    };
-
-    for (const [name, dialog] of Object.entries(dialogs)) {
-      if (dialog?.open && name !== activeDisclosure) dialog.close();
+    const dialog = bagDialogRef.current;
+    if (state.open && dialog && !dialog.open) {
+      setMenuOpen(false);
+      dialog.showModal();
+      requestAnimationFrame(() => bagHeadingRef.current?.focus());
     }
+    if (!state.open && dialog?.open) dialog.close();
+  }, [state.open]);
 
-    const activeDialog = activeDisclosure
-      ? dialogs[activeDisclosure]
-      : undefined;
-    if (activeDialog && !activeDialog.open) activeDialog.showModal();
-  }, [activeDisclosure]);
-
-  function openDisclosure(
-    disclosure: Disclosure,
-    invoker: HTMLButtonElement,
-  ) {
-    invokerRef.current = invoker;
-    setActiveDisclosure(disclosure);
+  function openMenu(invoker: HTMLButtonElement) {
+    menuInvokerRef.current = invoker;
+    setMenuOpen(true);
   }
 
-  function closeDisclosure() {
-    setActiveDisclosure(null);
-    requestAnimationFrame(() => invokerRef.current?.focus());
+  function closeMenu() {
+    setMenuOpen(false);
+    requestAnimationFrame(() => menuInvokerRef.current?.focus());
   }
 
   function containFocus(event: KeyboardEvent<HTMLDialogElement>) {
@@ -116,75 +102,72 @@ export function ShellNavigation({ bagContent }: { bagContent: ReactNode }) {
 
       <button
         aria-controls="navigation-dialog"
-        aria-expanded={activeDisclosure === "menu"}
+        aria-expanded={menuOpen}
         aria-haspopup="dialog"
         aria-label="Open menu"
         className={styles.menuTrigger}
-        onClick={(event) => openDisclosure("menu", event.currentTarget)}
+        onClick={(event) => openMenu(event.currentTarget)}
         type="button"
       >
         Menu
       </button>
 
-      <button
-        aria-controls="bag-dialog"
-        aria-expanded={activeDisclosure === "bag"}
-        aria-haspopup="dialog"
-        aria-label="Open Bag, 0 items"
-        onClick={(event) => openDisclosure("bag", event.currentTarget)}
-        type="button"
-      >
-        Bag <span aria-hidden="true">/ 0</span>
-      </button>
+      <BagTrigger />
 
       <dialog
         aria-labelledby="navigation-dialog-title"
         className={styles.dialog}
         id="navigation-dialog"
-        onClick={(event) => {
-          if (event.target === event.currentTarget) closeDisclosure();
+        onCancel={(event) => {
+          event.preventDefault();
+          closeMenu();
         }}
-        onClose={closeDisclosure}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) closeMenu();
+        }}
         onKeyDown={containFocus}
         ref={menuDialogRef}
       >
         <div className={styles.dialogPanel}>
           <div className={styles.dialogHeading}>
             <h2 id="navigation-dialog-title">Navigation</h2>
-            <button autoFocus onClick={closeDisclosure} type="button">
+            <button autoFocus onClick={closeMenu} type="button">
               Close menu
             </button>
           </div>
           <nav aria-label="Menu navigation" className={styles.dialogLinks}>
-            <NavigationLinks onNavigate={closeDisclosure} />
+            <NavigationLinks onNavigate={closeMenu} />
           </nav>
         </div>
       </dialog>
 
       <dialog
         aria-labelledby="bag-dialog-title"
-        className={styles.dialog}
+        className={`${styles.dialog} ${styles.bagDialog}`}
         id="bag-dialog"
-        onClick={(event) => {
-          if (
-            event.target === event.currentTarget ||
-            (event.target instanceof Element && event.target.closest("a[href]"))
-          ) {
-            closeDisclosure();
-          }
+        onCancel={(event) => {
+          event.preventDefault();
+          closeBag();
         }}
-        onClose={closeDisclosure}
+        onClick={(event) => {
+          if (event.target === event.currentTarget) closeBag();
+        }}
         onKeyDown={containFocus}
         ref={bagDialogRef}
       >
         <div className={styles.dialogPanel}>
           <div className={styles.dialogHeading}>
-            <h2 id="bag-dialog-title">Bag</h2>
-            <button autoFocus onClick={closeDisclosure} type="button">
+            <div>
+              <p className={styles.dialogStatus}>Same-browser Bag / 30 days</p>
+              <h2 id="bag-dialog-title" ref={bagHeadingRef} tabIndex={-1}>
+                Bag
+              </h2>
+            </div>
+            <button onClick={closeBag} type="button">
               Close Bag
             </button>
           </div>
-          {bagContent}
+          <BagOverlayBoundary />
         </div>
       </dialog>
     </div>
@@ -197,34 +180,72 @@ type BagTriggerProps = {
   children?: ReactNode;
   className?: string;
   disabled?: boolean;
+  operation?: "add" | "open";
 };
 
 export function BagTrigger({
   ariaDescribedBy,
-  ariaLabel = "Open Bag, 0 items",
-  children = (
-    <>
-      Bag <span aria-hidden="true">/ 0</span>
-    </>
-  ),
+  ariaLabel,
+  children,
   className,
   disabled = false,
+  operation = "open",
 }: BagTriggerProps) {
+  const id = useId();
+  const { activeInvokerId, addToBag, openBag, retry, state } = useBag();
+  const count = state.confirmed?.item ? 1 : 0;
+  const countKnown = state.confirmed !== null;
+  const label =
+    ariaLabel ??
+    (countKnown
+      ? `Open Bag, ${count} ${count === 1 ? "item" : "items"}`
+      : "Open Bag, status unknown");
+  const isActiveInvoker = activeInvokerId === id;
+  const adding = operation === "add" && state.pending === "add";
+  const addError =
+    operation === "add" &&
+    isActiveInvoker &&
+    state.error?.operation === "add"
+      ? state.error
+      : null;
+
   return (
-    <button
-      aria-describedby={ariaDescribedBy}
-      aria-label={ariaLabel}
-      className={className}
-      disabled={disabled}
-      onClick={(event) =>
-        window.dispatchEvent(
-          new CustomEvent(OPEN_BAG_EVENT, { detail: event.currentTarget }),
-        )
-      }
-      type="button"
-    >
-      {children}
-    </button>
+    <Fragment>
+      <button
+        aria-controls="bag-dialog"
+        aria-describedby={ariaDescribedBy}
+        aria-expanded={state.open}
+        aria-haspopup="dialog"
+        aria-label={label}
+        className={className}
+        data-bag-action
+        disabled={disabled || adding}
+        onClick={(event) => {
+          if (operation === "add") {
+            void addToBag(event.currentTarget, id);
+          } else {
+            openBag(event.currentTarget, id);
+          }
+        }}
+        type="button"
+      >
+        {adding ? (
+          "Adding MONOLITH to Bag…"
+        ) : (children ?? (
+          <>
+            Bag <span aria-hidden="true">/ {countKnown ? count : "—"}</span>
+          </>
+        ))}
+      </button>
+      {addError ? (
+        <span className={styles.bagTriggerError} role="alert">
+          {addError.message}{" "}
+          <button data-bag-action onClick={() => void retry()} type="button">
+            Retry
+          </button>
+        </span>
+      ) : null}
+    </Fragment>
   );
 }
 
