@@ -106,6 +106,17 @@ describe("server/client source ownership", () => {
   });
 });
 
+describe("audio/render dependency isolation", () => {
+  it("keeps the lazy native audio engine independent from rendering", () => {
+    const engine = readFileSync("src/audio/engine.client.ts", "utf8");
+    const transport = readFileSync("src/synth/transport.client.ts", "utf8");
+    expect(engine).not.toMatch(/three|renderer|\.glb|@react-three/i);
+    expect(engine).not.toMatch(/AudioWorklet|audioWorklet/i);
+    expect(transport).toContain('import("@/src/audio/engine.client")');
+    expect(transport).not.toMatch(/^import .*engine\.client/m);
+  });
+});
+
 describe("public Bag surface", () => {
   it("exposes only read, add MONOLITH, and remove MONOLITH Route Handlers", () => {
     const routes = readdirSync("app/api/bag", { recursive: true })

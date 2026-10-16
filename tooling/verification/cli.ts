@@ -14,6 +14,11 @@ import {
   evaluatePublicRuntime,
   evaluateSourceBoundaries,
 } from "./architecture";
+import {
+  evaluateAudioCalibration,
+  evaluateAudioIsolation,
+  evaluateAudioStress,
+} from "./audio";
 import { validateEvidenceManifest } from "./evidence-manifest";
 import { evaluatePerformanceRegression } from "./performance-regression";
 import { writeVerificationReport } from "./report";
@@ -296,7 +301,7 @@ function runCheck(checkId: string, command: string[]): number {
 
 function usage(): never {
   throw new Error(
-    "Usage: cli.ts requirements | evidence [manifest ...] | performance <input.json> | product-catalog | boundaries | public-runtime | run <check-id> -- <command ...>",
+    "Usage: cli.ts requirements | evidence [manifest ...] | performance <input.json> | product-catalog | boundaries | public-runtime | audio-calibration | audio-stress | audio-isolation | run <check-id> -- <command ...>",
   );
 }
 
@@ -321,6 +326,14 @@ function main(): number {
       );
     case "public-runtime":
       return runArchitectureCheck("public-runtime-scan", evaluatePublicRuntime);
+    case "audio-calibration":
+      return runArchitectureCheck("audio-calibration", () =>
+        evaluateAudioCalibration(),
+      );
+    case "audio-stress":
+      return runArchitectureCheck("audio-stress", () => evaluateAudioStress());
+    case "audio-isolation":
+      return runArchitectureCheck("audio-render-isolation", evaluateAudioIsolation);
     case "run": {
       const separator = args.indexOf("--");
       if (!args[0] || separator === -1) return usage();

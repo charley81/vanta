@@ -177,24 +177,140 @@ test.describe("Synth shell and semantic Control deck", () => {
     );
   });
 
-  test("crosses the sound boundary only after activation and reports local unavailability", async ({
+  test("loads native audio only after activation and meets cold, warm, and control scheduling budgets", async ({
+    page,
+  }, testInfo) => {
+    await page.goto("/synth");
+    const status = page.locator('[data-audio-state="off"]');
+    await expect(status).toBeVisible();
+    const resourcesBeforeActivation = await page.evaluate(() =>
+      performance.getEntriesByType("resource").map((entry) => entry.name),
+    );
+
+    await page.getByRole("button", { name: "Enable Sound" }).click();
+    await expect(page.locator('[data-audio-state="playing"]')).toContainText(
+      "Sound is playing.",
+    );
+    const coldLatency = Number(
+      await page
+        .locator('[data-audio-state="playing"]')
+        .getAttribute("data-audio-cold-latency-ms"),
+    );
+    expect(coldLatency).toBeLessThanOrEqual(500);
+    await expect(page.getByRole("button", { name: "Pause Sound" })).toBeEnabled();
+
+    await page.locator('[data-control-selector="morph"]').click();
+    await page.getByRole("slider", { name: "MORPH value" }).fill("64");
+    await expect
+      .poll(async () =>
+        Number(
+          await page
+            .locator('[data-audio-state="playing"]')
+            .getAttribute("data-audio-control-latency-ms"),
+        ),
+      )
+      .toBeLessThanOrEqual(50);
+    const visibleInNextFrame = await page.evaluate(
+      () =>
+        new Promise<boolean>((resolve) => {
+          const range = document.querySelector<HTMLInputElement>(
+            '#control-range-morph',
+          );
+          const valueSetter = Object.getOwnPropertyDescriptor(
+            HTMLInputElement.prototype,
+            "value",
+          )?.set;
+          if (!range || !valueSetter) return resolve(false);
+          valueSetter.call(range, "65");
+          range.dispatchEvent(new Event("input", { bubbles: true }));
+          requestAnimationFrame(() => {
+            const selector = document.querySelector(
+              '[data-control-selector="morph"]',
+            );
+            resolve(selector?.textContent?.includes("65%") ?? false);
+          });
+        }),
+    );
+    expect(visibleInNextFrame).toBe(true);
+
+    await page.getByRole("button", { name: "Pause Sound" }).click();
+    await expect(page.locator('[data-audio-state="paused"]')).toContainText(
+      "will resume only",
+    );
+    await page.getByRole("button", { name: "Resume Sound" }).click();
+    await expect(page.locator('[data-audio-state="playing"]')).toBeVisible();
+    const warmLatency = Number(
+      await page
+        .locator('[data-audio-state="playing"]')
+        .getAttribute("data-audio-warm-latency-ms"),
+    );
+    expect(warmLatency).toBeLessThanOrEqual(150);
+    const controlLatency = Number(
+      await page
+        .locator('[data-audio-state="playing"]')
+        .getAttribute("data-audio-control-latency-ms"),
+    );
+    await testInfo.attach("audio-latency-trace", {
+      body: Buffer.from(
+        JSON.stringify(
+          {
+            budgetsMs: { cold: 500, controlSchedule: 50, warm: 150 },
+            measurementsMs: {
+              cold: coldLatency,
+              controlSchedule: controlLatency,
+              warm: warmLatency,
+            },
+            visibleUpdateByNextAnimationFrame: visibleInNextFrame,
+          },
+          null,
+          2,
+        ),
+      ),
+      contentType: "application/json",
+    });
+
+    const resourcesAfterActivation = await page.evaluate(() =>
+      performance.getEntriesByType("resource").map((entry) => entry.name),
+    );
+    const resourcesLoadedByActivation = resourcesAfterActivation.filter(
+      (resource) => !resourcesBeforeActivation.includes(resource),
+    );
+    expect(resourcesLoadedByActivation.some((resource) => /\.js(?:$|\?)/.test(resource))).toBe(
+      true,
+    );
+    expect(resourcesAfterActivation.join("\n")).not.toMatch(
+      /audio-worklet|\.mp3(?:$|\?)|\.wav(?:$|\?)|\.ogg(?:$|\?)/i,
+    );
+  });
+
+  test("pauses for Bag and route intent without automatically resuming", async ({
     page,
   }) => {
     await page.goto("/synth");
-    await expect(page.locator('[data-audio-state="off"]')).toBeVisible();
-
     await page.getByRole("button", { name: "Enable Sound" }).click();
-    await expect(page.locator('[data-audio-state="unavailable"]')).toContainText(
-      "Sound is unavailable in this build.",
-    );
-    await expect(page.getByRole("button", { name: "Retry sound" })).toBeEnabled();
+    await expect(page.locator('[data-audio-state="playing"]')).toBeVisible();
 
-    const resources = await page.evaluate(() =>
-      performance.getEntriesByType("resource").map((entry) => entry.name),
+    await page
+      .getByRole("banner")
+      .getByRole("button", { name: /Open Bag/ })
+      .click();
+    await expect(page.locator('[data-audio-state="interrupted"]')).toContainText(
+      "will not resume automatically",
     );
-    expect(resources.join("\n")).not.toMatch(
-      /audio-worklet|\.mp3(?:$|\?)|\.wav(?:$|\?)|\.ogg(?:$|\?)/i,
-    );
+    await page.getByRole("button", { name: "Close Bag" }).click();
+    await expect(page.locator('[data-audio-state="interrupted"]')).toBeVisible();
+
+    await page.getByRole("button", { name: "Resume Sound" }).click();
+    await expect(page.locator('[data-audio-state="playing"]')).toBeVisible();
+    await page
+      .getByRole("navigation", { name: "Primary navigation" })
+      .getByRole("link", { name: "Product" })
+      .click();
+    await expect(page).toHaveURL(/\/monolith$/);
+    await page.goBack();
+    await expect(page.locator('[data-audio-state="interrupted"]')).toBeVisible();
+    await page.getByRole("button", { name: "Resume Sound" }).click();
+    await expect(page.locator('[data-audio-state="playing"]')).toBeVisible();
   });
 
   test("reflows at 320 CSS pixels with accessible targets and no serious findings", async ({

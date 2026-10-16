@@ -23,11 +23,15 @@
     "validate:product-catalog": "tsx tooling/verification/cli.ts product-catalog",
     "validate:boundaries": "tsx tooling/verification/cli.ts boundaries",
     "validate:public-runtime": "tsx tooling/verification/cli.ts public-runtime",
+    "validate:audio-calibration": "tsx tooling/verification/cli.ts audio-calibration",
+    "validate:audio-stress": "tsx tooling/verification/cli.ts audio-stress",
+    "validate:audio-isolation": "tsx tooling/verification/cli.ts audio-isolation",
+    "test:audio-latency": "tsx tooling/verification/cli.ts run audio-latency -- pnpm exec playwright test tests/browser/synth.spec.ts --grep loads.native.audio",
     "validate:editorial": "sanity schema validate && tsx scripts/validate-editorial.ts && vitest run tests/editorial",
     "sanity:dev": "sanity dev",
     "sanity:deploy": "sanity deploy",
     "seed:editorial": "tsx scripts/seed-editorial.ts",
-    "check": "pnpm validate:requirements && pnpm validate:evidence && pnpm validate:performance && pnpm validate:product-catalog && pnpm validate:boundaries && pnpm validate:public-runtime && pnpm validate:editorial && pnpm lint && pnpm typecheck && pnpm test:unit && pnpm build:verified && pnpm test:browser"
+    "check": "pnpm validate:requirements && pnpm validate:evidence && pnpm validate:performance && pnpm validate:product-catalog && pnpm validate:boundaries && pnpm validate:public-runtime && pnpm validate:audio-calibration && pnpm validate:audio-stress && pnpm validate:audio-isolation && pnpm validate:editorial && pnpm lint && pnpm typecheck && pnpm test:unit && pnpm build:verified && pnpm test:browser"
   },
   "dependencies": {
     "@sanity/client": "8.9.0",

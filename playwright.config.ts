@@ -15,7 +15,8 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  // Timing budgets must not be contaminated by sibling browser journeys.
+  workers: 1,
   reporter: [
     ["line"],
     ["html", { outputFolder: "artifacts/playwright", open: "never" }],

@@ -6,7 +6,7 @@ import {
   SYNTH_CONTROL_DEFINITIONS,
   createMorphControlSurfaceAdapter,
 } from "@/src/synth/controls";
-import { unavailableAudioTransport } from "@/src/synth/transport";
+import { reduceAudioTransport } from "@/src/synth/transport";
 
 describe("MORPH control surface contract", () => {
   it("defines exactly the six approved normalized controls and canonical defaults", () => {
@@ -47,9 +47,9 @@ describe("MORPH control surface contract", () => {
     expect(store.getSnapshot().values.attack).toBe(39);
   });
 
-  it("keeps the pre-audio transport explicitly unavailable", async () => {
-    await expect(
-      unavailableAudioTransport.enableFromTrustedGesture(),
-    ).resolves.toEqual({ ok: false, reason: "audio-engine-unavailable" });
+  it("keeps audio off until the explicit preparation transition", () => {
+    expect(reduceAudioTransport("off", { type: "pause" })).toBe("off");
+    expect(reduceAudioTransport("off", { type: "prepare" })).toBe("preparing");
+    expect(reduceAudioTransport("preparing", { type: "play" })).toBe("playing");
   });
 });

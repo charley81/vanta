@@ -89,7 +89,7 @@ test.describe("Core route walking skeleton", () => {
     await expect(page.getByRole("main").getByText("$2,499 USD")).toHaveCount(2);
   });
 
-  test("keeps unavailable enhancements explicit and locally contained", async ({ page }) => {
+  test("keeps local failures contained while independent enhancements remain usable", async ({ page }) => {
     await page.goto("/monolith");
     await page.getByRole("button", { name: "Add MONOLITH to Bag" }).first().click();
     const bag = page.getByRole("dialog", { name: "Bag" });
@@ -110,8 +110,8 @@ test.describe("Core route walking skeleton", () => {
     await expect(bag).toBeHidden();
 
     await page.getByRole("button", { name: "Enable Sound" }).click();
-    await expect(page.locator('[data-audio-state="unavailable"]')).toContainText(
-      "Sound is unavailable in this build.",
+    await expect(page.locator('[data-audio-state="playing"]')).toContainText(
+      "Sound is playing.",
     );
     const synthRanges = page.locator('main input[type="range"]');
     await expect(synthRanges).toHaveCount(6);
