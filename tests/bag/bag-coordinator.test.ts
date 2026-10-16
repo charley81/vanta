@@ -107,6 +107,21 @@ describe("Bag coordinator", () => {
     });
   });
 
+  it("revalidates confirmed membership whenever Bag is reopened", async () => {
+    const request = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(response(populated))
+      .mockResolvedValueOnce(response(empty));
+    const coordinator = createBagCoordinator(createBagClient({ request }));
+
+    await coordinator.open();
+    coordinator.close();
+    await coordinator.open();
+
+    expect(coordinator.getSnapshot().confirmed).toEqual(empty);
+    expect(request).toHaveBeenCalledTimes(2);
+  });
+
   it("treats cross-tab messages as invalidation and refetches on interaction", async () => {
     const request = vi
       .fn<typeof fetch>()

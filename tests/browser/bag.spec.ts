@@ -144,6 +144,21 @@ test.describe("Bag disclosure", () => {
       .getByRole("button", { name: "Open Bag" });
     const initialHistoryLength = await page.evaluate(() => window.history.length);
     await page.evaluate(() => {
+      window.history.replaceState(
+        { ...window.history.state, __vantaBagDisclosure: { version: 99 } },
+        "",
+        window.location.href,
+      );
+      window.dispatchEvent(new PopStateEvent("popstate", { state: history.state }));
+    });
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () => !("__vantaBagDisclosure" in (window.history.state ?? {})),
+        ),
+      )
+      .toBe(true);
+    await page.evaluate(() => {
       document.addEventListener("vanta:bag-opened", () => {
         const count = Number(document.documentElement.dataset.bagOpened ?? "0");
         document.documentElement.dataset.bagOpened = String(count + 1);

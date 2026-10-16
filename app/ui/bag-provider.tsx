@@ -40,12 +40,21 @@ const BagContext = createContext<BagContextValue | null>(null);
 
 function hasBagHistoryState(): boolean {
   const state: unknown = window.history.state;
-  return Boolean(
-    state &&
-      typeof state === "object" &&
-      BAG_HISTORY_KEY in state &&
-      (state as Record<string, unknown>)[BAG_HISTORY_KEY] !== null,
-  );
+  if (!state || typeof state !== "object" || !(BAG_HISTORY_KEY in state)) {
+    return false;
+  }
+  const marker = (state as Record<string, unknown>)[BAG_HISTORY_KEY];
+  if (
+    marker &&
+    typeof marker === "object" &&
+    !Array.isArray(marker) &&
+    Object.keys(marker).length === 1 &&
+    (marker as Record<string, unknown>).version === 1
+  ) {
+    return true;
+  }
+  clearBagHistoryState();
+  return false;
 }
 
 function pushBagHistoryState() {
@@ -132,7 +141,9 @@ export function BagProvider({ children }: { children: ReactNode }) {
     const operation = coordinator.getSnapshot().error?.operation;
     if (!(await coordinator.retry())) return;
     if (operation === "add" || operation === "remove") publishInvalidation();
-    if (operation === "add") enterBagHistory();
+    if (operation === "add" && coordinator.getSnapshot().open) {
+      enterBagHistory();
+    }
   }, [coordinator, enterBagHistory, publishInvalidation]);
 
   const closeBag = useCallback(() => {

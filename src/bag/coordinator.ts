@@ -100,8 +100,7 @@ export function createBagCoordinator(client: BagClient): BagCoordinator {
     },
     async open() {
       if (!state.open) publish({ ...state, open: true });
-      if (state.confirmed === null || state.stale) return run("read");
-      return true;
+      return run("read");
     },
     refreshIfStale() {
       return state.stale ? run("read") : Promise.resolve(true);
