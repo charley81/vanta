@@ -1,0 +1,185 @@
+schema_version: 1
+status: draft
+notice: >-
+  This is an unexecuted qualification record for issue 58. Every artifact is
+  not_run, candidate identity is intentionally unbound, and this file makes no
+  verification, Acceptance, or launch claim.
+
+candidate:
+  baseline_commit: 8177d60995fcce30fad51663b8c8e8fc5c7fceb9
+  application_commit: null
+  deployment_id: null
+  deployment_url: null
+  production_origin: null
+  content_release_or_revisions: []
+  product_truth_manifest_sha256: null
+  glb_source_sha256: ccbdb568548e154335b2d8eb147a8f39b9881eb930e2b290e098f419425ca261
+  derivative_manifest_sha256: null
+  configuration_manifest_sha256: null
+  node_version: null
+  pnpm_version: null
+  next_version: null
+  netlify_adapter_version: null
+  created_at: null
+  created_by: null
+
+artifacts:
+  - id: morph-calibration-manifest
+    status: not_run
+    title: MORPH calibration manifest and audio/render isolation report
+    requirement_ids: [SYNTH-006]
+    acceptance_stage: candidate
+    verification_methods: [automated, measurement, inspection]
+    environment: null
+    started_at: null
+    completed_at: null
+    tool_and_version: null
+    command_or_procedure: >-
+      Run pnpm validate:audio-calibration and pnpm validate:audio-isolation from
+      a clean checkout of the bound application commit.
+    result_summary: null
+    measurements: {}
+    public_uri: null
+    restricted_uri: null
+    sha256: null
+    custodian: null
+    retention_until: null
+    sensitive: false
+    redactions: []
+    notes: >-
+      Retain both generated reports; a machine pass remains supporting evidence
+      until the named reviewer completes the sound review.
+
+  - id: morph-sound-review
+    status: not_run
+    title: Human MORPH continuum, secondary-control, phrase, and scope review
+    requirement_ids: [SYNTH-006]
+    acceptance_stage: candidate
+    verification_methods: [manual, review]
+    environment: null
+    started_at: null
+    completed_at: null
+    tool_and_version: null
+    command_or_procedure: >-
+      Complete sections 1 through 3 of docs/evidence/issue-58/README.md on every
+      selected target using the immutable candidate.
+    result_summary: null
+    measurements: {}
+    public_uri: null
+    restricted_uri: null
+    sha256: null
+    custodian: null
+    retention_until: null
+    sensitive: false
+    redactions: []
+    notes: >-
+      Requires a named product/design reviewer; desktop-only listening cannot
+      produce a pass.
+
+  - id: target-device-audio-latency
+    status: not_run
+    title: Target-device first-sound, control, and visible-update latency traces
+    requirement_ids: [QUALITY-007]
+    acceptance_stage: candidate
+    verification_methods: [measurement]
+    environment: null
+    started_at: null
+    completed_at: null
+    tool_and_version: null
+    command_or_procedure: >-
+      Complete section 4 of docs/evidence/issue-58/README.md with at least three
+      raw runs per selected hardware and browser pair.
+    result_summary: null
+    measurements: {}
+    public_uri: null
+    restricted_uri: null
+    sha256: null
+    custodian: null
+    retention_until: null
+    sensitive: false
+    redactions: []
+    notes: >-
+      Application scheduling measurements must not be relabeled as audible
+      output latency when the target output stack adds material latency.
+
+  - id: target-device-audio-stress
+    status: not_run
+    title: Ten-minute target-device real-output stress traces and review notes
+    requirement_ids: [QUALITY-008]
+    acceptance_stage: candidate
+    verification_methods: [measurement, manual, exercise]
+    environment: null
+    started_at: null
+    completed_at: null
+    tool_and_version: null
+    command_or_procedure: >-
+      Complete section 5 of docs/evidence/issue-58/README.md on every selected
+      target class and retain the raw target trace and heard review notes.
+    result_summary: null
+    measurements: {}
+    public_uri: null
+    restricted_uri: null
+    sha256: null
+    custodian: null
+    retention_until: null
+    sensitive: false
+    redactions: []
+    notes: >-
+      The deterministic pnpm validate:audio-stress report is supporting evidence
+      and cannot replace the real-output session.
+
+  - id: signed-audio-acceptance
+    status: not_run
+    title: Named product/design MORPH sound and interaction decision
+    requirement_ids: [SYNTH-006, QUALITY-007, QUALITY-008]
+    acceptance_stage: candidate
+    verification_methods: [review]
+    environment: null
+    started_at: null
+    completed_at: null
+    tool_and_version: null
+    command_or_procedure: >-
+      Post the explicit APPROVE or REJECT decision from section 7 of
+      docs/evidence/issue-58/README.md after reviewing every preceding artifact.
+    result_summary: null
+    measurements: {}
+    public_uri: null
+    restricted_uri: null
+    sha256: null
+    custodian: null
+    retention_until: null
+    sensitive: false
+    redactions: []
+    notes: >-
+      Missing evidence blocks approval; rejection notes must identify precise,
+      reproducible failures.
+
+bindings:
+  production_origin:
+    value_or_reference: null
+    owner: null
+    validated_at: null
+    evidence_artifact_id: null
+  sanity_project_dataset:
+    value_or_reference: null
+    owner: null
+    validated_at: null
+    evidence_artifact_id: null
+  privacy_notice:
+    value_or_reference: null
+    owner: null
+    validated_at: null
+    evidence_artifact_id: null
+  rollback_deployment:
+    value_or_reference: null
+    owner: null
+    validated_at: null
+    evidence_artifact_id: null
+
+waivers: []
+signatures: []
+
+manifest:
+  generated_at: null
+  sha256: null
+  supersedes_manifest_sha256: null
