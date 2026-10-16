@@ -22,7 +22,7 @@ Baseline: approved Handoff Baseline `8177d60995fcce30fad51663b8c8e8fc5c7fceb9`.
 | Malformed state | Malformed JSON and an impossible reached/active-stage combination reset to fresh Contact without unlocking Review. |
 | Tamper | A modified signed HttpOnly Bag cookie becomes empty and is cleared. |
 
-The focused Playwright HTML report, traces on failure, and JSON attachments are retained below `artifacts/commerce-playwright/` and `artifacts/commerce-results/` by the existing CI artifact upload.
+The focused Playwright HTML report, traces on failure, and JSON attachments are retained below `artifacts/commerce-playwright/` and `artifacts/commerce-results/`. Local CI uploads these files with the full verification report. The manually triggered `Commerce qualification` workflow uploads the deployed-run files as one GitHub Actions artifact retained for 30 days.
 
 ## Privacy, storage, network, and accessibility capture
 
@@ -47,7 +47,7 @@ The `restricted-endpoint-security` attachment records status outcomes, not paylo
 - Remove replay remaining empty;
 - mutation-burst rate limiting with a positive `Retry-After`.
 
-The artifact is treated as restricted operational evidence because it documents the immutable target and abuse-control exercise. Application rate limiting remains defense in depth; a deployed run is also the qualification of the platform path used by this focused gate.
+The attachment is sanitized: it contains status outcomes and deployment metadata but no secret, payload, cookie value, IP address, or visitor data. For this portfolio, the owner [approved](https://github.com/charley81/vanta/issues/54#issuecomment-6217458124) the authenticated GitHub Actions run and its 30-day artifact as sufficient Acceptance evidence; no separate private evidence system is required. Application rate limiting remains defense in depth; a deployed run is also the qualification of the platform path used by this focused gate.
 
 ## Immutable deployed run
 
@@ -60,13 +60,13 @@ COMMERCE_QUALIFICATION_APPLICATION_COMMIT=<full-40-character-commit> \
 pnpm test:commerce
 ```
 
-The first test reads Netlify's public deploy record and requires `state: ready` and `commit_ref` equal to the supplied application commit. The remaining tests then run against that same origin. Local runs use a temporary HTTPS reverse proxy over `next start`, deterministic non-production Bag signing material, and `acceptanceClaim: false` identity metadata.
+The first test reads Netlify's public deploy record and requires `state: ready` and `commit_ref` equal to the supplied application commit. The remaining tests then run against that same origin. The `Commerce qualification` GitHub Actions workflow checks out the same application commit before running this command, preventing a later harness from qualifying earlier application code. Local runs use a temporary HTTPS reverse proxy over `next start`, deterministic non-production Bag signing material, and `acceptanceClaim: false` identity metadata.
 
 A pre-implementation probe of main commit `1864677eb62d4f996fb6c19abe4c96dcf6547eb6` at immutable deploy `6ad1742497414beac510e967` passed the identity binding and failed the first commerce journey because deployed Bag configuration was disabled. That failure is retained as a blocker diagnosis only; it is not evidence for this branch or a later candidate. Enabling Bag requires the documented private Netlify bindings and approved secret custody before a new immutable deployment can pass.
 
 ## Risk-gate decision record
 
-**Branch/local decision: BLOCK candidate Acceptance.** Local success is implementation feedback only. The gate changes to pass only when all focused tests pass against the immutable deployed application commit, the generated artifacts are retained at controlled URIs, and the security/privacy reviewer records approval against that identity. Any disabled Bag, identity mismatch, journey failure, transaction-shaped request, visitor-data persistence, endpoint-control failure, or missing artifact keeps the gate blocked; no listed boundary is waivable.
+**Branch/local decision: BLOCK candidate Acceptance.** Local success is implementation feedback only. The gate changes to pass only when all focused tests pass in the `Commerce qualification` workflow against the immutable deployed application commit, its sanitized artifact is retained for 30 days, and the owner records the security/privacy approval against the workflow run and deployment identity in issue #54. Any disabled Bag, identity mismatch, journey failure, transaction-shaped request, visitor-data persistence, endpoint-control failure, or missing artifact keeps the gate blocked; no listed boundary is waivable.
 
 ## Commands
 

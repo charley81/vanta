@@ -317,24 +317,35 @@ describe("Bag Route Handler contract", () => {
     }
   });
 
-  it("treats tampered and expired state as empty and clears it", async () => {
+  it("treats tampered, non-canonical, and expired state as empty and clears it", async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-10-15T12:00:00.000Z"));
     const { GET } = await import("@/app/api/bag/route");
     const { POST: add } = await import("@/app/api/bag/add/route");
     const added = await add(request("/api/bag/add", { method: "POST" }));
     const cookie = cookieFrom(added);
-    const finalCharacter = cookie.at(-1);
-    const tampered = `${cookie.slice(0, -1)}${finalCharacter === "A" ? "B" : "A"}`;
+    const [cookieName, cookieValue] = cookie.split("=");
+    const [payload, signature] = cookieValue.split(".");
+    const tamperedSignature = `${signature.at(0) === "A" ? "B" : "A"}${signature.slice(1)}`;
+    const base64UrlAlphabet =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+    const finalIndex = base64UrlAlphabet.indexOf(signature.at(-1)!);
+    expect(finalIndex % 4).toBe(0);
+    const nonCanonicalSignature = `${signature.slice(0, -1)}${base64UrlAlphabet[finalIndex + 1]}`;
 
-    const tamperedResponse = await GET(
-      request("/api/bag", { cookie: tampered }),
-    );
-    expect(await tamperedResponse.json()).toMatchObject({
-      item: null,
-      expiresAt: null,
-    });
-    expect(tamperedResponse.headers.get("set-cookie")).toContain("Max-Age=0");
+    for (const invalidCookie of [
+      `${cookieName}=${payload}.${tamperedSignature}`,
+      `${cookieName}=${payload}.${nonCanonicalSignature}`,
+    ]) {
+      const invalidResponse = await GET(
+        request("/api/bag", { cookie: invalidCookie }),
+      );
+      expect(await invalidResponse.json()).toMatchObject({
+        item: null,
+        expiresAt: null,
+      });
+      expect(invalidResponse.headers.get("set-cookie")).toContain("Max-Age=0");
+    }
 
     vi.setSystemTime(new Date("2026-11-14T12:00:00.001Z"));
     const expiredResponse = await GET(request("/api/bag", { cookie }));

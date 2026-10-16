@@ -1,0 +1,62 @@
+name: Commerce qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      deployment_id:
+        description: Immutable 24-character Netlify deployment ID
+        required: true
+        type: string
+      application_commit:
+        description: Full 40-character commit deployed by Netlify
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: commerce-qualification-${{ inputs.deployment_id }}
+  cancel-in-progress: false
+
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.application_commit }}
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Test the immutable deployed commerce boundary
+        env:
+          COMMERCE_QUALIFICATION_APPLICATION_COMMIT: ${{ inputs.application_commit }}
+          COMMERCE_QUALIFICATION_BASE_URL: https://${{ inputs.deployment_id }}--vanta-monolith.netlify.app
+          COMMERCE_QUALIFICATION_DEPLOYMENT_ID: ${{ inputs.deployment_id }}
+        run: pnpm test:commerce
+
+      - name: Upload sanitized Acceptance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: commerce-qualification-${{ inputs.deployment_id }}
+          path: |
+            artifacts/commerce-playwright/
+            artifacts/commerce-results/
+          if-no-files-found: warn
+          retention-days: 30
