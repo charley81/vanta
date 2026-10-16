@@ -1,0 +1,205 @@
+schema_version: 1
+status: draft
+notice: >-
+  This is a qualification scaffold for issue 60. Machine artifacts may provide
+  supporting evidence, but the candidate identity and named product/design
+  decision remain unbound. This file makes no Acceptance or launch claim.
+
+candidate:
+  baseline_commit: 8177d60995fcce30fad51663b8c8e8fc5c7fceb9
+  application_commit: null
+  deployment_id: null
+  deployment_url: null
+  production_origin: null
+  content_release_or_revisions: []
+  product_truth_manifest_sha256: null
+  glb_source_sha256: ccbdb568548e154335b2d8eb147a8f39b9881eb930e2b290e098f419425ca261
+  derivative_manifest_sha256: 20ea020786e240a3bdf96e90dca255b26a789004d222d5ab219441a2536881f7
+  configuration_manifest_sha256: null
+  node_version: null
+  pnpm_version: null
+  next_version: 16.4.0
+  netlify_adapter_version: null
+  created_at: null
+  created_by: null
+
+artifacts:
+  - id: typography-license-budget
+    status: not_run
+    title: Typography role, license, layout, readability, and transfer review
+    requirement_ids: [PRODUCT-008, QUALITY-004]
+    acceptance_stage: candidate
+    verification_methods: [automated, inspection, measurement, review]
+    environment: null
+    started_at: null
+    completed_at: null
+    tool_and_version: Next.js 16.4.0 next/font and Playwright 1.64.1
+    command_or_procedure: >-
+      Run the focused global-shell browser suite from a production build, then
+      complete the typography rows in docs/evidence/issue-60/README.md at wide,
+      narrow, and 400 percent zoom.
+    result_summary: null
+    measurements:
+      geist_variable_woff2_bytes: 29288
+      geist_mono_variable_woff2_bytes: 23108
+      instrument_serif_italic_woff2_bytes: 15684
+      maximum_route_font_bytes: 68080
+      first_render_ceiling_bytes: 122880
+    public_uri: null
+    restricted_uri: null
+    sha256: null
+    custodian: null
+    retention_until: null
+    sensitive: false
+    redactions: []
+    notes: >-
+      Complete SIL OFL 1.1 texts are retained under
+      docs/evidence/issue-60/licenses. Built font hashes must be rechecked from
+      the bound production build before approval.
+
+  - id: signal-cyan-qualification
+    status: not_run
+    title: Signal-cyan operational role, contrast, focus, and forced-colors review
+    requirement_ids: [PRODUCT-007]
+    acceptance_stage: candidate
+    verification_methods: [automated, inspection, measurement, review]
+    environment: null
+    started_at: null
+    completed_at: null
+    tool_and_version: WCAG relative-luminance calculation and Playwright 1.64.1
+    command_or_procedure: >-
+      Run the focused global-shell forced-colors and Axe journey, inspect all
+      remaining signal-token uses, and complete the signal-cyan decision row in
+      docs/evidence/issue-60/README.md.
+    result_summary: null
+    measurements:
+      signal_hex: "#7DE3D6"
+      signal_on_espresso_contrast: 13.03
+      signal_on_brown_contrast: 5.18
+      espresso_on_signal_contrast: 13.03
+    public_uri: null
+    restricted_uri: null
+    sha256: null
+    custodian: null
+    retention_until: null
+    sensitive: false
+    redactions: []
+    notes: >-
+      Decorative grid, placeholder-marker, and Product-mark uses were changed to
+      Taupe or Peach. Human focus and forced-colors review remains required.
+
+  - id: figma-media-comparison
+    status: not_run
+    title: Pinned Figma composition and generated-media comparison captures
+    requirement_ids: [PRODUCT-007, PRODUCT-008, MEDIA-004]
+    acceptance_stage: candidate
+    verification_methods: [inspection]
+    environment: Figma desktop MCP against the approved final page
+    started_at: null
+    completed_at: null
+    tool_and_version: Figma desktop MCP get_metadata, get_design_context, get_variable_defs, and get_screenshot
+    command_or_procedure: >-
+      Capture nodes 129:616, 129:477, 129:521, and 129:693; retain each capture
+      and compose them beside the corresponding generated master without using
+      any Figma image as a production asset.
+    result_summary: >-
+      Four pinned Figma captures and one comparison sheet are prepared for the
+      bound candidate review. The artifact exposes visual differences but makes
+      no approval claim.
+    measurements:
+      figma_capture_count: 4
+      generated_master_count: 4
+    public_uri: null
+    restricted_uri: null
+    sha256: 461c813fedbe1f94fd90a4d6756fcffe7ad650de0da9c7bf7ac8e19493fdecbb
+    custodian: null
+    retention_until: null
+    sensitive: false
+    redactions: []
+    notes: Figma captures are comparison evidence only, never masters or runtime assets.
+
+  - id: media-provenance-budget
+    status: not_run
+    title: Generated-media provenance, reproducibility, and payload qualification
+    requirement_ids: [MEDIA-001, MEDIA-004, QUALITY-004]
+    acceptance_stage: candidate
+    verification_methods: [automated, inspection, measurement]
+    environment: null
+    started_at: null
+    completed_at: null
+    tool_and_version: media pipeline 1.0.0
+    command_or_procedure: >-
+      Run pnpm validate:media from a clean checkout of the bound application
+      commit, retain its reports, and verify every identity in
+      docs/evidence/issue-60/accepted-media-candidates.json.
+    result_summary: null
+    measurements:
+      runtime_glb_bytes: 2568220
+      runtime_glb_ceiling_bytes: 2700000
+      single_motion_ceiling_bytes: 1500000
+      current_motion_variant_count: 0
+    public_uri: null
+    restricted_uri: null
+    sha256: null
+    custodian: null
+    retention_until: null
+    sensitive: false
+    redactions: []
+    notes: >-
+      The candidate overlay has acceptanceClaim false and every visual decision
+      remains pending until the named review.
+
+  - id: signed-visual-latitude-decision
+    status: not_run
+    title: Named product/design visual-latitude decision
+    requirement_ids: [PRODUCT-007, PRODUCT-008, MEDIA-001, MEDIA-004, QUALITY-004]
+    acceptance_stage: candidate
+    verification_methods: [review]
+    environment: null
+    started_at: null
+    completed_at: null
+    tool_and_version: null
+    command_or_procedure: >-
+      Complete every decision row and post the signed decision block from
+      docs/evidence/issue-60/README.md on issue 60 against one immutable commit
+      and deployment.
+    result_summary: null
+    measurements: {}
+    public_uri: https://github.com/charley81/vanta/issues/60
+    restricted_uri: null
+    sha256: null
+    custodian: null
+    retention_until: null
+    sensitive: false
+    redactions: []
+    notes: Missing or implicit decisions block approval.
+
+bindings:
+  production_origin:
+    value_or_reference: null
+    owner: null
+    validated_at: null
+    evidence_artifact_id: null
+  sanity_project_dataset:
+    value_or_reference: null
+    owner: null
+    validated_at: null
+    evidence_artifact_id: null
+  privacy_notice:
+    value_or_reference: null
+    owner: null
+    validated_at: null
+    evidence_artifact_id: null
+  rollback_deployment:
+    value_or_reference: null
+    owner: null
+    validated_at: null
+    evidence_artifact_id: null
+
+waivers: []
+signatures: []
+
+manifest:
+  generated_at: null
+  sha256: null
+  supersedes_manifest_sha256: null

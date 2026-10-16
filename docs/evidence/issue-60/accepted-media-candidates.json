@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "status": "pending-product-design-review",
+  "acceptanceClaim": false,
+  "baselineCommit": "8177d60995fcce30fad51663b8c8e8fc5c7fceb9",
+  "applicationCommit": null,
+  "pipeline": {
+    "version": "1.0.0",
+    "specificationPath": "media/pipeline.json",
+    "specificationSha256": "03a91d959c816491714ff7d7072ddd21224b1a35d7165a0ab6d56465db4ae35e",
+    "sourceGlbSha256": "ccbdb568548e154335b2d8eb147a8f39b9881eb930e2b290e098f419425ca261",
+    "derivativeManifestPath": "media/manifests/derivatives.json",
+    "derivativeManifestSha256": "20ea020786e240a3bdf96e90dca255b26a789004d222d5ab219441a2536881f7",
+    "publicManifestPath": "media/manifests/media.json",
+    "publicManifestSha256": "6e289ba5eb5a3554b0741e3815ec442c5c9b5584d48cb10fbebce90f10a815c0"
+  },
+  "outputs": [
+    {
+      "id": "home-poster",
+      "decision": "pending",
+      "masterPath": "media/masters/home-poster.png",
+      "masterSha256": "563c92fa322753c6b760f581cea62da4a6ec7a177e62a23164317791d19d1a41",
+      "figmaNodeId": "129:616",
+      "figmaCapturePath": "docs/evidence/issue-60/figma/home-reveal.webp",
+      "figmaCaptureSha256": "94497e6293a1c289874f49dacf2370bddae512bb61f4ff1713d62d2741956cf2",
+      "review": ["camera", "lighting", "8:5 center crop", "Signal Black", "Home reveal role"]
+    },
+    {
+      "id": "product-hero",
+      "decision": "pending",
+      "masterPath": "media/masters/product-hero.png",
+      "masterSha256": "f73cd77eef3953e61a3df3fa5be85310eded8e136afd82c90f522da87721d049",
+      "figmaNodeId": "129:477",
+      "figmaCapturePath": "docs/evidence/issue-60/figma/product-hero.webp",
+      "figmaCaptureSha256": "afbcb6ebbe162b9bac0b88dac8808a0a9fc7c0e706f94ef33815e9b2ef976fb8",
+      "review": ["camera", "lighting", "4:5 contain crop", "Signal Black relationship", "Product introduction role"]
+    },
+    {
+      "id": "product-morph",
+      "decision": "pending",
+      "masterPath": "media/masters/product-morph.png",
+      "masterSha256": "75deaddae376717030cacfa39e5be811935f6249c6c251a7d83950d961edde76",
+      "figmaNodeId": "129:521",
+      "figmaCapturePath": "docs/evidence/issue-60/figma/product-morph.webp",
+      "figmaCaptureSha256": "d2d0b438dc2d09504549e4bc189c6379ee44c6d2ec050fa02f508493c7711e3e",
+      "review": ["camera", "lighting", "8:5 MORPH-encoder crop", "MORPH prominence", "Product detail role"]
+    },
+    {
+      "id": "synth-poster",
+      "decision": "pending",
+      "masterPath": "media/masters/synth-poster.png",
+      "masterSha256": "a9eebccf2c9969421778c19713763edd778e36db8a757496b1d552c202470577",
+      "figmaNodeId": "129:693",
+      "figmaCapturePath": "docs/evidence/issue-60/figma/synth.webp",
+      "figmaCaptureSha256": "b8f3609c2684686e6817f9367148bf6fb8a8beae5eb1e16ea658d3a3b81114e4",
+      "review": ["camera", "lighting", "16:9 center crop", "Control-deck clearance", "Synth silent-shell role"]
+    },
+    {
+      "id": "runtime-meshopt",
+      "decision": "pending",
+      "path": "public/media/models/VANTA_MONOLITH_runtime_meshopt.glb",
+      "sha256": "e764793bea736a369995ea1ee20a1a9bf263e52363e9db214f219d5b60552cc1",
+      "bytes": 2568220,
+      "review": ["source/runtime visual comparison", "required hierarchy", "runtime payload ceiling"]
+    }
+  ],
+  "authoredMotion": {
+    "decision": "pending",
+    "proposedDisposition": "not-applicable-current-contract",
+    "reason": "Home and Synth use the candidate still before realtime readiness; no current route contract requires authored motion.",
+    "singleVariantCeilingBytes": 1500000
+  },
+  "comparison": {
+    "path": "docs/evidence/issue-60/figma-media-comparison.webp",
+    "sha256": "461c813fedbe1f94fd90a4d6756fcffe7ad650de0da9c7bf7ac8e19493fdecbb",
+    "notice": "Figma captures are comparison evidence only and are not approved production assets."
+  },
+  "reviewer": null,
+  "reviewerRole": "product_design",
+  "signedAt": null,
+  "notes": "Every pending decision must become approve or reject in the signed issue record. Approval must bind this file to the immutable application commit; this draft makes no Acceptance claim."
+}
