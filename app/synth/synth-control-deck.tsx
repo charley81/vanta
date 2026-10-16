@@ -18,6 +18,7 @@ import {
 import {
   morphControlSurface,
   morphSessionStore,
+  subscribeMorphControlSelection,
 } from "@/src/synth/session.client";
 
 import styles from "./synth.module.css";
@@ -46,6 +47,16 @@ export function SynthControlDeck({ controls }: SynthControlDeckProps) {
     pendingRangeFocus.current = null;
     rangeRefs.current.get(openControl)?.focus();
   }, [openControl]);
+
+  useEffect(
+    () =>
+      subscribeMorphControlSelection(({ control, source }) => {
+        if (source !== "physical") return;
+        pendingRangeFocus.current = null;
+        setOpenControl(control);
+      }),
+    [],
+  );
 
   useEffect(
     () => () => {

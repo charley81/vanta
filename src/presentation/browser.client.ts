@@ -10,6 +10,7 @@ import {
 
 import {
   downgradePresentation,
+  qualifyDataSavingOptIn,
   qualifyPresentation,
   type RealtimePurpose,
 } from "./qualification";
@@ -37,6 +38,7 @@ export type BrowserPresentationEnvironment = {
 export type BrowserPresentationController = {
   dispose(): void;
   downgrade(reason: RealtimeDowngradeReason): void;
+  getDataSavingOptInSnapshot(): PresentationSession;
   getSnapshot(): PresentationSession;
   subscribe(listener: () => void): () => void;
 };
@@ -133,6 +135,8 @@ export function createBrowserPresentationController({
 
   return {
     getSnapshot: () => snapshot,
+    getDataSavingOptInSnapshot: () =>
+      qualifyDataSavingOptIn(readSignals(), snapshot),
     subscribe(listener) {
       listeners.add(listener);
       return () => listeners.delete(listener);

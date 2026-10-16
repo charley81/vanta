@@ -47,6 +47,156 @@ test.describe("Synth shell and semantic Control deck", () => {
     await expect(page.getByRole("slider")).toHaveCount(0);
   });
 
+  test("defers Realtime until activation and keeps physical drag, visual values, and the semantic panel equivalent", async ({
+    page,
+  }, testInfo) => {
+    await page.addInitScript(() => {
+      let now = 0;
+      Object.defineProperty(Performance.prototype, "now", {
+        configurable: true,
+        value: () => ++now,
+      });
+      Object.defineProperty(PerformanceObserver, "supportedEntryTypes", {
+        configurable: true,
+        value: [],
+      });
+    });
+    const modelRequests: string[] = [];
+    page.on("request", (request) => {
+      if (request.url().endsWith(".glb")) modelRequests.push(request.url());
+    });
+
+    await page.goto("/synth");
+    await expect(page.locator("[data-realtime-status]")).toContainText(
+      "model remains unloaded",
+    );
+    expect(modelRequests).toEqual([]);
+
+    await page
+      .getByRole("button", { name: "Load interactive instrument view" })
+      .click();
+    const canvas = page.locator('canvas[data-direct-manipulation="ready"]');
+    await expect(canvas).toBeVisible();
+    await expect(page.locator("[data-realtime-status]")).toContainText(
+      "Tap a lit control or drag it",
+    );
+    expect(modelRequests).toHaveLength(1);
+
+    const box = await canvas.boundingBox();
+    expect(box).not.toBeNull();
+    const start = {
+      x: box!.x + box!.width * 0.8,
+      y: box!.y + box!.height * 0.6,
+    };
+    await page.mouse.move(start.x, start.y);
+    await page.mouse.down();
+    await page.mouse.move(start.x + 3, start.y);
+    await expect(canvas).not.toHaveCSS("touch-action", "none");
+    await page.mouse.move(start.x + 30, start.y, { steps: 3 });
+    await expect(canvas).toHaveCSS("touch-action", "none");
+    await page.mouse.up();
+    await expect(canvas).not.toHaveCSS("touch-action", "none");
+
+    const release = page.getByRole("slider", { name: "RELEASE value" });
+    await expect(release).toBeVisible();
+    await expect(release).toHaveValue("62");
+    await release.fill("33");
+    await expect(page.locator('[data-control-selector="release"]')).toHaveAccessibleName(
+      "Open RELEASE control, current value 33 percent",
+    );
+    await expect(page.locator("[data-instrument-readout]")).toContainText(
+      "33%",
+    );
+
+    await canvas.evaluate((element) =>
+      element.dispatchEvent(
+        new Event("webglcontextlost", { bubbles: false, cancelable: true }),
+      ),
+    );
+    await expect(page.locator('[data-realtime-phase="fallback"]')).toBeVisible();
+    await expect(page.locator("[data-realtime-status]")).toContainText(
+      "Controls and sound remain available below",
+    );
+    await expect(release).toHaveValue("33");
+    await expect(page.locator('[data-audio-state="off"]')).toBeVisible();
+
+    await testInfo.attach("synth-realtime-activation-trace", {
+      body: Buffer.from(
+        JSON.stringify(
+          {
+            modelRequestsBeforeActivation: 0,
+            modelRequestsAfterActivation: modelRequests.length,
+            physicalReleaseValue: 62,
+            semanticReleaseValue: 33,
+            contextLossFallback: true,
+          },
+          null,
+          2,
+        ),
+      ),
+      contentType: "application/json",
+    });
+  });
+
+  test("requires explicit model opt-in under data saving and preserves the Control deck on decode failure", async ({
+    page,
+  }, testInfo) => {
+    await page.addInitScript(() => {
+      const connection = new EventTarget();
+      Object.defineProperties(connection, {
+        effectiveType: { value: "4g" },
+        saveData: { value: true },
+      });
+      Object.defineProperty(navigator, "connection", {
+        configurable: true,
+        value: connection,
+      });
+      Object.defineProperty(navigator, "hardwareConcurrency", {
+        configurable: true,
+        value: 8,
+      });
+    });
+    let modelRequests = 0;
+    await page.route("**/*.glb", async (route) => {
+      modelRequests += 1;
+      await route.abort("failed");
+    });
+
+    await page.goto("/synth");
+    await expect(page.locator("[data-realtime-status]")).toContainText(
+      "Data saving is active",
+    );
+    expect(modelRequests).toBe(0);
+
+    await page
+      .getByRole("button", { name: "Load interactive instrument view" })
+      .click();
+    await expect(page.locator('[data-realtime-phase="fallback"]')).toBeVisible();
+    expect(modelRequests).toBe(1);
+
+    await page.locator('[data-control-selector="cutoff"]').click();
+    const cutoff = page.getByRole("slider", { name: "CUTOFF value" });
+    await cutoff.fill("77");
+    await expect(cutoff).toHaveValue("77");
+    await expect(page.locator('[data-audio-state="off"]')).toBeVisible();
+
+    await testInfo.attach("synth-data-saving-network-trace", {
+      body: Buffer.from(
+        JSON.stringify(
+          {
+            explicitOptIn: true,
+            modelRequestsBeforeOptIn: 0,
+            modelRequestsAfterOptIn: modelRequests,
+            decodeFailureFallback: true,
+          },
+          null,
+          2,
+        ),
+      ),
+      contentType: "application/json",
+    });
+  });
+
   test("uses native ranges, keyboard focus, Escape, and selector focus return", async ({
     page,
   }) => {

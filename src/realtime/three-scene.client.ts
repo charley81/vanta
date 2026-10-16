@@ -93,12 +93,26 @@ export async function createThreeRealtimeScene(
   });
 
   let disposed = false;
+  let model: Object3D | null = null;
+  let extension: ReturnType<
+    NonNullable<ThreeRealtimeSceneOptions["createExtension"]>
+  > | null = null;
   const handleContextLost = (event: Event) => {
     event.preventDefault();
     options.onContextLost();
   };
   options.canvas.addEventListener("webglcontextlost", handleContextLost);
   options.recordStartupTask(performance.now() - setupStartedAt);
+  const startupTaskObserver =
+    typeof PerformanceObserver !== "undefined" &&
+    PerformanceObserver.supportedEntryTypes.includes("longtask")
+      ? new PerformanceObserver((list) => {
+          for (const entry of list.getEntries()) {
+            options.recordStartupTask(entry.duration);
+          }
+        })
+      : null;
+  startupTaskObserver?.observe({ type: "longtask" });
 
   try {
     const response = await fetch(options.modelUrl, {
@@ -114,14 +128,20 @@ export async function createThreeRealtimeScene(
     await MeshoptDecoder.ready;
     const loader = new GLTFLoader();
     loader.setMeshoptDecoder(MeshoptDecoder);
-    const decodeStartedAt = performance.now();
     const gltf = await loader.parseAsync(data, modelBaseUrl(options.modelUrl));
-    options.recordStartupTask(performance.now() - decodeStartedAt);
+    model = gltf.scene;
+    startupTaskObserver?.disconnect();
     if (options.signal.aborted) {
-      disposeModel(gltf.scene);
       throw new DOMException("Aborted", "AbortError");
     }
-    scene.add(gltf.scene);
+    scene.add(model);
+    extension =
+      options.createExtension?.({
+        canvas: options.canvas,
+        camera,
+        model,
+        renderer,
+      }) ?? null;
 
     return {
       resources: options.resources,
@@ -142,8 +162,9 @@ export async function createThreeRealtimeScene(
         // qualified sRGB/ACES color pipeline while the controller still lowers
         // DPR and route-owned scenes may disable their own optional effects.
       },
-      render() {
+      render(timestampMs) {
         if (disposed) return;
+        extension?.beforeRender?.(timestampMs);
         renderer.render(scene, camera);
       },
       dispose() {
@@ -153,15 +174,23 @@ export async function createThreeRealtimeScene(
           "webglcontextlost",
           handleContextLost,
         );
-        scene.remove(gltf.scene);
-        disposeModel(gltf.scene);
+        extension?.dispose();
+        extension = null;
+        if (model) {
+          scene.remove(model);
+          disposeModel(model);
+          model = null;
+        }
         renderer.renderLists.dispose();
         renderer.dispose();
         renderer.forceContextLoss();
       },
     };
   } catch (error) {
+    startupTaskObserver?.disconnect();
     options.canvas.removeEventListener("webglcontextlost", handleContextLost);
+    extension?.dispose();
+    if (model) disposeModel(model);
     renderer.dispose();
     renderer.forceContextLoss();
     throw error;

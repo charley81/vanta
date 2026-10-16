@@ -23,10 +23,17 @@ export type MorphControlInput = {
 };
 
 const controlInputListeners = new Set<(input: MorphControlInput) => void>();
+const controlSelectionListeners = new Set<
+  (selection: { control: MorphControl; source: ControlSurfaceSource }) => void
+>();
 const sessionSurface = createMorphControlSurfaceAdapter(morphSessionStore);
 
 export const morphControlSurface = {
-  select: sessionSurface.select,
+  select(control: MorphControl, source: ControlSurfaceSource) {
+    sessionSurface.select(control, source);
+    const selection = { control, source };
+    controlSelectionListeners.forEach((listener) => listener(selection));
+  },
   setNormalizedValue(
     control: MorphControl,
     value: number,
@@ -47,4 +54,14 @@ export function subscribeMorphControlInput(
 ): () => void {
   controlInputListeners.add(listener);
   return () => controlInputListeners.delete(listener);
+}
+
+export function subscribeMorphControlSelection(
+  listener: (selection: {
+    control: MorphControl;
+    source: ControlSurfaceSource;
+  }) => void,
+): () => void {
+  controlSelectionListeners.add(listener);
+  return () => controlSelectionListeners.delete(listener);
 }
