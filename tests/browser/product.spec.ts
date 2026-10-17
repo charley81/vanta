@@ -176,9 +176,10 @@ test.describe("Product experience", () => {
 
     const link = page.getByRole("link", { name: /TRY MORPH LAB/ });
     const click = link.click();
-    await expect(link.locator('[data-navigation-state="pending"]')).toContainText(
-      "Opening MORPH Lab…",
-    );
+    const status = link.locator('[data-navigation-state="pending"]');
+    await expect(status).toContainText("Opening MORPH Lab…");
+    await expect(status).toHaveCSS("animation-delay", "0.1s");
+    await expect(status).toHaveCSS("opacity", "1");
 
     releaseNavigation();
     await click;

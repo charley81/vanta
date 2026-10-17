@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "issue": 67,
+  "generatedAt": "2026-10-17T15:44:48Z",
+  "runtimeIdentity": "working-tree",
+  "acceptanceClaim": false,
+  "requirements": ["STATE-004", "STATE-005", "BAG-007", "PREVIEW-009"],
+  "results": {
+    "explicitDestination": {
+      "outcome": "pass",
+      "behavior": "Starts at the canonical route beginning and focuses the visible route h1."
+    },
+    "backForward": {
+      "outcome": "pass",
+      "behavior": "Restores valid semantic section, normalized position, visible presentation, and prior in-route focus."
+    },
+    "homeRecomposition": {
+      "outcome": "pass",
+      "behavior": "Restores the Core shell first, recomposes current presentation conditions, positions semantically, restores focus, then activates enhancements."
+    },
+    "sameRouteMenu": {
+      "outcome": "pass",
+      "behavior": "Consumes the transient menu surface before deferred canonical heading focus; no history entry is added."
+    },
+    "sameRouteBagDestination": {
+      "outcome": "pass",
+      "behavior": "Consumes the Bag marker even when the shared same-route handler prevents framework navigation; subsequent Back/Forward does not reopen the Bag."
+    },
+    "bagClose": {
+      "outcome": "pass",
+      "behavior": "Back closes the same-document Bag state and restores its actual header or footer invoker."
+    },
+    "previewStages": {
+      "outcome": "pass",
+      "behavior": "Contact, Delivery, Review, and terminal remain validated same-URL history states and focus the active stage heading."
+    },
+    "supersededIntent": {
+      "outcome": "pass",
+      "behavior": "Bag or menu intent replaces an uncommitted route intent, restores the captured source semantic context without stealing overlay focus, and retains the active surface."
+    }
+  },
+  "automatedCoverage": [
+    "tests/browser/continuity.spec.ts",
+    "tests/browser/bag.spec.ts",
+    "tests/browser/checkout-preview.spec.ts",
+    "tests/continuity/restoration.test.ts"
+  ]
+}

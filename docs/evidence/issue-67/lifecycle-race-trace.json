@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "issue": 67,
+  "generatedAt": "2026-10-17T15:44:48Z",
+  "runtimeIdentity": "working-tree",
+  "acceptanceClaim": false,
+  "requirements": ["STATE-006", "STATE-007", "STATE-008", "SYNTH-008", "SYNTH-009", "ARCH-009"],
+  "traces": [
+    {
+      "name": "route-superseded-by-route",
+      "signals": ["Product intent pending", "Synth intent", "Synth commit", "late Product response"],
+      "result": "Synth remains current and focused; the stale Product response has no visible effect."
+    },
+    {
+      "name": "route-superseded-by-bag",
+      "signals": ["Synth intent pending", "Bag open", "source-route replace", "late Synth response", "Bag close"],
+      "result": "Product remains current, Bag remains the only active surface, the captured Product section is restored, and close returns focus to the Bag invoker."
+    },
+    {
+      "name": "same-route-overlay-consumption",
+      "signals": ["Bag history push", "same-route MORPH intent", "Bag marker clear", "Back", "Forward"],
+      "result": "The Bag stays closed and canonical heading focus is restored; stale history cannot reopen it."
+    },
+    {
+      "name": "synth-repeated-suspend-restore",
+      "signals": ["hidden", "hidden", "freeze", "pagehide persisted", "pageshow persisted", "freeze", "pagehide persisted", "pageshow persisted"],
+      "result": "Interruptions coalesce, sound never resumes automatically, MORPH values remain, and committed navigation disposes one route-owned AudioContext."
+    },
+    {
+      "name": "prefetch-isolation",
+      "signals": ["Synth RSC prefetch observed while Product remains current"],
+      "result": "No route entry, history change, overlay, Preview progress, Bag mutation, AudioContext, or GLB request occurs."
+    },
+    {
+      "name": "local-failure-retry",
+      "signals": ["Bag or audio operation fails", "local unavailable state", "explicit Retry"],
+      "result": "Route content and unaffected controls remain usable; Retry recovers only the failed subsystem."
+    }
+  ],
+  "automatedCoverage": [
+    "tests/browser/continuity.spec.ts",
+    "tests/browser/synth.spec.ts",
+    "tests/browser/bag.spec.ts",
+    "tests/continuity/navigation.test.ts",
+    "tests/continuity/lifecycle.test.ts"
+  ]
+}

@@ -163,4 +163,216 @@ test.describe("route continuity", () => {
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(10);
     expect(await page.evaluate(() => window.history.length)).toBe(historyLength);
   });
+
+  test("Bag intent supersedes an uncommitted route while preserving the source", async ({
+    page,
+  }) => {
+    let releaseNavigation!: () => void;
+    let markRequested!: () => void;
+    const navigationGate = new Promise<void>(
+      (resolve) => (releaseNavigation = resolve),
+    );
+    const navigationRequested = new Promise<void>(
+      (resolve) => (markRequested = resolve),
+    );
+    await page.route("**/api/bag", (route) =>
+      route.fulfill({
+        json: {
+          schemaVersion: 1,
+          item: null,
+          subtotal: null,
+          expiresAt: null,
+        },
+      }),
+    );
+    await page.route("**/synth?*", async (route) => {
+      markRequested();
+      await navigationGate;
+      await route.continue();
+    });
+    await page.goto("/monolith");
+    const sourceSection = page.locator("[data-section='craft']");
+    await sourceSection.scrollIntoViewIfNeeded();
+    await page.locator("#product-craft-heading").focus();
+
+    const synthLink = page
+      .getByRole("navigation", { name: "Primary navigation" })
+      .getByRole("link", { name: "Synth" });
+    const routeClick = synthLink.click();
+    await navigationRequested;
+    await expect(synthLink).toBeFocused();
+    const bagTrigger = page
+      .getByRole("banner")
+      .getByRole("button", { name: /Open Bag/ });
+    await bagTrigger.click();
+    const bag = page.getByRole("dialog", { name: "Bag" });
+    await expect(bag).toBeVisible();
+
+    releaseNavigation();
+    await routeClick;
+    await page.waitForTimeout(250);
+    await expect(page).toHaveURL(/\/monolith$/);
+    await expect(bag).toBeVisible();
+
+    await bag.getByRole("button", { name: "Close Bag" }).click();
+    await expect(bag).toBeHidden();
+    await expect(bagTrigger).toBeFocused();
+    await expect(sourceSection).toBeInViewport();
+  });
+
+  test("a newer route intent supersedes an older delayed navigation", async ({
+    page,
+  }) => {
+    let releaseProduct!: () => void;
+    const productGate = new Promise<void>(
+      (resolve) => (releaseProduct = resolve),
+    );
+    await page.route("**/monolith?*", async (route) => {
+      await productGate;
+      await route.continue();
+    });
+    await page.goto("/");
+
+    const navigation = page.getByRole("navigation", {
+      name: "Primary navigation",
+    });
+    const productLink = navigation.getByRole("link", { name: "Product" });
+    const olderIntent = productLink.click();
+    await expect(productLink).toBeFocused();
+    await navigation.getByRole("link", { name: "Synth" }).click();
+    await expect(page).toHaveURL(/\/synth$/);
+    await expect(page.locator("#synth-heading")).toBeFocused();
+
+    releaseProduct();
+    await olderIntent;
+    await page.waitForTimeout(250);
+    await expect(page).toHaveURL(/\/synth$/);
+    await expect(page.locator("#synth-heading")).toBeFocused();
+  });
+
+  test("prefetch leaves route, progression, consent, and runtime resources untouched", async ({
+    page,
+  }) => {
+    const requests: string[] = [];
+    page.on("request", (request) => requests.push(request.url()));
+    await page.addInitScript(() => {
+      const NativeAudioContext = window.AudioContext;
+      let audioContexts = 0;
+      Object.defineProperty(window, "AudioContext", {
+        configurable: true,
+        value: new Proxy(NativeAudioContext, {
+          construct(target, argumentsList) {
+            audioContexts += 1;
+            return Reflect.construct(target, argumentsList, target);
+          },
+        }),
+      });
+      Object.defineProperty(window, "__vantaPrefetchProbe", {
+        configurable: true,
+        value: {
+          get audioContexts() {
+            return audioContexts;
+          },
+        },
+      });
+    });
+    await page.goto("/monolith");
+    const originalHistoryLength = await page.evaluate(
+      () => window.history.length,
+    );
+
+    await expect
+      .poll(() =>
+        requests.some((request) => {
+          const url = new URL(request);
+          return url.pathname === "/synth" && url.searchParams.has("_rsc");
+        }),
+      )
+      .toBe(true);
+
+    expect(new URL(page.url()).pathname).toBe("/monolith");
+    expect(await page.evaluate(() => window.history.length)).toBe(
+      originalHistoryLength,
+    );
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    expect(requests.some((request) => request.endsWith(".glb"))).toBe(false);
+    expect(
+      requests.some((request) => /\/api\/bag\/(?:add|remove)/.test(request)),
+    ).toBe(false);
+    expect(
+      await page.evaluate(() => {
+        const probe = (
+          window as Window & {
+            __vantaPrefetchProbe?: { audioContexts: number };
+          }
+        ).__vantaPrefetchProbe;
+        return {
+          audioContexts: probe?.audioContexts ?? -1,
+          localKeys: Object.keys(localStorage),
+          previewProgress: sessionStorage.getItem(
+            "vanta:checkout-preview:v1",
+          ),
+        };
+      }),
+    ).toEqual({ audioContexts: 0, localKeys: [], previewProgress: null });
+  });
+
+  test("same-route intents consume menu and Bag surfaces without stale focus or overlay history", async ({
+    page,
+  }) => {
+    await page.route("**/api/bag", (route) =>
+      route.fulfill({
+        json: {
+          schemaVersion: 1,
+          item: null,
+          subtotal: null,
+          expiresAt: null,
+        },
+      }),
+    );
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/synth");
+    const initialHistoryLength = await page.evaluate(() => window.history.length);
+
+    await page.getByRole("button", { name: "Open menu" }).click();
+    const menu = page.getByRole("dialog", { name: "Navigation" });
+    await menu.getByRole("link", { name: "Synth" }).click();
+    await expect(menu).toBeHidden();
+    await expect(page.locator("#synth-heading")).toBeFocused();
+    expect(await page.evaluate(() => window.history.length)).toBe(
+      initialHistoryLength,
+    );
+
+    await page
+      .getByRole("banner")
+      .getByRole("button", { name: /Open Bag/ })
+      .click();
+    const bag = page.getByRole("dialog", { name: "Bag" });
+    await expect(bag).toBeVisible();
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () => window.history.state.__vantaBagDisclosure?.version ?? null,
+        ),
+      )
+      .toBe(1);
+
+    await bag.getByRole("link", { name: "Open MORPH Lab" }).click();
+    await expect(bag).toBeHidden();
+    await expect(page.locator("#synth-heading")).toBeFocused();
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () => "__vantaBagDisclosure" in (window.history.state ?? {}),
+        ),
+      )
+      .toBe(false);
+
+    await page.goBack();
+    await expect(page).toHaveURL(/\/synth$/);
+    await expect(bag).toBeHidden();
+    await page.goForward();
+    await expect(page).toHaveURL(/\/synth$/);
+    await expect(bag).toBeHidden();
+  });
 });

@@ -438,7 +438,12 @@
   min-height: 1rem;
   color: var(--color-espresso);
   letter-spacing: 0.04em;
+  opacity: 0;
   text-transform: none;
+}
+
+.navigationStatus[data-navigation-state="pending"] {
+  animation: reveal-navigation-status 0s linear 100ms forwards;
 }
 
 .navigationStatus[data-navigation-state="pending"]::before {
@@ -449,6 +454,12 @@
   border-radius: 50%;
   background: var(--color-signal);
   content: "";
+}
+
+@keyframes reveal-navigation-status {
+  to {
+    opacity: 1;
+  }
 }
 
 .finalAction {

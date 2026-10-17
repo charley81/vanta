@@ -299,13 +299,14 @@ test.describe("Signal Ledger Checkout Preview", () => {
     await page.getByRole("button", { name: "Exit preview" }).click();
     await expect(page).toHaveURL(/\/monolith$/);
 
+    await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/checkout-preview");
     await page.getByRole("button", { name: "Continue to delivery" }).click();
-    await page
-      .getByRole("navigation", { name: "Primary navigation" })
-      .getByRole("link", { name: "Synth" })
-      .click();
+    await page.getByRole("button", { name: "Open menu" }).click();
+    const menu = page.getByRole("dialog", { name: "Navigation" });
+    await menu.getByRole("link", { name: "Synth" }).click();
     await expect(page).toHaveURL(/\/synth$/);
+    await expect(menu).toBeHidden();
     await expect(page.getByRole("heading", { level: 1 })).toBeFocused();
     await expect
       .poll(() => page.evaluate(() => sessionStorage.getItem("vanta:checkout-preview:v1")))

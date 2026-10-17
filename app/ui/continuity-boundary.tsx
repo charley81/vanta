@@ -204,7 +204,45 @@ export function ContinuityBoundary() {
   const pathname = usePathname();
   const router = useRouter();
   const navigationIntent = useRef<"explicit" | null>(null);
+  const pendingRouteContext = useRef<ReturnContext | null>(null);
   const routeEntries = useRef(new Map<CanonicalRoute, string>());
+  const supersededRouteContext = useRef<ReturnContext | null>(null);
+
+  useEffect(() => {
+    function supersedePendingRouteIntent() {
+      if (navigationIntent.current !== "explicit") return;
+      const route = canonicalRoute(pathname);
+      const savedContext = readReturnContext(window.history);
+      const pendingContext = pendingRouteContext.current;
+      const context =
+        route && pendingContext?.originRoute === route
+          ? pendingContext
+          : route && savedContext?.originRoute === route
+            ? savedContext
+            : route
+              ? captureRouteContext(route)
+              : null;
+      pendingRouteContext.current = null;
+      supersededRouteContext.current = context
+        ? { ...context, focusTarget: null }
+        : null;
+      navigationIntent.current = null;
+      router.replace(pathname, { scroll: false });
+    }
+
+    document.addEventListener("vanta:bag-opened", supersedePendingRouteIntent);
+    document.addEventListener("vanta:menu-opened", supersedePendingRouteIntent);
+    return () => {
+      document.removeEventListener(
+        "vanta:bag-opened",
+        supersedePendingRouteIntent,
+      );
+      document.removeEventListener(
+        "vanta:menu-opened",
+        supersedePendingRouteIntent,
+      );
+    };
+  }, [pathname, router]);
 
   useEffect(() => {
     const route = canonicalRoute(pathname);
@@ -212,7 +250,13 @@ export function ContinuityBoundary() {
 
     let restorationFrame = 0;
     const previousEntry = routeEntries.current.get(route);
-    if (navigationIntent.current === "explicit") {
+    const supersededContext = supersededRouteContext.current;
+    if (supersededContext?.originRoute === route) {
+      supersededRouteContext.current = null;
+      restorationFrame = window.requestAnimationFrame(() =>
+        restoreRouteContext(supersededContext),
+      );
+    } else if (navigationIntent.current === "explicit") {
       window.scrollTo({ top: 0, left: 0, behavior: "instant" });
       focusRouteHeading();
     } else {
@@ -233,6 +277,7 @@ export function ContinuityBoundary() {
     }
     routeEntries.current.set(route, router.bfcacheId);
     navigationIntent.current = null;
+    pendingRouteContext.current = null;
     return () => {
       if (restorationFrame) window.cancelAnimationFrame(restorationFrame);
     };
@@ -278,9 +323,19 @@ export function ContinuityBoundary() {
       });
     }
 
+    function handleFocusIn(event: FocusEvent) {
+      const target = event.target;
+      if (target instanceof Element && target.closest("main")) {
+        scheduleCurrentEntrySave();
+      }
+    }
+
     function handlePointerDown(event: PointerEvent) {
       const target = event.target;
-      const anchor = target instanceof Element ? target.closest<HTMLAnchorElement>("a[href]") : null;
+      const anchor =
+        target instanceof Element
+          ? target.closest<HTMLAnchorElement>("a[href]")
+          : null;
       if (anchor) pointerContext = captureRouteContext(currentRoute);
     }
 
@@ -296,29 +351,42 @@ export function ContinuityBoundary() {
         return;
       }
       const target = event.target;
-      const anchor = target instanceof Element ? target.closest<HTMLAnchorElement>("a[href]") : null;
+      const anchor =
+        target instanceof Element
+          ? target.closest<HTMLAnchorElement>("a[href]")
+          : null;
       if (!anchor || anchor.target || anchor.download) return;
       const destination = new URL(anchor.href, window.location.href);
       if (destination.origin !== window.location.origin) return;
       const destinationRoute = canonicalRoute(destination.pathname);
       if (!destinationRoute || destination.hash) return;
 
-      saveCurrentEntry(pointerContext ?? undefined);
+      const routeContext = pointerContext ?? captureRouteContext(currentRoute);
+      saveCurrentEntry(routeContext);
       pointerContext = null;
       navigationIntent.current = "explicit";
+      const savedRouteContext = readReturnContext(window.history);
+      pendingRouteContext.current =
+        savedRouteContext?.originRoute === currentRoute
+          ? savedRouteContext
+          : routeContext;
       if (destinationRoute === currentRoute) {
         event.preventDefault();
         window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-        focusRouteHeading();
-        const canonical = captureRouteContext(currentRoute);
-        if (canonical) replaceReturnContext(window.history, canonical);
+        window.requestAnimationFrame(() => {
+          if (canonicalRoute(window.location.pathname) !== currentRoute) return;
+          focusRouteHeading();
+          const canonical = captureRouteContext(currentRoute);
+          if (canonical) replaceReturnContext(window.history, canonical);
+        });
         navigationIntent.current = null;
+        pendingRouteContext.current = null;
       }
     }
 
     const handlePageExit = () => saveCurrentEntry();
     document.addEventListener("click", handleClick, true);
-    document.addEventListener("focusin", scheduleCurrentEntrySave, true);
+    document.addEventListener("focusin", handleFocusIn, true);
     document.addEventListener("pointerdown", handlePointerDown, true);
     window.addEventListener("beforeunload", handlePageExit);
     window.addEventListener("pagehide", handlePageExit);
@@ -327,7 +395,7 @@ export function ContinuityBoundary() {
     });
     return () => {
       document.removeEventListener("click", handleClick, true);
-      document.removeEventListener("focusin", scheduleCurrentEntrySave, true);
+      document.removeEventListener("focusin", handleFocusIn, true);
       document.removeEventListener("pointerdown", handlePointerDown, true);
       window.removeEventListener("beforeunload", handlePageExit);
       window.removeEventListener("pagehide", handlePageExit);

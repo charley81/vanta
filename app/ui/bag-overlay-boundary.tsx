@@ -2,9 +2,20 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import type { MouseEvent } from "react";
 
 import { useBag } from "./bag-provider";
 import styles from "./shell-navigation.module.css";
+
+function isPrimaryNavigationClick(event: MouseEvent<HTMLAnchorElement>) {
+  return (
+    event.button === 0 &&
+    !event.metaKey &&
+    !event.ctrlKey &&
+    !event.shiftKey &&
+    !event.altKey
+  );
+}
 
 function BagDestinations() {
   const pathname = usePathname();
@@ -17,11 +28,23 @@ function BagDestinations() {
           Return to Product
         </button>
       ) : (
-        <Link href="/monolith" onNavigate={consumeBagHistory} replace>
+        <Link
+          href="/monolith"
+          onClick={(event) => {
+            if (isPrimaryNavigationClick(event)) consumeBagHistory();
+          }}
+          replace
+        >
           Return to Product
         </Link>
       )}
-      <Link href="/synth" onNavigate={consumeBagHistory} replace>
+      <Link
+        href="/synth"
+        onClick={(event) => {
+          if (isPrimaryNavigationClick(event)) consumeBagHistory();
+        }}
+        replace
+      >
         Open MORPH Lab
       </Link>
     </div>
@@ -115,9 +138,12 @@ export function BagOverlayBoundary() {
             className={styles.previewAction}
             href="/checkout-preview"
             onClick={(event) => {
-              if (state.pending !== null) event.preventDefault();
+              if (state.pending !== null) {
+                event.preventDefault();
+                return;
+              }
+              if (isPrimaryNavigationClick(event)) consumeBagHistory();
             }}
-            onNavigate={consumeBagHistory}
             replace
           >
             Enter Checkout Preview <span aria-hidden="true">→</span>
