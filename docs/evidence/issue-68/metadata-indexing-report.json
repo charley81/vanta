@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-17T16:18:02Z",
+  "acceptanceClaim": false,
+  "productionOrigin": "https://vanta-monolith.netlify.app",
+  "indexedRoutes": [
+    {
+      "route": "/",
+      "title": "VANTA — Sound, given mass.",
+      "descriptionLength": 133,
+      "canonical": "https://vanta-monolith.netlify.app",
+      "socialImageDimensions": "1200x630"
+    },
+    {
+      "route": "/monolith",
+      "title": "MONOLITH — Hybrid Polyphonic Synthesizer | VANTA",
+      "descriptionLength": 126,
+      "canonical": "https://vanta-monolith.netlify.app/monolith",
+      "socialImageDimensions": "1200x630"
+    },
+    {
+      "route": "/synth",
+      "title": "MORPH Lab — Play MONOLITH | VANTA",
+      "descriptionLength": 122,
+      "canonical": "https://vanta-monolith.netlify.app/synth",
+      "socialImageDimensions": "1200x630"
+    }
+  ],
+  "excludedSurfaces": [
+    "/checkout-preview",
+    "/api/*",
+    "unknown and operational routes",
+    "Editorial preview sessions",
+    "Netlify deploy previews and branch deploys"
+  ],
+  "checks": {
+    "exactUniqueTitles": "pass",
+    "uniqueDescriptionsWithin120To160Characters": "pass",
+    "dedicatedSocialImages": "pass",
+    "openGraphAndLargeImageMetadata": "pass",
+    "canonicalLinks": "pass",
+    "sitemapContainsOnlyIndexedRoutes": "pass",
+    "responseLevelNoindex": "pass",
+    "draftMetadataExclusion": "pass",
+    "icons": "pass"
+  },
+  "verification": [
+    "tests/discoverability/discoverability.test.ts",
+    "tests/discoverability/proxy-policy.test.ts",
+    "tests/browser/discoverability.spec.ts",
+    "tests/editorial/preview-isolation.test.ts"
+  ]
+}

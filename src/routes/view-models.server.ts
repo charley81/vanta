@@ -9,6 +9,7 @@ import {
 } from "@/sanity/validation";
 import { CATALOG } from "@/src/catalog/catalog";
 import { composeCheckoutPreviewRouteViewModel } from "@/src/checkout-preview/model";
+import type { SocialImage } from "@/src/discoverability/metadata";
 import { PRODUCT_TRUTH } from "@/src/product/product-truth";
 import { SYNTH_CONTROL_DEFINITIONS } from "@/src/synth/controls";
 
@@ -91,6 +92,53 @@ function seoDescriptionAt(record: UnknownRecord, path: string): string {
   return description as string;
 }
 
+function socialImageAt(record: UnknownRecord, path: string): SocialImage {
+  const image = objectAt(record.socialImage, `${path}.socialImage`, [
+    "url",
+    "width",
+    "height",
+    "alt",
+  ]);
+  const url = image.url;
+  if (typeof url !== "string" || !url) {
+    throw new Error(`${path}.socialImage.url is required`);
+  }
+
+  let parsed: URL;
+  try {
+    parsed = new URL(url, "https://vanta.invalid");
+  } catch {
+    throw new Error(`${path}.socialImage.url must be a valid URL`);
+  }
+  const localFixture =
+    parsed.origin === "https://vanta.invalid" &&
+    parsed.pathname.startsWith("/social/");
+  const publishedSanityAsset =
+    parsed.protocol === "https:" && parsed.hostname === "cdn.sanity.io";
+  if (
+    (!localFixture && !publishedSanityAsset) ||
+    parsed.username ||
+    parsed.password ||
+    parsed.search ||
+    parsed.hash
+  ) {
+    throw new Error(
+      `${path}.socialImage.url must be a local social fixture or an HTTPS Sanity CDN asset`,
+    );
+  }
+  if (image.width !== 1200 || image.height !== 630) {
+    throw new Error(`${path}.socialImage must be exactly 1200×630 pixels`);
+  }
+  const alt = stringAt(
+    image,
+    "alt",
+    `${path}.socialImage`,
+    EDITORIAL_LIMITS.alt,
+  );
+
+  return { url, width: 1200, height: 630, alt };
+}
+
 function sectionAt(value: unknown, path: string): EditorialSection {
   const section = objectAt(value, path, ["headline", "body"]);
   return {
@@ -107,6 +155,7 @@ function sectionAt(value: unknown, path: string): EditorialSection {
 function parseHomeEditorial(input: unknown) {
   const page = objectAt(input, "homePage", [
     "seoDescription",
+    "socialImage",
     "opening",
     "chapters",
     "labInvitation",
@@ -129,6 +178,7 @@ function parseHomeEditorial(input: unknown) {
 
   return {
     seoDescription: seoDescriptionAt(page, "homePage"),
+    socialImage: socialImageAt(page, "homePage"),
     opening: {
       kicker: stringAt(
         opening,
@@ -179,6 +229,7 @@ function parseHomeEditorial(input: unknown) {
 function parseProductEditorial(input: unknown) {
   const page = objectAt(input, "productPage", [
     "seoDescription",
+    "socialImage",
     "hero",
     "thesis",
     "sonic",
@@ -205,6 +256,7 @@ function parseProductEditorial(input: unknown) {
 
   return {
     seoDescription: seoDescriptionAt(page, "productPage"),
+    socialImage: socialImageAt(page, "productPage"),
     hero: {
       subtitle: stringAt(
         hero,
@@ -270,12 +322,14 @@ function parseProductEditorial(input: unknown) {
 function parseSynthEditorial(input: unknown) {
   const page = objectAt(input, "synthPage", [
     "seoDescription",
+    "socialImage",
     "category",
     "headline",
     "introduction",
   ]);
   return {
     seoDescription: seoDescriptionAt(page, "synthPage"),
+    socialImage: socialImageAt(page, "synthPage"),
     category: stringAt(
       page,
       "category",
@@ -323,6 +377,7 @@ export function composeHomeRouteViewModel(editorial: unknown) {
     route: "/" as const,
     title: "VANTA — Sound, given mass." as const,
     seoDescription: page.seoDescription,
+    socialImage: page.socialImage,
     opening: {
       ...page.opening,
       action: { label: "ENTER MORPH LAB" as const, href: "/synth" as const },
@@ -356,6 +411,7 @@ export function composeProductRouteViewModel(editorial: unknown) {
     route: "/monolith" as const,
     title: "MONOLITH — Hybrid Polyphonic Synthesizer | VANTA" as const,
     seoDescription: page.seoDescription,
+    socialImage: page.socialImage,
     hero: {
       identifier: "VANTA / INSTRUMENT 001" as const,
       name: PRODUCT_TRUTH.identity.model,
@@ -390,6 +446,7 @@ export function composeSynthRouteViewModel(editorial: unknown) {
     route: "/synth" as const,
     title: "MORPH Lab — Play MONOLITH | VANTA" as const,
     seoDescription: page.seoDescription,
+    socialImage: page.socialImage,
     category: page.category,
     headline: page.headline,
     introduction: page.introduction,

@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
 
+import { buildIndexedRouteMetadata } from "@/src/discoverability/metadata";
+import {
+  buildProductStructuredData,
+  serializeJsonLd,
+} from "@/src/discoverability/structured-data";
 import {
   getProductRouteContentForRequest,
   getPublishedProductMetadataForRequest,
@@ -12,11 +17,7 @@ import { ProductRouteLink } from "./product-route-link";
 import styles from "./product.module.css";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const model = await getPublishedProductMetadataForRequest();
-  return {
-    title: { absolute: model.title },
-    description: model.seoDescription,
-  };
+  return buildIndexedRouteMetadata(await getPublishedProductMetadataForRequest());
 }
 
 function specificationLabel(term: string): string {
@@ -24,13 +25,24 @@ function specificationLabel(term: string): string {
 }
 
 export default async function ProductPage() {
-  const { model, preview } = await getProductRouteContentForRequest();
+  const [{ model, preview }, publishedMetadata] = await Promise.all([
+    getProductRouteContentForRequest(),
+    getPublishedProductMetadataForRequest(),
+  ]);
   const bagStatus = preview
     ? "Bag mutation is disabled in Editorial preview."
     : "Bag stores one MONOLITH in this browser for up to 30 days.";
 
   return (
     <>
+      <script
+        dangerouslySetInnerHTML={{
+          __html: serializeJsonLd(
+            buildProductStructuredData(publishedMetadata),
+          ),
+        }}
+        type="application/ld+json"
+      />
       {preview ? <EditorialPreviewBanner session={preview} /> : null}
       <main className={styles.productMain} id="main-content" tabIndex={-1}>
         <section

@@ -1,8 +1,10 @@
 import type { NextConfig } from "next";
 
 import { resolveBagMode } from "./src/bag/configuration";
+import { resolveCanonicalOrigin } from "./src/discoverability/configuration";
 
 resolveBagMode(process.env.BAG_MODE);
+resolveCanonicalOrigin(process.env);
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -11,6 +13,7 @@ const nextConfig: NextConfig = {
   },
   cacheComponents: true,
   partialPrefetching: true,
+  skipTrailingSlashRedirect: true,
   turbopack: {
     rules: {
       "*.css": {

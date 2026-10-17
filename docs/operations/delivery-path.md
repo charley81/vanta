@@ -24,6 +24,10 @@ Requirements supported: `ARCH-001`, `OPS-008`, `SECURITY-005`, `SECURITY-007`
 
 The exact non-production toolchain values are repository-owned: Node `22.22.1` in [`.node-version`](../../.node-version) and pnpm `10.32.1` in [`package.json`](../../package.json). Do not invent placeholder configuration values.
 
+### Canonical production origin
+
+The currently bound canonical origin is `https://vanta-monolith.netlify.app`, matching the project's public Netlify SSL URL. Runtime discoverability policy resolves `VANTA_PRODUCTION_ORIGIN` first, Netlify's production `URL` binding second, and this repository-bound origin for deterministic local verification. Every accepted value must be an HTTPS origin without credentials, path, query, or fragment; malformed values fail startup. A custom-domain cutover must set `VANTA_PRODUCTION_ORIGIN` in the appropriate Netlify contexts and requalify DNS/TLS, host and protocol redirects, canonicals, sitemap, robots, social cards, and structured data before promotion.
+
 Secrets must be entered through Netlify's environment-variable controls with the narrowest applicable deploy contexts and scopes. They must never be committed, written into this record, exposed through a `NEXT_PUBLIC_` name, copied into issue comments, or included in generated reports. Values required by both startup validation and server handlers need Builds and Functions scope.
 
 ### Bag configuration and rotation

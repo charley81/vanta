@@ -2,18 +2,31 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it, vi } from "vitest";
 
+const socialImage = {
+  url: "/social/home.jpg",
+  width: 1200 as const,
+  height: 630 as const,
+  alt: "Published social image",
+};
+
 const published = {
   home: vi.fn(async () => ({
+    route: "/" as const,
     title: "Published home",
     seoDescription: "Published home description",
+    socialImage,
   })),
   product: vi.fn(async () => ({
+    route: "/monolith" as const,
     title: "Published product",
     seoDescription: "Published product description",
+    socialImage,
   })),
   synth: vi.fn(async () => ({
+    route: "/synth" as const,
     title: "Published synth",
     seoDescription: "Published synth description",
+    socialImage,
   })),
 };
 
@@ -49,18 +62,34 @@ describe("draft/public output isolation", () => {
       import("@/app/synth/page"),
     ]);
 
-    await expect(home.generateMetadata()).resolves.toEqual({
+    const [homeMetadata, productMetadata, synthMetadata] = await Promise.all([
+      home.generateMetadata(),
+      product.generateMetadata(),
+      synth.generateMetadata(),
+    ]);
+
+    expect(homeMetadata).toMatchObject({
       title: { absolute: "Published home" },
       description: "Published home description",
+      alternates: { canonical: "https://vanta-monolith.netlify.app/" },
+      openGraph: { description: "Published home description" },
     });
-    await expect(product.generateMetadata()).resolves.toEqual({
+    expect(productMetadata).toMatchObject({
       title: { absolute: "Published product" },
       description: "Published product description",
+      alternates: {
+        canonical: "https://vanta-monolith.netlify.app/monolith",
+      },
+      openGraph: { description: "Published product description" },
     });
-    await expect(synth.generateMetadata()).resolves.toEqual({
+    expect(synthMetadata).toMatchObject({
       title: { absolute: "Published synth" },
       description: "Published synth description",
+      alternates: { canonical: "https://vanta-monolith.netlify.app/synth" },
+      openGraph: { description: "Published synth description" },
     });
+    expect(JSON.stringify([homeMetadata, productMetadata, synthMetadata]))
+      .not.toContain("SECRET DRAFT");
   });
 
   it("keeps preview reads outside every public cache scope", () => {

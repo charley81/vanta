@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
 
+import { resolveCanonicalOrigin } from "@/src/discoverability/configuration";
 import { getSiteSettingsForRequest } from "@/src/editorial/preview-content.server";
 
 import { BagProvider } from "./ui/bag-provider";
@@ -33,12 +34,19 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(resolveCanonicalOrigin()),
+  applicationName: "VANTA",
   title: {
     default: "VANTA — Sound, given mass.",
     template: "%s | VANTA",
   },
   description:
     "VANTA creates MONOLITH, an eight-voice hybrid desktop synthesizer shaped by continuous movement between SUB and FRACTURE.",
+  formatDetection: {
+    address: false,
+    email: false,
+    telephone: false,
+  },
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
