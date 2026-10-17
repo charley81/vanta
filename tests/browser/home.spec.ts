@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 const canonicalBeats = [
   "opening",
@@ -17,6 +17,22 @@ const canonicalBeats = [
 ] as const;
 
 const canonicalChapters = canonicalBeats.slice(1, 10);
+
+async function stabilizeRealtimeMeasurement(page: Page) {
+  await page.addInitScript(() => {
+    let now = 0;
+    Object.defineProperty(Performance.prototype, "now", {
+      configurable: true,
+      value: () => ++now,
+    });
+    Object.defineProperty(PerformanceObserver, "supportedEntryTypes", {
+      configurable: true,
+      value: PerformanceObserver.supportedEntryTypes.filter(
+        (type) => type !== "longtask",
+      ),
+    });
+  });
+}
 
 test.describe("Home Core narrative", () => {
   test("renders every beat once in canonical semantic order with all route exits", async ({
@@ -295,27 +311,218 @@ test.describe("Home Core narrative", () => {
     expect(movingDecorations).toBe(0);
   });
 
-  test("creates no sound or MORPH state while the cinematic narrative is explored", async ({
+  test("loads qualified Realtime only after the authored poster and never creates sound or MORPH state", async ({
     page,
   }) => {
-    await page.goto("/");
-    await page.locator('[data-home-beat="resolution"]').scrollIntoViewIfNeeded();
-    await page.locator('[data-home-beat="opening"]').scrollIntoViewIfNeeded();
+    await stabilizeRealtimeMeasurement(page);
+    const modelRequests: string[] = [];
+    page.on("request", (request) => {
+      if (request.url().endsWith(".glb")) modelRequests.push(request.url());
+    });
 
-    await expect(page.locator("canvas, video, audio, [data-audio-state]")).toHaveCount(0);
+    await page.goto("/");
+    const poster = page.locator('[data-authored-media="home-poster"] img');
+    await expect(poster).toHaveJSProperty("complete", true);
+    await expect(page.locator("[data-home-realtime-stage] canvas")).toBeVisible();
+    await expect(page.locator("main")).toHaveAttribute(
+      "data-home-realtime-phase",
+      "ready",
+    );
+    expect(modelRequests).toHaveLength(1);
+
+    await page.locator('[data-home-beat="lab-invitation"]').evaluate((element) =>
+      window.scrollTo({
+        top: element.getBoundingClientRect().top + window.scrollY,
+        behavior: "instant",
+      }),
+    );
+    await expect(page.locator("main")).toHaveAttribute(
+      "data-home-realtime-phase",
+      "suspended",
+    );
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+
+    await expect(page.locator("video, audio, [data-audio-state]")).toHaveCount(0);
     const resources = await page.evaluate(() =>
       performance.getEntriesByType("resource").map((entry) => entry.name),
     );
     expect(resources.join("\n")).toMatch(/home-poster-(?:720|1440)\.(?:avif|webp)/);
-    expect(resources.join("\n")).not.toMatch(
-      /three|decoder|\.glb(?:$|\?)|audio-worklet/i,
-    );
+    expect(resources.join("\n")).not.toMatch(/audio-worklet/i);
     expect(
       await page.evaluate(() => ({
         local: Object.keys(window.localStorage).filter((key) => /morph|audio/i.test(key)),
         session: Object.keys(window.sessionStorage).filter((key) => /morph|audio/i.test(key)),
       })),
     ).toEqual({ local: [], session: [] });
+  });
+
+  test("keeps authored content and the LCP candidate painted while Realtime is loading", async ({
+    page,
+  }, testInfo) => {
+    await stabilizeRealtimeMeasurement(page);
+    await page.addInitScript(() => {
+      const entries: Array<{ element: string | null; startTime: number }> = [];
+      Object.defineProperty(window, "__homeLcpEntries", {
+        configurable: true,
+        value: entries,
+      });
+      new PerformanceObserver((list) => {
+        for (const entry of list.getEntries()) {
+          const candidate = entry as PerformanceEntry & { element?: Element };
+          entries.push({
+            element: candidate.element?.tagName ?? null,
+            startTime: candidate.startTime,
+          });
+        }
+      }).observe({ type: "largest-contentful-paint", buffered: true });
+    });
+
+    let releaseModel!: () => void;
+    const modelBlocked = new Promise<void>((resolve) => {
+      releaseModel = resolve;
+    });
+    let announceRequest!: () => void;
+    const modelRequested = new Promise<void>((resolve) => {
+      announceRequest = resolve;
+    });
+    await page.route("**/*.glb", async (route) => {
+      announceRequest();
+      await modelBlocked;
+      await route.abort("failed");
+    });
+
+    await page.goto("/");
+    await modelRequested;
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    const poster = page.locator('[data-authored-media="home-poster"] img');
+    await expect(poster).toBeVisible();
+    await expect(poster).toHaveJSProperty("complete", true);
+    await expect(page.locator("main")).toHaveAttribute(
+      "data-home-realtime-phase",
+      "loading",
+    );
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () =>
+            (window as Window & {
+              __homeLcpEntries?: Array<{ element: string | null; startTime: number }>;
+            }).__homeLcpEntries?.length ?? 0,
+        ),
+      )
+      .toBeGreaterThan(0);
+
+    const lcpEntries = await page.evaluate(
+      () =>
+        (window as Window & {
+          __homeLcpEntries?: Array<{ element: string | null; startTime: number }>;
+        }).__homeLcpEntries ?? [],
+    );
+    expect(lcpEntries.some((entry) => entry.element !== "CANVAS")).toBe(true);
+
+    releaseModel();
+    await expect(page.locator("main")).toHaveAttribute(
+      "data-home-realtime-phase",
+      "fallback",
+    );
+    await expect(page.getByRole("link", { name: "ENTER MORPH LAB" }).first()).toBeVisible();
+
+    await testInfo.attach("home-realtime-lcp-trace", {
+      body: Buffer.from(
+        JSON.stringify(
+          {
+            authoredPosterCompleteBeforeModelResolution: true,
+            contentVisibleDuringModelRequest: true,
+            lcpEntries,
+            fallbackAfterModelFailure: true,
+          },
+          null,
+          2,
+        ),
+      ),
+      contentType: "application/json",
+    });
+  });
+
+  test("suspends for Bag coverage and preserves chapter position through context loss", async ({
+    page,
+  }, testInfo) => {
+    await stabilizeRealtimeMeasurement(page);
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/");
+    const main = page.locator("main");
+    const canvas = page.locator("[data-home-realtime-stage] canvas");
+    await expect(main).toHaveAttribute("data-home-realtime-phase", "ready");
+
+    await page.getByRole("banner").getByRole("button", { name: /Open Bag/ }).click();
+    await expect(main).toHaveAttribute("data-home-realtime-phase", "suspended");
+    await page.getByRole("button", { name: "Close Bag" }).click();
+    await expect(main).toHaveAttribute("data-home-realtime-phase", "ready");
+
+    await page.locator("#chapter-morph").evaluate((heading) => {
+      const element = heading as HTMLElement;
+      element.tabIndex = -1;
+      element.focus();
+    });
+    await expect(main).toHaveAttribute("data-home-active-chapter", "morph");
+    const scrollBeforeFailure = await page.evaluate(() => window.scrollY);
+    await canvas.evaluate((element) =>
+      element.dispatchEvent(
+        new Event("webglcontextlost", { bubbles: false, cancelable: true }),
+      ),
+    );
+
+    await expect(main).toHaveAttribute("data-home-realtime-phase", "fallback");
+    await expect(main).toHaveAttribute(
+      "data-home-realtime-fallback",
+      "runtime-failure",
+    );
+    await expect(main).toHaveAttribute("data-home-active-chapter", "morph");
+    expect(await page.evaluate(() => window.scrollY)).toBe(scrollBeforeFailure);
+    await expect(page.getByRole("link", { name: "EXPLORE MONOLITH" })).toBeVisible();
+
+    await testInfo.attach("home-realtime-lifecycle-trace", {
+      body: Buffer.from(
+        JSON.stringify(
+          {
+            coveredPhase: "suspended",
+            resumedPhase: "ready",
+            contextLossFallback: "runtime-failure",
+            chapterPreserved: "morph",
+            scrollBeforeFailure,
+          },
+          null,
+          2,
+        ),
+      ),
+      contentType: "application/json",
+    });
+  });
+
+  test("does not request Realtime when WebGL2 qualification fails", async ({ page }) => {
+    await page.addInitScript(() => {
+      const nativeGetContext = HTMLCanvasElement.prototype.getContext;
+      HTMLCanvasElement.prototype.getContext = function (
+        this: HTMLCanvasElement,
+        contextId: string,
+        options?: unknown,
+      ) {
+        if (contextId === "webgl2") return null;
+        return Reflect.apply(nativeGetContext, this, [contextId, options]);
+      } as typeof HTMLCanvasElement.prototype.getContext;
+    });
+    const modelRequests: string[] = [];
+    page.on("request", (request) => {
+      if (request.url().endsWith(".glb")) modelRequests.push(request.url());
+    });
+
+    await page.goto("/");
+    const main = page.locator("main");
+    await expect(main).toHaveAttribute("data-home-presentation-tier", "motion");
+    await expect(main).toHaveAttribute("data-home-realtime-fallback", "capability");
+    await expect(page.locator("[data-home-realtime-stage]")).toHaveCount(0);
+    expect(modelRequests).toEqual([]);
+    await expect(page.locator('[data-authored-media="home-poster"] img')).toBeVisible();
   });
 
   test("remains complete on direct entry without JavaScript", async ({ browser }) => {

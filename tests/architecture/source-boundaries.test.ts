@@ -128,6 +128,21 @@ describe("audio/render dependency isolation", () => {
     expect(scene).toContain("MeshoptDecoder");
     expect(scene).not.toMatch(/AudioContext|AudioNode|engine\.client/);
 
+    const homeLoader = readFileSync(
+      "src/home/realtime-loader.client.ts",
+      "utf8",
+    );
+    const homeScene = readFileSync(
+      "src/home/realtime-scene.client.ts",
+      "utf8",
+    );
+    expect(homeLoader).toMatch(
+      /import\(\s*"\.\/realtime-scene\.client"\s*\)/,
+    );
+    expect(homeLoader).not.toMatch(/^import .*realtime-scene\.client/m);
+    expect(homeLoader).not.toMatch(/from ["']three(?:\/|["'])/);
+    expect(homeScene).not.toMatch(/AudioContext|AudioNode|engine\.client/);
+
     const synthLoader = readFileSync(
       "src/synth/realtime-loader.client.ts",
       "utf8",

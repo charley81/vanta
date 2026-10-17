@@ -86,6 +86,21 @@ function routeFocusTarget(): string | null {
     : null;
 }
 
+function visibleSectionForFocusTarget(id: string | null): HTMLElement | null {
+  const target = id ? document.getElementById(id) : null;
+  const section = target?.closest<HTMLElement>(
+    "main [data-chapter], main [data-section], main > section",
+  );
+  if (!section) return null;
+  const bounds = section.getBoundingClientRect();
+  return bounds.bottom > 0 &&
+    bounds.right > 0 &&
+    bounds.top < window.innerHeight &&
+    bounds.left < window.innerWidth
+    ? section
+    : null;
+}
+
 function captureRouteContext(route: CanonicalRoute): ReturnContext | null {
   const section = currentSemanticSection();
   const semanticSection = section ? sectionIdentifier(section) : null;
@@ -239,8 +254,18 @@ export function ContinuityBoundary() {
         context.focusTarget === null && previous?.originRoute === currentRoute
           ? previous.focusTarget
           : context.focusTarget;
+      const focusedSection = visibleSectionForFocusTarget(retainedFocus);
+      const semanticSection = focusedSection
+        ? sectionIdentifier(focusedSection)
+        : null;
       replaceReturnContext(window.history, {
         ...context,
+        ...(focusedSection && semanticSection
+          ? {
+              semanticSection,
+              normalizedProgress: normalizedProgress(focusedSection),
+            }
+          : {}),
         focusTarget: retainedFocus,
       });
     }

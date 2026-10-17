@@ -8,6 +8,7 @@ import {
 
 import { HomeChoreography } from "./home-choreography";
 import { HomeMedia } from "./home-media";
+import { HomeRealtimeReveal } from "./home-realtime-reveal";
 import styles from "./home.module.css";
 import { EditorialPreviewBanner } from "./ui/editorial-preview-banner";
 import coreStyles from "./ui/core-route.module.css";
@@ -29,9 +30,13 @@ export default async function HomePage() {
       <main
         className={`${coreStyles.routeMain} ${styles.home}`}
         data-home-presentation="vertical"
+        data-home-presentation-tier="core"
+        data-home-realtime-phase="poster"
+        data-home-realtime-visible="false"
         id="main-content"
         tabIndex={-1}
       >
+        <HomeRealtimeReveal />
         <section
           aria-labelledby="home-heading"
           className={styles.introduction}
