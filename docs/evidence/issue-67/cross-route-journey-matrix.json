@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "issue": 67,
+  "baseline": "8177d60995fcce30fad51663b8c8e8fc5c7fceb9",
+  "generatedAt": "2026-10-17T15:44:48Z",
+  "runtimeIdentity": "working-tree",
+  "acceptanceClaim": false,
+  "rows": [
+    {
+      "journey": "Home to Product explicit navigation",
+      "requirements": ["STATE-004"],
+      "assertions": ["canonical beginning", "Product heading focus", "top scroll position"],
+      "coverage": "tests/browser/continuity.spec.ts",
+      "outcome": "pass"
+    },
+    {
+      "journey": "Product to Synth to Back/Forward",
+      "requirements": ["STATE-004", "STATE-005", "SYNTH-009"],
+      "assertions": ["semantic Product position restored", "prior route focus restored", "MORPH session retained"],
+      "coverage": "tests/browser/continuity.spec.ts; tests/browser/synth.spec.ts",
+      "outcome": "pass"
+    },
+    {
+      "journey": "Enhanced Home to Product to Back and reload",
+      "requirements": ["STATE-004", "STATE-005"],
+      "assertions": ["chapter restored without replay", "focus target restored", "current conditions recomposed"],
+      "coverage": "tests/browser/continuity.spec.ts",
+      "outcome": "pass"
+    },
+    {
+      "journey": "Bag same-route MORPH destination and narrow menu current-route intent",
+      "requirements": ["BAG-007", "STATE-004", "STATE-006"],
+      "assertions": ["surface closes", "history marker consumed", "Back/Forward does not reopen stale Bag", "route heading receives focus"],
+      "coverage": "tests/browser/continuity.spec.ts",
+      "outcome": "pass"
+    },
+    {
+      "journey": "Delayed route superseded by Bag",
+      "requirements": ["STATE-006", "STATE-007"],
+      "assertions": ["source route remains current", "source semantic section remains visible", "Bag remains active", "Bag invoker focus restores"],
+      "coverage": "tests/browser/continuity.spec.ts",
+      "outcome": "pass"
+    },
+    {
+      "journey": "Older delayed route superseded by newer route",
+      "requirements": ["STATE-006"],
+      "assertions": ["new destination commits", "late older response cannot replace it", "new heading remains focused"],
+      "coverage": "tests/browser/continuity.spec.ts",
+      "outcome": "pass"
+    },
+    {
+      "journey": "Product MORPH link under delayed navigation",
+      "requirements": ["STATE-007"],
+      "assertions": ["source remains usable", "progress is link-local", "visual progress has a 100 ms grace period"],
+      "coverage": "tests/browser/product.spec.ts; tests/continuity/navigation.test.ts",
+      "outcome": "pass"
+    },
+    {
+      "journey": "Checkout Preview Contact through terminal and history retrace",
+      "requirements": ["PREVIEW-009", "PREVIEW-010", "STATE-004"],
+      "assertions": ["one canonical URL", "only reached stages enabled", "Back/Forward retraces legal stages", "exit consumes Preview concern"],
+      "coverage": "tests/browser/checkout-preview.spec.ts",
+      "outcome": "pass"
+    },
+    {
+      "journey": "Synth interruption, Bag cover, navigation disposal, and Back restoration",
+      "requirements": ["SYNTH-008", "SYNTH-009", "ARCH-009"],
+      "assertions": ["no automatic audio resume", "one engine disposal", "values retained", "explicit resume creates one replacement engine"],
+      "coverage": "tests/browser/synth.spec.ts",
+      "outcome": "pass"
+    },
+    {
+      "journey": "Product prefetch of Synth",
+      "requirements": ["STATE-008"],
+      "assertions": ["URL and history unchanged", "no overlay", "no GLB", "no AudioContext", "no mutation", "no Preview progress"],
+      "coverage": "tests/browser/continuity.spec.ts",
+      "outcome": "pass"
+    },
+    {
+      "journey": "Bag and optional-runtime failure with targeted Retry",
+      "requirements": ["STATE-007", "ARCH-009"],
+      "assertions": ["route content remains", "last confirmed state remains", "targeted Retry recovers local subsystem"],
+      "coverage": "tests/browser/bag.spec.ts; tests/browser/synth.spec.ts; tests/continuity/navigation.test.ts",
+      "outcome": "pass"
+    }
+  ]
+}

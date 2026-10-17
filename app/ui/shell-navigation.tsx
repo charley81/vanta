@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   Fragment,
   type KeyboardEvent,
+  type MouseEvent,
   type ReactNode,
   useEffect,
   useId,
@@ -22,7 +23,17 @@ const destinations = [
   { href: "/synth", label: "Synth" },
 ] as const;
 
-function NavigationLinks({ onNavigate }: { onNavigate?: () => void }) {
+function isPrimaryNavigationClick(event: MouseEvent<HTMLAnchorElement>) {
+  return (
+    event.button === 0 &&
+    !event.metaKey &&
+    !event.ctrlKey &&
+    !event.shiftKey &&
+    !event.altKey
+  );
+}
+
+function NavigationLinks({ onRouteIntent }: { onRouteIntent?: () => void }) {
   const pathname = usePathname();
 
   return destinations.map(({ href, label }) => (
@@ -30,7 +41,9 @@ function NavigationLinks({ onNavigate }: { onNavigate?: () => void }) {
       aria-current={pathname === href ? "page" : undefined}
       href={href}
       key={href}
-      onNavigate={onNavigate}
+      onClick={(event) => {
+        if (isPrimaryNavigationClick(event)) onRouteIntent?.();
+      }}
     >
       {label}
     </Link>
@@ -38,8 +51,10 @@ function NavigationLinks({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 export function ShellNavigation() {
+  const pathname = usePathname();
   const { closeBag, state } = useBag();
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuPath, setMenuPath] = useState<string | null>(null);
+  const menuOpen = menuPath === pathname;
   const bagDialogRef = useRef<HTMLDialogElement>(null);
   const bagHeadingRef = useRef<HTMLHeadingElement>(null);
   const menuDialogRef = useRef<HTMLDialogElement>(null);
@@ -54,7 +69,7 @@ export function ShellNavigation() {
   useEffect(() => {
     const dialog = bagDialogRef.current;
     if (state.open && dialog && !dialog.open) {
-      setMenuOpen(false);
+      setMenuPath(null);
       dialog.showModal();
       requestAnimationFrame(() => bagHeadingRef.current?.focus());
     }
@@ -63,12 +78,17 @@ export function ShellNavigation() {
 
   function openMenu(invoker: HTMLButtonElement) {
     menuInvokerRef.current = invoker;
-    setMenuOpen(true);
+    setMenuPath(pathname);
+    document.dispatchEvent(new CustomEvent("vanta:menu-opened"));
   }
 
   function closeMenu() {
-    setMenuOpen(false);
+    setMenuPath(null);
     requestAnimationFrame(() => menuInvokerRef.current?.focus());
+  }
+
+  function dismissMenuForNavigation() {
+    setMenuPath(null);
   }
 
   function containFocus(event: KeyboardEvent<HTMLDialogElement>) {
@@ -136,7 +156,7 @@ export function ShellNavigation() {
             </button>
           </div>
           <nav aria-label="Menu navigation" className={styles.dialogLinks}>
-            <NavigationLinks onNavigate={closeMenu} />
+            <NavigationLinks onRouteIntent={dismissMenuForNavigation} />
           </nav>
         </div>
       </dialog>
