@@ -121,6 +121,11 @@
   letter-spacing: 0.14em;
 }
 
+.chapterPassage,
+.chapterViewport {
+  width: 100%;
+}
+
 .chapters {
   width: min(100%, var(--content-max));
   margin-inline: auto;
@@ -249,6 +254,50 @@
     linear-gradient(27deg, transparent 0 45%, var(--text-emphasis) 45.4% 45.8%, transparent 46.2%),
     linear-gradient(112deg, transparent 0 57%, var(--color-terracotta) 57.4% 58%, transparent 58.4%),
     linear-gradient(153deg, transparent 0 37%, var(--rule) 37.4% 38%, transparent 38.4%);
+}
+
+.home[data-home-presentation="horizontal"] .chapterViewport {
+  --home-chapter-progress: 0;
+  position: sticky;
+  top: var(--shell-height);
+  height: calc(100svh - var(--shell-height));
+  overflow: clip;
+  background: var(--surface-foundation);
+}
+
+.home[data-home-presentation="horizontal"] .chapterViewport::after {
+  position: absolute;
+  z-index: 3;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: var(--text-emphasis);
+  content: "";
+  pointer-events: none;
+  transform: scaleX(var(--home-chapter-progress));
+  transform-origin: left;
+}
+
+.home[data-home-presentation="horizontal"] .chapters {
+  display: flex;
+  width: max-content;
+  height: 100%;
+  margin: 0;
+  will-change: transform;
+}
+
+.home[data-home-presentation="horizontal"] .chapter {
+  width: 100vw;
+  min-height: 100%;
+  flex: 0 0 100vw;
+  border-top: 0;
+  border-left: 1px solid var(--rule);
+  padding-block: clamp(var(--space-8), 7vh, var(--space-16));
+}
+
+.home[data-home-presentation="horizontal"] .chapter:first-child {
+  border-left: 0;
 }
 
 .labInvitation {

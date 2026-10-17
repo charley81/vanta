@@ -5,7 +5,11 @@ test.describe("route continuity", () => {
     page,
   }) => {
     await page.goto("/");
-    await page.locator("[data-chapter='craft']").scrollIntoViewIfNeeded();
+    await page.locator("#chapter-craft").evaluate((heading) => {
+      const element = heading as HTMLElement;
+      element.tabIndex = -1;
+      element.focus();
+    });
     expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
 
     await page
@@ -39,6 +43,97 @@ test.describe("route continuity", () => {
     await expect(page).toHaveURL(/\/monolith$/);
     await expect(page.locator("#product-craft-heading")).toBeFocused();
     await expect(craft).toBeInViewport();
+  });
+
+  test("Back restores an enhanced Home chapter directly with prior focus", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/");
+    const main = page.locator("[data-home-presentation]");
+    await expect(main).toHaveAttribute("data-home-presentation", "horizontal");
+
+    const resolutionAction = page.locator("#home-resolution-action");
+    await resolutionAction.focus();
+    await expect(main).toHaveAttribute(
+      "data-home-active-chapter",
+      "resolution",
+    );
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () =>
+            (window.history.state as {
+              __vantaReturnContext?: { focusTarget?: string };
+            }).__vantaReturnContext?.focusTarget,
+        ),
+      )
+      .toBe("home-resolution-action");
+    await page
+      .getByRole("navigation", { name: "Primary navigation" })
+      .getByRole("link", { name: "Product" })
+      .click();
+    await expect(page).toHaveURL(/\/monolith$/);
+
+    await page.goBack();
+    await expect(page).toHaveURL(/\/$/);
+    await expect(main).toHaveAttribute("data-home-presentation", "horizontal");
+    await expect(main).toHaveAttribute(
+      "data-home-active-chapter",
+      "resolution",
+    );
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () =>
+            (window.history.state as {
+              __vantaReturnContext?: { focusTarget?: string };
+            }).__vantaReturnContext?.focusTarget,
+        ),
+      )
+      .toBe("home-resolution-action");
+    await expect(resolutionAction).toBeFocused();
+    await expect(resolutionAction).toBeInViewport();
+  });
+
+  test("fresh explicit Home navigation returns to the opening", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/");
+    await page.locator("#home-resolution-action").focus();
+    expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+
+    await page
+      .getByRole("navigation", { name: "Primary navigation" })
+      .getByRole("link", { name: "Product" })
+      .click();
+    await page
+      .getByRole("navigation", { name: "Primary navigation" })
+      .getByRole("link", { name: "Home" })
+      .click();
+
+    await expect(page).toHaveURL(/\/$/);
+    await expect(page.locator("#home-heading")).toBeFocused();
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(10);
+    await expect(page.locator('[data-home-beat="opening"]')).toBeInViewport();
+  });
+
+  test("reload restores Home semantic position without replay", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/");
+    const main = page.locator("[data-home-presentation]");
+    await page.locator("#home-resolution-action").focus();
+    await expect(main).toHaveAttribute(
+      "data-home-active-chapter",
+      "resolution",
+    );
+
+    await page.reload();
+    await expect(main).toHaveAttribute("data-home-presentation", "horizontal");
+    await expect(main).toHaveAttribute(
+      "data-home-active-chapter",
+      "resolution",
+    );
+    await expect(page.locator("#home-resolution-action")).toBeFocused();
   });
 
   test("activating the current route replaces in place at its canonical start", async ({
