@@ -12,6 +12,10 @@ import {
   type ReturnContext,
   type SemanticSection,
 } from "@/src/continuity";
+import {
+  ROUTE_ACTIVATE_ENHANCEMENTS_EVENT,
+  ROUTE_RECOMPOSE_EVENT,
+} from "@/src/continuity/composition";
 
 function canonicalRoute(pathname: string): CanonicalRoute | null {
   return CANONICAL_ROUTES.find((route) => route === pathname) ?? null;
@@ -21,6 +25,7 @@ function sectionIdentifier(section: HTMLElement): string | null {
   return (
     section.dataset.chapter ??
     section.dataset.section ??
+    section.dataset.homeBeat ??
     section.getAttribute("aria-labelledby") ??
     section.id ??
     null
@@ -39,10 +44,24 @@ function routeSections(): HTMLElement[] {
 }
 
 function documentTop(element: HTMLElement): number {
-  return element.getBoundingClientRect().top + window.scrollY;
+  const continuityTop = Number(element.dataset.continuityTop);
+  return Number.isFinite(continuityTop)
+    ? continuityTop
+    : element.getBoundingClientRect().top + window.scrollY;
+}
+
+function semanticHeight(element: HTMLElement): number {
+  const continuityHeight = Number(element.dataset.continuityHeight);
+  return Number.isFinite(continuityHeight)
+    ? continuityHeight
+    : element.offsetHeight;
 }
 
 function currentSemanticSection(): HTMLElement | null {
+  const active = document.querySelector<HTMLElement>(
+    "main [data-continuity-active='true']",
+  );
+  if (active) return active;
   const position = window.scrollY + window.innerHeight / 2;
   return (
     routeSections().findLast((section) => documentTop(section) <= position) ??
@@ -52,7 +71,7 @@ function currentSemanticSection(): HTMLElement | null {
 }
 
 function normalizedProgress(section: HTMLElement): number {
-  const distance = Math.max(0, section.offsetHeight - window.innerHeight);
+  const distance = Math.max(0, semanticHeight(section) - window.innerHeight);
   if (distance === 0) return 0;
   return Math.min(
     1,
@@ -110,7 +129,7 @@ function restorationSection(id: string): SemanticSection | null {
   const heading = section.querySelector<HTMLElement>("h1[id], h2[id], h3[id]");
   return {
     top: documentTop(section),
-    height: section.offsetHeight,
+    height: semanticHeight(section),
     headingTarget: heading?.id ?? routeHeading()?.id ?? "main-content",
   };
 }
@@ -122,14 +141,25 @@ function focusRouteHeading() {
 
 function restoreRouteContext(context: ReturnContext) {
   const controller = createRestorationController({
-    recompose: () => undefined,
+    recompose: () => {
+      document.dispatchEvent(new Event(ROUTE_RECOMPOSE_EVENT));
+    },
     resolveSection: restorationSection,
     viewportHeight: () => window.innerHeight,
     applyScroll: (y) =>
       window.scrollTo({ top: y, left: 0, behavior: "instant" }),
     focus: focusElement,
     focusRouteHeading,
-    activateEnhancements: () => undefined,
+    activateEnhancements: () => {
+      document.dispatchEvent(
+        new CustomEvent(ROUTE_ACTIVATE_ENHANCEMENTS_EVENT, {
+          detail: {
+            semanticSection: context.semanticSection,
+            normalizedProgress: context.normalizedProgress,
+          },
+        }),
+      );
+    },
     listenForInteraction(listener) {
       const options = { capture: true, once: true } as const;
       for (const event of ["pointerdown", "keydown", "wheel", "touchstart"]) {
@@ -142,8 +172,14 @@ function restoreRouteContext(context: ReturnContext) {
       };
     },
     scheduleCorrection(correction) {
-      const frame = requestAnimationFrame(correction);
-      return () => cancelAnimationFrame(frame);
+      let correctionFrame = 0;
+      const settleFrame = requestAnimationFrame(() => {
+        correctionFrame = requestAnimationFrame(correction);
+      });
+      return () => {
+        cancelAnimationFrame(settleFrame);
+        if (correctionFrame) cancelAnimationFrame(correctionFrame);
+      };
     },
   });
   void controller.restore(context);
@@ -159,16 +195,32 @@ export function ContinuityBoundary() {
     const route = canonicalRoute(pathname);
     if (!route) return;
 
+    let restorationFrame = 0;
     const previousEntry = routeEntries.current.get(route);
     if (navigationIntent.current === "explicit") {
       window.scrollTo({ top: 0, left: 0, behavior: "instant" });
       focusRouteHeading();
-    } else if (previousEntry === router.bfcacheId) {
-      const context = readReturnContext(window.history);
-      if (context?.originRoute === route) restoreRouteContext(context);
+    } else {
+      const navigation = performance.getEntriesByType("navigation").at(-1) as
+        | PerformanceNavigationTiming
+        | undefined;
+      const initialDocumentRestoration =
+        previousEntry === undefined &&
+        (navigation?.type === "reload" || navigation?.type === "back_forward");
+      if (previousEntry === router.bfcacheId || initialDocumentRestoration) {
+        const context = readReturnContext(window.history);
+        if (context?.originRoute === route) {
+          restorationFrame = window.requestAnimationFrame(() =>
+            restoreRouteContext(context),
+          );
+        }
+      }
     }
     routeEntries.current.set(route, router.bfcacheId);
     navigationIntent.current = null;
+    return () => {
+      if (restorationFrame) window.cancelAnimationFrame(restorationFrame);
+    };
   }, [pathname, router.bfcacheId]);
 
   useEffect(() => {
@@ -177,10 +229,28 @@ export function ContinuityBoundary() {
     const currentRoute: CanonicalRoute = route;
     const previousScrollRestoration = window.history.scrollRestoration;
     let pointerContext: ReturnContext | null = null;
+    let saveFrame = 0;
     window.history.scrollRestoration = "manual";
 
     function saveCurrentEntry(context = captureRouteContext(currentRoute)) {
-      if (context) replaceReturnContext(window.history, context);
+      if (!context) return;
+      const previous = readReturnContext(window.history);
+      const retainedFocus =
+        context.focusTarget === null && previous?.originRoute === currentRoute
+          ? previous.focusTarget
+          : context.focusTarget;
+      replaceReturnContext(window.history, {
+        ...context,
+        focusTarget: retainedFocus,
+      });
+    }
+
+    function scheduleCurrentEntrySave() {
+      if (saveFrame) return;
+      saveFrame = window.requestAnimationFrame(() => {
+        saveFrame = 0;
+        saveCurrentEntry();
+      });
     }
 
     function handlePointerDown(event: PointerEvent) {
@@ -221,14 +291,23 @@ export function ContinuityBoundary() {
       }
     }
 
-    const handlePageHide = () => saveCurrentEntry();
+    const handlePageExit = () => saveCurrentEntry();
     document.addEventListener("click", handleClick, true);
+    document.addEventListener("focusin", scheduleCurrentEntrySave, true);
     document.addEventListener("pointerdown", handlePointerDown, true);
-    window.addEventListener("pagehide", handlePageHide);
+    window.addEventListener("beforeunload", handlePageExit);
+    window.addEventListener("pagehide", handlePageExit);
+    window.addEventListener("scroll", scheduleCurrentEntrySave, {
+      passive: true,
+    });
     return () => {
       document.removeEventListener("click", handleClick, true);
+      document.removeEventListener("focusin", scheduleCurrentEntrySave, true);
       document.removeEventListener("pointerdown", handlePointerDown, true);
-      window.removeEventListener("pagehide", handlePageHide);
+      window.removeEventListener("beforeunload", handlePageExit);
+      window.removeEventListener("pagehide", handlePageExit);
+      window.removeEventListener("scroll", scheduleCurrentEntrySave);
+      if (saveFrame) window.cancelAnimationFrame(saveFrame);
       window.history.scrollRestoration = previousScrollRestoration;
     };
   }, [pathname]);

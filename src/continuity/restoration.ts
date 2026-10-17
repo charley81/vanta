@@ -74,6 +74,9 @@ export function createRestorationController(
         visitorInteracted = true;
         cancelCorrection?.();
         cancelCorrection = null;
+        const stop = stopListening;
+        stopListening = null;
+        stop?.();
       });
 
       await adapter.recompose();
@@ -119,7 +122,22 @@ export function createRestorationController(
               viewportHeight: adapter.viewportHeight(),
             }),
           );
+          if (context.focusTarget) {
+            if (!adapter.focus(context.focusTarget)) {
+              if (!adapter.focus(corrected.headingTarget)) {
+                adapter.focusRouteHeading();
+              }
+            }
+          }
+          cancelCorrection = null;
+          const stop = stopListening;
+          stopListening = null;
+          stop?.();
         });
+      } else {
+        const stop = stopListening;
+        stopListening = null;
+        stop?.();
       }
 
       return { status: "restored", position, focus };

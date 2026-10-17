@@ -47,7 +47,7 @@ describe("semantic history restoration", () => {
       },
       focusRouteHeading: () => void events.push("focus:route"),
       activateEnhancements: () => void events.push("enhance"),
-      listenForInteraction: () => () => undefined,
+      listenForInteraction: () => () => void events.push("stop-listening"),
       scheduleCorrection: (callback) => {
         events.push("schedule-correction");
         correction.current = callback;
@@ -71,7 +71,11 @@ describe("semantic history restoration", () => {
       "schedule-correction",
     ]);
     correction.current?.();
-    expect(events.at(-1)).toBe("scroll:600");
+    expect(events.slice(-3)).toEqual([
+      "scroll:600",
+      "focus:fracture-action",
+      "stop-listening",
+    ]);
   });
 
   it("cancels delayed correction on visitor interaction", async () => {

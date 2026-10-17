@@ -6,6 +6,7 @@ import {
   getPublishedHomeMetadataForRequest,
 } from "@/src/editorial/preview-content.server";
 
+import { HomeChoreography } from "./home-choreography";
 import { HomeMedia } from "./home-media";
 import styles from "./home.module.css";
 import { EditorialPreviewBanner } from "./ui/editorial-preview-banner";
@@ -63,7 +64,7 @@ export default async function HomePage() {
           </p>
         </section>
 
-        <div className={styles.chapters} data-home-sequence="chapters">
+        <HomeChoreography>
           {model.chapters.map((chapter) => (
             <section
               aria-labelledby={`chapter-${chapter.id}`}
@@ -83,6 +84,7 @@ export default async function HomePage() {
                   <Link
                     className={coreStyles.secondaryAction}
                     href={chapter.action.href}
+                    id={`home-${chapter.id}-action`}
                   >
                     {chapter.action.label}
                   </Link>
@@ -93,7 +95,7 @@ export default async function HomePage() {
               </div>
             </section>
           ))}
-        </div>
+        </HomeChoreography>
 
         <section
           aria-labelledby="lab-invitation-heading"
