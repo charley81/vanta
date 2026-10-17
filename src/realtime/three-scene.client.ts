@@ -60,7 +60,7 @@ export async function createThreeRealtimeScene(
 
   const setupStartedAt = performance.now();
   const renderer = new WebGLRenderer({
-    alpha: false,
+    alpha: options.background === null,
     antialias: true,
     canvas: options.canvas,
     powerPreference: "high-performance",
@@ -70,7 +70,8 @@ export async function createThreeRealtimeScene(
   renderer.toneMappingExposure = options.exposure ?? 1;
 
   const scene = new Scene();
-  scene.background = new Color(options.background);
+  scene.background =
+    options.background === null ? null : new Color(options.background);
   const camera = new PerspectiveCamera(
     options.camera.verticalFovDegrees,
     1,
@@ -141,6 +142,7 @@ export async function createThreeRealtimeScene(
         camera,
         model,
         renderer,
+        scene,
       }) ?? null;
 
     return {
@@ -157,15 +159,16 @@ export async function createThreeRealtimeScene(
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
       },
-      setEffects() {
-        // This primitive has no optional post-processing effects. Preserve the
-        // qualified sRGB/ACES color pipeline while the controller still lowers
-        // DPR and route-owned scenes may disable their own optional effects.
+      setEffects(effects) {
+        // Preserve the qualified sRGB/ACES color pipeline while allowing a
+        // route-owned orchestrator to remove its optional effects.
+        extension?.setEffects?.(effects);
       },
       render(timestampMs) {
         if (disposed) return;
         extension?.beforeRender?.(timestampMs);
         renderer.render(scene, camera);
+        extension?.afterRender?.(timestampMs);
       },
       dispose() {
         if (disposed) return;

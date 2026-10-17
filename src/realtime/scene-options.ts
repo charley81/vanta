@@ -32,6 +32,8 @@ export const DEFAULT_REALTIME_LIGHTING: RealtimeSceneLighting = {
 
 export type ThreeRealtimeSceneExtension = {
   beforeRender?(timestampMs: number): void;
+  afterRender?(timestampMs: number): void;
+  setEffects?(effects: import("./runtime").RealtimeEffects): void;
   dispose(): void;
 };
 
@@ -40,13 +42,14 @@ export type ThreeRealtimeSceneExtensionContext = {
   camera: import("three").PerspectiveCamera;
   model: import("three").Object3D;
   renderer: import("three").WebGLRenderer;
+  scene: import("three").Scene;
 };
 
 export type ThreeRealtimeSceneOptions = {
   canvas: HTMLCanvasElement;
   camera: RealtimeCamera;
   lighting: RealtimeSceneLighting;
-  background: number;
+  background: number | null;
   exposure?: number;
   createExtension?(
     context: ThreeRealtimeSceneExtensionContext,

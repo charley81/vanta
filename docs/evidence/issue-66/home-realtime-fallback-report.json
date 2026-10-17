@@ -1,0 +1,42 @@
+{
+  "acceptanceClaim": false,
+  "environment": "local production build / Playwright Chromium",
+  "automatedSource": "tests/browser/home.spec.ts",
+  "cases": [
+    {
+      "trigger": "WebGL2 qualification failure",
+      "expectedTier": "motion",
+      "modelRequests": 0,
+      "authoredPosterPreserved": true
+    },
+    {
+      "trigger": "model request failure",
+      "expectedFallbackReason": "runtime-failure",
+      "routeHeadingPreserved": true,
+      "primaryActionPreserved": true
+    },
+    {
+      "trigger": "webglcontextlost",
+      "expectedFallbackReason": "runtime-failure",
+      "semanticChapterPreserved": "morph",
+      "scrollPositionPreserved": true,
+      "routeActionsPreserved": true
+    },
+    {
+      "trigger": "Bag coverage",
+      "expectedRuntimePhase": "suspended",
+      "resumeAfterUncover": true
+    },
+    {
+      "trigger": "Home cinematic range offscreen",
+      "expectedRuntimePhase": "suspended",
+      "authoredNarrativePreserved": true
+    },
+    {
+      "trigger": "reduced motion",
+      "expectedTier": "core",
+      "modelRequests": 0,
+      "canonicalBeatCount": 12
+    }
+  ]
+}

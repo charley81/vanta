@@ -1,6 +1,34 @@
 .home {
+  position: relative;
   overflow: clip;
   background: var(--surface-foundation);
+}
+
+.realtimeStage {
+  position: fixed;
+  z-index: 2;
+  top: var(--shell-height);
+  right: -4vw;
+  width: min(76rem, 76vw);
+  height: calc(100svh - var(--shell-height));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 320ms ease-out;
+  mask-image: linear-gradient(90deg, transparent 0, black 18% 92%, transparent);
+}
+
+.realtimeStage[data-visible="true"] {
+  opacity: 1;
+}
+
+.realtimeStage:not([data-home-realtime-beat="opening"]) {
+  z-index: 0;
+}
+
+.realtimeCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .telemetry {
@@ -67,6 +95,12 @@
   display: block;
   width: min(76rem, 82vw);
   margin: 0;
+  opacity: 1;
+  transition: opacity 240ms ease-out;
+}
+
+.home[data-home-realtime-visible="true"] .homeMedia {
+  opacity: 0;
 }
 
 .homeMedia img {
@@ -175,6 +209,8 @@
 }
 
 .chapterIndex {
+  position: relative;
+  z-index: 3;
   align-self: start;
   margin: 0;
   color: var(--text-emphasis);
@@ -182,7 +218,7 @@
 
 .chapterCopy {
   position: relative;
-  z-index: 1;
+  z-index: 3;
 }
 
 .chapterSignal {
@@ -265,6 +301,10 @@
   background: var(--surface-foundation);
 }
 
+.home[data-home-presentation="horizontal"][data-home-realtime-visible="true"] .chapterViewport {
+  background: color-mix(in srgb, var(--surface-foundation) 18%, transparent);
+}
+
 .home[data-home-presentation="horizontal"] .chapterViewport::after {
   position: absolute;
   z-index: 3;
@@ -298,6 +338,10 @@
 
 .home[data-home-presentation="horizontal"] .chapter:first-child {
   border-left: 0;
+}
+
+.home[data-home-presentation="horizontal"][data-home-realtime-visible="true"] .chapter:nth-child(even) {
+  background: linear-gradient(105deg, color-mix(in srgb, var(--color-brown) 10%, transparent), transparent 72%);
 }
 
 .labInvitation {
@@ -378,6 +422,15 @@
 }
 
 @media (max-width: 63.999rem) {
+  .realtimeStage {
+    position: absolute;
+    top: 0;
+    right: -18%;
+    width: 118%;
+    height: max(28rem, calc(100svh - var(--shell-height)));
+    mask-image: linear-gradient(0deg, transparent 0, black 22% 100%);
+  }
+
   .introduction {
     min-height: max(42rem, calc(100svh - var(--shell-height)));
     grid-template-rows: minmax(14rem, 1fr) auto;
@@ -402,6 +455,12 @@
 }
 
 @media (max-width: 47.999rem) {
+  .realtimeStage {
+    right: -30%;
+    width: 145%;
+    height: 52svh;
+  }
+
   .introduction {
     min-height: max(42rem, calc(100svh - var(--shell-height)));
     grid-template-rows: minmax(15rem, 42svh) auto;
@@ -491,6 +550,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .realtimeStage,
   .homeMedia,
   .grid,
   .chapterSignal,

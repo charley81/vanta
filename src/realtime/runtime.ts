@@ -60,7 +60,10 @@ export type RealtimeRuntime = {
   invalidate(): void;
   recordFrameWindow(window: { durationMs: number; frames: number }): void;
   recordTask(kind: "startup" | "interaction", durationMs: number): void;
-  resize(): void;
+  resize(update?: {
+    viewport?: RealtimeViewport;
+    devicePixelRatio?: number;
+  }): void;
   setActivity(activity: Partial<RealtimeActivity>): void;
   start(): Promise<void>;
   subscribe(listener: () => void): () => void;
@@ -106,7 +109,8 @@ function isExternallySuspended(activity: RealtimeActivity): boolean {
 }
 
 export function createRealtimeRuntime(options: RuntimeOptions): RealtimeRuntime {
-  const viewport = options.viewport ?? "desktop";
+  let viewport = options.viewport ?? "desktop";
+  let devicePixelRatio = options.devicePixelRatio ?? 1;
   const listeners = new Set<() => void>();
   const now = options.now ?? (() => performance.now());
   const requestFrame = options.requestFrame ?? browserRequestFrame;
@@ -118,7 +122,7 @@ export function createRealtimeRuntime(options: RuntimeOptions): RealtimeRuntime 
     phase: "idle",
     fallbackReason: null,
     quality: {
-      dpr: cappedRealtimeDpr(options.devicePixelRatio ?? 1, viewport),
+      dpr: cappedRealtimeDpr(devicePixelRatio, viewport),
       effects: "full",
     },
     resources: null,
@@ -381,12 +385,22 @@ export function createRealtimeRuntime(options: RuntimeOptions): RealtimeRuntime 
       pendingFrame = true;
       synchronizeActivity();
     },
-    resize() {
+    resize(update) {
+      viewport = update?.viewport ?? viewport;
+      devicePixelRatio = update?.devicePixelRatio ?? devicePixelRatio;
+      const cappedDpr = cappedRealtimeDpr(devicePixelRatio, viewport);
+      const dpr =
+        snapshot.quality.effects === "reduced"
+          ? Math.min(cappedDpr, snapshot.quality.dpr)
+          : cappedDpr;
+      if (dpr !== snapshot.quality.dpr) {
+        publish({ quality: { ...snapshot.quality, dpr } });
+      }
       if (!scene || (snapshot.phase !== "ready" && snapshot.phase !== "suspended")) {
         return;
       }
       try {
-        scene.resize({ dpr: snapshot.quality.dpr });
+        scene.resize({ dpr });
         pendingFrame = true;
         synchronizeActivity();
       } catch {

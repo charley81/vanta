@@ -69,6 +69,17 @@ test.describe("route continuity", () => {
         ),
       )
       .toBe("home-resolution-action");
+
+    // A late enhancement/layout correction may move the passage while the
+    // focused resolution action remains visible. Navigation must anchor the
+    // Return context to that visible focused section, not the adjacent beat.
+    await page.evaluate(() =>
+      window.scrollBy({ top: -window.innerHeight / 2, behavior: "instant" }),
+    );
+    await expect(main).toHaveAttribute("data-home-active-chapter", "craft");
+    await expect(resolutionAction).toBeFocused();
+    await expect(resolutionAction).toBeInViewport();
+
     await page
       .getByRole("navigation", { name: "Primary navigation" })
       .getByRole("link", { name: "Product" })

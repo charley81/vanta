@@ -96,6 +96,36 @@ describe("route-neutral Realtime runtime", () => {
     });
   });
 
+  it("re-caps DPR after responsive viewport changes without undoing a quality reduction", async () => {
+    const scheduler = frameScheduler();
+    const loadedScene = scene();
+    const runtime = createRealtimeRuntime({
+      cancelFrame: scheduler.cancelFrame,
+      devicePixelRatio: 3,
+      loadScene: async () => loadedScene,
+      presentation: presentation(),
+      requestFrame: scheduler.requestFrame,
+      viewport: "desktop",
+    });
+    await runtime.start();
+
+    runtime.resize({ devicePixelRatio: 3, viewport: "mobile" });
+    expect(runtime.getSnapshot()).toMatchObject({
+      phase: "ready",
+      quality: { dpr: 1.5, effects: "full" },
+    });
+    expect(loadedScene.resize).toHaveBeenLastCalledWith({ dpr: 1.5 });
+
+    runtime.recordFrameWindow({ durationMs: 2_000, frames: 58 });
+    expect(runtime.getSnapshot().quality).toEqual({
+      dpr: 1.125,
+      effects: "reduced",
+    });
+    runtime.resize({ devicePixelRatio: 3, viewport: "desktop" });
+    expect(runtime.getSnapshot().quality.dpr).toBe(1.125);
+    expect(loadedScene.resize).toHaveBeenLastCalledWith({ dpr: 1.125 });
+  });
+
   it("selects authored fallback and disposes when resource or task budgets fail", async () => {
     const oversized = scene({
       ...referenceResources,

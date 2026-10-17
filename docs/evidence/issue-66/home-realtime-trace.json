@@ -1,0 +1,71 @@
+{
+  "acceptanceClaim": false,
+  "environment": "local production build / headless Chromium",
+  "viewport": {
+    "width": 1440,
+    "height": 900,
+    "dpr": 1
+  },
+  "selectedTier": "motion",
+  "finalPhase": "fallback",
+  "fallbackReason": "performance",
+  "authoredPosterComplete": true,
+  "startedAt": 17,
+  "phases": [
+    {
+      "phase": "poster",
+      "time": 49.300000000046566
+    },
+    {
+      "phase": "poster",
+      "time": 207
+    },
+    {
+      "phase": "loading",
+      "time": 237.10000000009313
+    },
+    {
+      "phase": "ready",
+      "time": 498.89999999990687
+    },
+    {
+      "phase": "ready",
+      "time": 498.89999999990687
+    },
+    {
+      "phase": "fallback",
+      "time": 1394.3999999999069
+    },
+    {
+      "phase": "fallback",
+      "time": 1397.1999999999534
+    }
+  ],
+  "lcp": [
+    {
+      "startTime": 104,
+      "size": 807372,
+      "element": "IMG"
+    }
+  ],
+  "resources": [
+    {
+      "name": "/media/stills/home-poster-1440.avif",
+      "initiatorType": "img",
+      "startTime": 14.699999999953434,
+      "duration": 15.5,
+      "transferSize": 7831,
+      "encodedBodySize": 7531,
+      "decodedBodySize": 7531
+    },
+    {
+      "name": "/media/models/VANTA_MONOLITH_runtime_meshopt.glb",
+      "initiatorType": "fetch",
+      "startTime": 315.5,
+      "duration": 98,
+      "transferSize": 2330321,
+      "encodedBodySize": 2330021,
+      "decodedBodySize": 2568220
+    }
+  ]
+}

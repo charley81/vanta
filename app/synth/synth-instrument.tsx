@@ -102,7 +102,14 @@ export function SynthInstrument() {
       { threshold: 0.01 },
     );
     intersection.observe(stage);
-    const resize = new ResizeObserver(() => runtime.resize());
+    const resize = new ResizeObserver(() =>
+      runtime.resize({
+        devicePixelRatio: window.devicePixelRatio,
+        viewport: window.matchMedia("(max-width: 47.999rem)").matches
+          ? "mobile"
+          : "desktop",
+      }),
+    );
     resize.observe(stage);
 
     const bagDialog = document.getElementById("bag-dialog");
