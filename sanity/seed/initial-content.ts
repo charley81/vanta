@@ -2,6 +2,12 @@ export const INITIAL_EDITORIAL_PROJECTION_FIXTURES = {
   homePage: {
     seoDescription:
       "Discover MONOLITH, VANTA’s eight-voice hybrid desktop synthesizer, through a cinematic journey from deep SUB foundations to FRACTURE.",
+    socialImage: {
+      url: "/social/home.jpg",
+      width: 1200,
+      height: 630,
+      alt: "MONOLITH emerging from darkness in the VANTA Home experience.",
+    },
     opening: {
       kicker: "INSTRUMENT 001 / EIGHT VOICES",
       headline: "Sound, given mass.",
@@ -54,6 +60,12 @@ export const INITIAL_EDITORIAL_PROJECTION_FIXTURES = {
   productPage: {
     seoDescription:
       "Explore MONOLITH, a graphite eight-voice hybrid desktop synthesizer built around continuous movement between SUB and FRACTURE.",
+    socialImage: {
+      url: "/social/product.jpg",
+      width: 1200,
+      height: 630,
+      alt: "MONOLITH graphite desktop synthesizer product portrait.",
+    },
     hero: {
       subtitle: "Eight voices. One continuum.",
       body: "A sculptural desktop synthesizer built for tactile exploration. Move between deep foundations and fractured harmonics with a single defining gesture.",
@@ -86,6 +98,12 @@ export const INITIAL_EDITORIAL_PROJECTION_FIXTURES = {
   synthPage: {
     seoDescription:
       "Play one evolving MONOLITH voice in MORPH Lab and shape MORPH, cutoff, resonance, drive, attack, and release in real time.",
+    socialImage: {
+      url: "/social/synth.jpg",
+      width: 1200,
+      height: 630,
+      alt: "MONOLITH MORPH Lab control surface between SUB and FRACTURE.",
+    },
     category: "MORPH LAB",
     headline: "One gesture. Endless change.",
     introduction:

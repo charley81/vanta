@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-10-17T16:18:02Z",
+  "acceptanceClaim": false,
+  "cards": [
+    {
+      "route": "/",
+      "asset": "sanity/seed/assets/home-social.jpg",
+      "dimensions": "1200x630",
+      "unique": true,
+      "review": "pass",
+      "notes": "VANTA / INSTRUMENT 001 and Sound, given mass. remain legible with a distinct circular signal composition."
+    },
+    {
+      "route": "/monolith",
+      "asset": "sanity/seed/assets/product-social.jpg",
+      "dimensions": "1200x630",
+      "unique": true,
+      "review": "pass",
+      "notes": "MONOLITH identity and Eight voices. One continuum. remain legible without price, availability, or purchase language."
+    },
+    {
+      "route": "/synth",
+      "asset": "sanity/seed/assets/synth-social.jpg",
+      "dimensions": "1200x630",
+      "unique": true,
+      "review": "pass",
+      "notes": "MORPH Lab and One gesture. Endless change. remain legible with a distinct SUB-to-FRACTURE control motif."
+    }
+  ],
+  "metadataChecks": {
+    "openGraphWidthAndHeight": "pass",
+    "twitterSummaryLargeImage": "pass",
+    "routeSpecificAltText": "pass",
+    "publishedSanityAssetUrls": "pass"
+  },
+  "note": "Platform-specific unfurl review against the immutable production candidate remains required before launch sign-off."
+}

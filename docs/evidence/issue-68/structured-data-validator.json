@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "validatedAt": "2026-10-17T16:17:30Z",
+  "acceptanceClaim": false,
+  "validator": "Schema.org Markup Validator",
+  "endpoint": "https://validator.schema.org/validate",
+  "input": "rendered local production-build HTML",
+  "results": [
+    {
+      "route": "/",
+      "rootType": "WebSite",
+      "nestedTypes": ["Organization"],
+      "errors": 0,
+      "warnings": 0
+    },
+    {
+      "route": "/monolith",
+      "rootType": "Product",
+      "nestedTypes": ["Brand", "QuantitativeValue", "PropertyValue"],
+      "errors": 0,
+      "warnings": 0,
+      "prohibitedCommercePropertiesPresent": false
+    }
+  ],
+  "sanitization": {
+    "lessThan": "escaped",
+    "greaterThan": "escaped",
+    "ampersand": "escaped",
+    "lineSeparators": "escaped",
+    "injectionRegressionTest": "pass"
+  },
+  "prohibitedProperties": [
+    "offers",
+    "sku",
+    "availability",
+    "aggregateRating",
+    "review",
+    "potentialAction",
+    "price",
+    "priceCurrency"
+  ],
+  "note": "A validator run against the immutable production candidate remains required before this can become candidate Acceptance evidence."
+}

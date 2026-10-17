@@ -1,6 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server";
 
 import {
+  canonicalRedirectUrl,
+  isIndexablePath,
+  isNonProductionDeployment,
+} from "@/src/discoverability/configuration";
+import {
   EDITORIAL_PREVIEW_COOKIE,
   EDITORIAL_PREVIEW_TARGETS,
   parseExactOrigin,
@@ -14,9 +19,33 @@ import {
 
 const NOINDEX = "noindex, nofollow, noarchive";
 
+function applyPublicResponseHeaders(
+  response: NextResponse,
+  development: boolean,
+): void {
+  response.headers.set(
+    "Content-Security-Policy",
+    publicContentSecurityPolicy(development),
+  );
+  response.headers.set("Permissions-Policy", RESTRICTIVE_PERMISSIONS_POLICY);
+  response.headers.set("Referrer-Policy", "no-referrer");
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("X-Frame-Options", "DENY");
+  if (process.env.CONTEXT === "production") {
+    response.headers.set("Strict-Transport-Security", "max-age=31536000");
+  }
+}
+
 export async function proxy(request: NextRequest) {
-  const response = NextResponse.next();
   const development = process.env.NODE_ENV === "development";
+  const redirectUrl = canonicalRedirectUrl(request.nextUrl, process.env);
+  if (redirectUrl) {
+    const redirect = NextResponse.redirect(redirectUrl, 308);
+    applyPublicResponseHeaders(redirect, development);
+    return redirect;
+  }
+
+  const response = NextResponse.next();
   const studioOrigin = parseExactOrigin(
     process.env.SANITY_STUDIO_ORIGIN,
     development,
@@ -35,26 +64,29 @@ export async function proxy(request: NextRequest) {
     request.nextUrl.pathname,
   );
   const isApi = request.nextUrl.pathname.startsWith("/api/");
-  const isDeployPreview = process.env.CONTEXT === "deploy-preview";
+  const nonProductionDeployment = isNonProductionDeployment(process.env);
 
+  applyPublicResponseHeaders(response, development);
   response.headers.set(
     "Content-Security-Policy",
     previewStudioOrigin && isPreviewTarget
       ? previewContentSecurityPolicy(previewStudioOrigin, development)
       : publicContentSecurityPolicy(development),
   );
-  response.headers.set("Permissions-Policy", RESTRICTIVE_PERMISSIONS_POLICY);
-  response.headers.set("Referrer-Policy", "no-referrer");
-  response.headers.set("X-Content-Type-Options", "nosniff");
 
   if (isPreviewSession && isPreviewTarget) {
     response.headers.set("Cache-Control", "private, no-store, max-age=0, must-revalidate");
     response.headers.set("X-Robots-Tag", NOINDEX);
+    response.headers.delete("X-Frame-Options");
   } else {
     response.headers.set("X-Frame-Options", "DENY");
   }
 
-  if (isApi || isDeployPreview || isPreviewSession) {
+  if (
+    !isIndexablePath(request.nextUrl.pathname) ||
+    nonProductionDeployment ||
+    isPreviewSession
+  ) {
     response.headers.set("X-Robots-Tag", NOINDEX);
   }
   if (isApi) {

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-17T16:18:02Z",
+  "acceptanceClaim": false,
+  "configuredOrigin": "https://vanta-monolith.netlify.app",
+  "statusCode": 308,
+  "queryPolicy": "preserve",
+  "rules": {
+    "productionAlternateHostOrProtocol": "configured HTTPS origin with the same normalized path and query",
+    "trailingSlash": "remove on every non-root path",
+    "legacyPaths": {
+      "/home": "/",
+      "/product": "/monolith",
+      "/products/monolith": "/monolith",
+      "/morph-lab": "/synth",
+      "/checkout": "/checkout-preview"
+    },
+    "deployPreviewException": "remains reachable for qualification and receives response-level noindex"
+  },
+  "checks": {
+    "alternateHost": "pass",
+    "httpToConfiguredHttpsOrigin": "pass",
+    "singleHopLegacyAndSlashNormalization": "pass",
+    "securityHeadersOnRedirect": "pass",
+    "deployPreviewNoindexWithoutCanonicalRedirect": "pass"
+  },
+  "verification": [
+    "tests/discoverability/discoverability.test.ts",
+    "tests/discoverability/proxy-policy.test.ts",
+    "tests/browser/discoverability.spec.ts"
+  ]
+}

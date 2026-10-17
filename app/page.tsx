@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { buildIndexedRouteMetadata } from "@/src/discoverability/metadata";
+import {
+  buildHomeStructuredData,
+  serializeJsonLd,
+} from "@/src/discoverability/structured-data";
 import {
   getHomeRouteContentForRequest,
   getPublishedHomeMetadataForRequest,
@@ -14,11 +19,7 @@ import { EditorialPreviewBanner } from "./ui/editorial-preview-banner";
 import coreStyles from "./ui/core-route.module.css";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const model = await getPublishedHomeMetadataForRequest();
-  return {
-    title: { absolute: model.title },
-    description: model.seoDescription,
-  };
+  return buildIndexedRouteMetadata(await getPublishedHomeMetadataForRequest());
 }
 
 export default async function HomePage() {
@@ -26,6 +27,12 @@ export default async function HomePage() {
 
   return (
     <>
+      <script
+        dangerouslySetInnerHTML={{
+          __html: serializeJsonLd(buildHomeStructuredData()),
+        }}
+        type="application/ld+json"
+      />
       {preview ? <EditorialPreviewBanner session={preview} /> : null}
       <main
         className={`${coreStyles.routeMain} ${styles.home}`}

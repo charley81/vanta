@@ -30,6 +30,20 @@ function cloneSeed() {
   return structuredClone(buildInitialEditorialSeed(bindings));
 }
 
+function projectionDataset() {
+  const assets = [
+    [bindings.socialImages.home, "/social/home.jpg"],
+    [bindings.socialImages.product, "/social/product.jpg"],
+    [bindings.socialImages.synth, "/social/synth.jpg"],
+  ].map(([_id, url]) => ({
+    _id,
+    _type: "sanity.imageAsset",
+    url,
+    metadata: { dimensions: { width: 1200, height: 630 } },
+  }));
+  return [...cloneSeed(), ...assets];
+}
+
 function schemaTypeNames(definition: unknown): string[] {
   if (definition === null || typeof definition !== "object") return [];
   const record = definition as Record<string, unknown>;
@@ -162,7 +176,7 @@ describe("Editorial Sanity schema", () => {
 
 describe("Editorial seed projections", () => {
   it("projects the approved seed into route-owned fixture shapes", async () => {
-    const documents = cloneSeed();
+    const documents = projectionDataset();
 
     const homeValue = await evaluate(parse(EDITORIAL_PROJECTIONS.homePage), {
       dataset: documents,
@@ -201,7 +215,7 @@ describe("Editorial seed projections", () => {
 
   it("keeps designed Home sequence and code-owned values out of projections", async () => {
     const value = await evaluate(parse(EDITORIAL_PROJECTIONS.homePage), {
-      dataset: cloneSeed(),
+      dataset: projectionDataset(),
     });
     const home = (await value.get()) as Record<string, unknown>;
     const chapters = home.chapters as Record<string, unknown>;

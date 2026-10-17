@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { buildIndexedRouteMetadata } from "@/src/discoverability/metadata";
 import {
   getPublishedSynthMetadataForRequest,
   getSynthRouteContentForRequest,
@@ -14,11 +15,7 @@ import styles from "./synth.module.css";
 import { SynthTransport } from "./synth-transport";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const model = await getPublishedSynthMetadataForRequest();
-  return {
-    title: { absolute: model.title },
-    description: model.seoDescription,
-  };
+  return buildIndexedRouteMetadata(await getPublishedSynthMetadataForRequest());
 }
 
 export default async function SynthPage() {
