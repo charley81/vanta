@@ -12,7 +12,7 @@ This directory defines the requirement-aware checks used by local development an
 - Playwright HTML report: `artifacts/playwright/`
 - Playwright failure artifacts: `artifacts/test-results/`
 
-Generated `artifacts/` are ignored by Git and uploaded by CI. Every machine report records the public command, tool versions, Git commit/dirty state, timestamps, and related requirement IDs. The IDs describe the check's future qualification context; they do not assert that a broad requirement was fully verified. Reports set `acceptanceClaim: false`: a passing local or branch report is verification feedback only, not candidate Acceptance evidence. A release-specific manifest must bind applicable artifacts to one immutable candidate and deployment before review can make that claim.
+Generated `artifacts/` are ignored by Git and uploaded by CI. Every machine report records the public command, tool versions, Git commit/dirty state, timestamps, and related requirement IDs. The IDs describe the check's context; they do not assert that a broad requirement was fully verified. Reports set `acceptanceClaim: false` because they are engineering feedback. For launch, record the deployed Git commit, immutable Netlify URL, checks run, material gaps, and owner decision. A structured evidence manifest is optional.
 
 ## Commands
 
@@ -38,9 +38,9 @@ pnpm test:commerce
 pnpm check
 ```
 
-`validate:evidence` checks the normative template and every YAML file below `evidence/manifests/` by default. Pass explicit manifest paths to validate another location. The schema permits null example values only for `status: template` or an in-progress `status: draft`; `status: candidate` requires candidate identity. Draft/template manifests cannot record passing or waived candidate/launch artifacts, and the `OPS-015` mappings in `checks.yaml` cannot appear in waivers.
+`validate:evidence` checks the optional structured template and any YAML files below `evidence/manifests/`. Pass explicit manifest paths to validate another location. The schema remains strict when a team chooses to use it, but a candidate manifest is not required for launch.
 
-`validate:performance` exercises the regression gate with the deterministic scaffold fixture. Later measurement jobs can call `tsx tooling/verification/cli.ts performance <input.json>` with at least three baseline and candidate samples. A median regression above 10% fails unless its input records an explicit approve decision for `QUALITY-003`, the Release Approver's identity and role, timestamp, and an HTTPS approval-record link.
+`validate:performance` exercises the existing regression checker with a deterministic scaffold fixture. It remains useful engineering feedback while issue #72 simplifies production profiling and regression review; it is not by itself a launch approval system.
 
 `test:browser` runs the production-build journey suite followed by the focused commerce boundary suite. `test:commerce` can run independently against a local temporary HTTPS proxy, or against an immutable Netlify deployment when `COMMERCE_QUALIFICATION_BASE_URL`, `COMMERCE_QUALIFICATION_DEPLOYMENT_ID`, and `COMMERCE_QUALIFICATION_APPLICATION_COMMIT` are all supplied. The deployed config rejects mutable aliases and verifies the public deploy record before exercising the journey. The manually triggered `Commerce qualification` GitHub Actions workflow accepts the deployment ID and deployed commit, checks out that commit, runs the deployed suite, and retains the sanitized Acceptance evidence for 30 days.
 
@@ -50,4 +50,4 @@ The audio checks produce non-Acceptance engineering reports under `artifacts/rep
 
 The media checks govern the immutable approved GLB and all current derivatives. `validate:media-source` verifies the source hash, glTF report, bounds, material/texture inventory, named-control hierarchy, and decoded texture/GPU estimates. `build:media` performs the conservative Meshopt derivation and offline authored-media render from `media/pipeline.json`. `validate:media` regenerates every model, master, responsive still, comparison image, and manifest in a clean temporary tree and requires byte-identical output while enforcing model, motion, texture, and GPU ceilings. See `media/README.md` for the exact hash-scoped source finding policy.
 
-`test:realtime` exercises the independent Presentation-selection matrix, versioned session downgrade, lazy-loader gate, governed resource accounting, DPR/task/startup/frame budgets, context-loss fallback, all frame-loop suspension reasons, stale startup cleanup, and idempotent disposal. Its generated report is focused engineering feedback; physical-device startup/frame qualification remains candidate evidence.
+`test:realtime` exercises the independent Presentation-selection matrix, versioned session downgrade, lazy-loader gate, governed resource accounting, context-loss fallback, frame-loop suspension, stale startup cleanup, and idempotent disposal. Its generated report is focused engineering feedback. Launch adds a practical production-profile and fallback check, not a prescribed physical-device laboratory.

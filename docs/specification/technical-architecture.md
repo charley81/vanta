@@ -8,7 +8,7 @@ Server Components own source composition and route HTML. Client boundaries sit a
 
 Server Components call server-only composition modules directly rather than the application’s own Route Handlers. Browser code reaches privileged behavior only through narrow same-origin Route Handlers. Use `server-only`/`client-only` boundaries and tests to prevent environment poisoning and heavy-runtime leakage.
 
-Pin Node 22.12 or newer and the repository’s pnpm version. Next.js, Netlify adapter, Sanity schema/client, telemetry, CSP, and dependency upgrades are explicit qualification events.
+Pin Node 22.12 or newer and the repository’s pnpm version. Next.js, the Netlify integration, Sanity schema/client, CSP, and material dependency upgrades require normal build and smoke qualification.
 
 ## 2. Deep feature modules
 
@@ -22,9 +22,7 @@ Framework route files and handlers remain thin adapters over these deep modules:
 6. MORPH session and calibrated audio engine;
 7. shared 3D scene/asset primitives with separate Home and Synth orchestrators;
 8. Presentation qualification;
-9. Return context and lifecycle coordination;
-10. telemetry, monitoring, and redaction contracts;
-11. isolated non-public Shopify qualification adapter/harness.
+9. Return context and lifecycle coordination.
 
 Vendor SDK responses, credentials, queries, cache policy, and errors stay inside adapters. Public module interfaces return domain-shaped validated data or typed availability results. Expected absence/unavailability is data; unexpected programming defects throw to the nearest boundary.
 
@@ -34,11 +32,10 @@ Vendor SDK responses, credentials, queries, cache policy, and errors stay inside
 |---|---|---|
 | Code | Product truth; public Catalog values; route/section structure; behavior; choreography; operational/accessibility language; approved GLB and derivatives; audio calibration; metadata titles/canonicals/index policy; structured-data shape | Editable Editorial prose/media |
 | Sanity | Fixed Editorial singleton copy; Editorial images; crop/hotspot; contextual alt text/captions; SEO descriptions; dedicated social images | Price, Product facts, controls, navigation, behavior, arbitrary page building/HTML/links |
-| Shopify development store | Non-public qualification catalog, Storefront Cart API, native test checkout, Functions, disposable test orders | Public runtime values, public carts, public checkout, public identifiers/tokens/URLs |
 | Figma | Composition, content structure, art direction, crop references | Runtime content, geometry, behavior, Product truth |
 | Approved GLB | Product geometry and named interaction hierarchy | Copy, layout, behavior |
 
-Composition never fills one owner’s missing value from another owner. Public production has no Shopify dependency. A Shopify qualification outage cannot affect routes, Bag, or Checkout Preview.
+Composition never fills one owner’s missing value from another owner. VANTA has no Shopify runtime, store, credential, harness, or launch dependency.
 
 ## 4. Sanity model and composition
 
@@ -66,7 +63,7 @@ Draft/release preview uses Next.js Draft Mode and the production component tree.
 - is visibly marked, private/no-store, non-indexable, and excluded from journey analytics;
 - disables Bag mutation;
 - cannot alter Product truth, public Catalog values, behavior, or public cache state;
-- never emits draft/release data through social images, metadata, or telemetry.
+- never emits draft/release data through social images, metadata, or public journey state.
 
 One root Sanity live-content bridge may refresh affected Server Component output. Preview CSP may allow framing only by the exact configured Sanity Studio origin and only the required API/WebSocket origins; public CSP remains stricter.
 
@@ -104,7 +101,7 @@ Do not create one application-wide state object. Use bounded serializable concer
 
 MORPH and Presentation stores may use separate typed Zustand vanilla stores with selector-based React adapters, mounted only deeply enough to survive client navigation. Runtime objects—`AudioContext`, AudioNodes, Three.js objects, GLTF scenes, renderers, DOM nodes, requests—never enter shared stores.
 
-Audio, rendering, navigation, Bag, and Preview transitions use explicit reducers/state machines and idempotent lifecycle controllers. Repeated hide/freeze/BFCache restore cycles cannot duplicate nodes, loops, listeners, or telemetry. A newer route intent supersedes an older uncommitted navigation. Opening Bag cancels uncommitted navigation; committed route navigation closes overlays.
+Audio, rendering, navigation, Bag, and Preview transitions use explicit reducers/state machines and idempotent lifecycle controllers. Repeated hide/freeze/BFCache restore cycles cannot duplicate nodes, loops, or listeners. A newer route intent supersedes an older uncommitted navigation. Opening Bag cancels uncommitted navigation; committed route navigation closes overlays.
 
 ## 9. 3D and authored-media pipeline
 
@@ -156,25 +153,21 @@ Tiers:
 
 Realtime is ineligible with Save-Data, explicitly reported 3G-or-worse, WebGL2/context failure, or fewer than four logical processors. Missing device-memory/network APIs are neutral. Reduced motion disables Home realtime choreography; directly manipulated Synth 3D may remain without decorative/eased motion. The session may downgrade but never automatically promote or redownload a declined asset.
 
-### Transfer and runtime ceilings
+### Key delivery budgets
 
 | Budget | Ceiling |
 |---|---:|
 | Product initial client JS | 110 KiB Brotli |
 | Home initial client JS | 140 KiB Brotli |
 | Synth silent-shell client JS | 140 KiB Brotli |
-| Bag code on first open | 60 KiB Brotli |
 | Deferred renderer/3D support | 300 KiB Brotli |
 | First-render fonts | 120 KiB compressed |
-| Home transfer through LCP | 900 KiB |
-| Product transfer through LCP | 850 KiB |
-| Synth shell transfer through LCP | 600 KiB |
 | Runtime GLB | 2.7 MB |
 | Single motion variant | 1.5 MB |
-| Decoded textures | 32 MB |
-| Estimated total GPU resources | 96 MB |
 
-Realtime: ready within 4 seconds on 10 Mbps/4× CPU reference; target 60 fps desktop and 45 fps mobile after warm-up; hard floor 30 fps; DPR ≤1.5 mobile and ≤2 desktop. Two consecutive two-second windows below 30 fps downgrade for the session. Startup tasks ≤100 ms; ordinary interaction tasks ≤50 ms. Realtime abandons after 8 seconds, decode failure, context loss, or sustained floor failure.
+These limits protect the main visitor-facing loading boundaries. Product, the global shell, and Bag must not eagerly load Realtime or audio code. Existing media validation may retain more detailed engineering measurements, but those measurements are not separate launch approvals.
+
+Realtime must become useful in a representative production profile or downgrade to the authored fallback. Bound DPR, suspend inactive frame loops, and abandon startup on decode failure, context loss, or clearly unusable sustained performance. Do not require a laboratory matrix of every GPU and device class.
 
 Audio: first sound ≤500 ms cold/≤150 ms warm; accepted input to scheduled parameter ≤50 ms; visible state same animation frame. Audio preparation over 3 seconds becomes explicit unavailable/Retry.
 
@@ -182,47 +175,29 @@ Bag pending feedback ≤100 ms and targeted failure ≤5 seconds. Only idempoten
 
 ## 12. Performance, support, and accessibility qualification
 
-Measure production builds using the median of three cold runs plus physical-device checks. Until field data is sufficient, each route must meet LCP ≤2.5 s, TBT ≤200 ms, CLS ≤0.1, and TTFB ≤800 ms. With sufficient traffic, mobile and desktop p75 must meet LCP ≤2.5 s, INP ≤200 ms, CLS ≤0.1. Median regression above 10% requires explicit approval even below ceilings.
+Run at least one repeatable production-build profile for each primary route and investigate material Core Web Vitals failures. Existing automated budget and isolation checks remain useful engineering feedback. Field data is optional and is reviewed only when the hosting platform naturally provides enough useful volume.
 
-Enhanced support: current and previous Chrome, Edge, Firefox, desktop Safari, iOS Safari, Android Chrome. Core smoke floor: Chrome 111, Edge 111, Firefox 111, Safari 16.4.
+Test critical journeys in current mainstream browsers and on practical available desktop and mobile devices. Core content and actions must remain useful when Realtime does not qualify. Do not maintain a historical browser laboratory or require ownership of a prescribed device fleet.
 
-Physical floor: iPhone SE 2, 4 GB Android handset, 1366×768 integrated-graphics Windows laptop. Realtime floors: iPhone 12, Pixel 6a, M1 MacBook Air, Windows 11/Iris Xe-class laptop. Assistive technology: VoiceOver/Safari macOS+iOS, NVDA/Firefox, JAWS/Chrome, TalkBack/Chrome.
-
-Launch requires WCAG 2.2 AA, zero automated serious/critical findings, and no accepted A/AA violation without a documented exception. Manual checks cover keyboard, focus, screen readers, 400% zoom, 320 CSS pixels, reduced motion, forced colors, and target sizing.
+Launch requires WCAG 2.2 AA, zero automated serious/critical findings, and focused manual checks for keyboard, focus, 400% zoom, 320 CSS pixels, reduced motion, forced colors, target sizing, and an available screen reader. Record unavailable assistive-technology coverage honestly; do not represent it as completed or create a multi-platform lab solely for this site.
 
 ## 13. Failure isolation
 
-No 3D, audio, Sanity, Bag, telemetry, or Shopify-qualification failure replaces route content with a generic error page. Stable authored fallback remains beneath enhancement. Preserve route position, confirmed Bag state, MORPH values, and unaffected actions whenever possible.
+No 3D, audio, Sanity, or Bag failure replaces route content with a generic error page. Stable authored fallback remains beneath enhancement. Preserve route position, confirmed Bag state, MORPH values, and unaffected actions whenever possible.
 
-Candidate tests inject disabled JavaScript, script failure, offline/timeout, malformed Editorial content, Bag failure, GLB/decode failure, WebGL context loss, suspended audio, preview corruption/expiry, invalid cookies/history/storage, telemetry outage, and invalidation failure.
+Focused tests cover disabled JavaScript, representative network/content failure, Bag failure, GLB/WebGL failure, suspended audio, and malformed Preview state. Do not build an exhaustive fault-injection program for low-consequence variants.
 
-## 14. Telemetry and privacy
+## 14. Privacy and operational visibility
 
-The browser sends only allowlisted events to same-origin `/api/telemetry`. The boundary validates, redacts, rate-limits, limits payloads to 10 KiB, and forwards to a replaceable sink. Telemetry runs after meaningful content, is non-blocking, and fails silently.
+VANTA collects no custom analytics or journey telemetry. It has no `/api/telemetry` endpoint, analytics cookies, persistent visitor identity, fingerprinting, replay, DOM capture, profiles, advertising attribution, or custom telemetry store. This is both the privacy policy and the smallest operational design.
 
-Allowed families:
+Use Netlify and other existing hosting-provider diagnostics when they are available and useful. Do not provision a custom telemetry stack, retention database, source-map service, probe service, or alert pipeline for launch. A simple external uptime check may be added later if actual outages justify it, provided it collects no visitor data and creates no public runtime dependency.
 
-- `route_viewed`;
-- `presentation_selected`;
-- `subsystem_outcome`;
-- `bag_action`;
-- `checkout_preview_action`;
-- `web_vital`;
-- `application_error`.
+Production browser source maps remain disabled. Application errors must preserve useful visitor-facing recovery without depending on remote error collection.
 
-Use enumerated/coarse properties defined by tests. Reject unknown events/properties. Never collect query strings, referrers, IP/network addresses in application events, synthetic Preview values, free text, DOM, MORPH/control/audio values, GPU strings, raw hardware IDs, audio-device names, or identifiers correlating page loads.
+## 15. Launch checks
 
-No analytics cookies, `localStorage` identity, persistent ID, fingerprint, precise location, advertising attribution, profiles, autocapture, replay, surveys, browser feature flags, or DOM capture. Honor GPC and DNT. Show no performative consent banner while optional tracking is absent. If legal review requires consent, disable optional journey analytics until a compliant mechanism exists.
-
-Retention: raw anonymous journey/performance and scrubbed errors 30 days; aggregate quality trends 13 months; platform/request logs 14 days; private source maps only while a deployment can receive traffic. Start at 100% low-volume collection; document unbiased sampling before scale harms privacy, cost, or performance.
-
-## 15. Monitoring and health
-
-Use Next.js server/client instrumentation behind vendor-neutral application interfaces. Attach immutable deployment identity. Scrub cookies, authorization, Draft Mode, queries, bodies, free-form content, and unapproved fields before export. Public source maps are prohibited; private maps may be uploaded and retained only for live deployments.
-
-Five-minute synthetic probes cover Home, Product, Synth, Bag, Checkout Preview, preview entry, content invalidation, and narrow health checks. Two consecutive Core failures open an incident. Percentage alerts use minimum sample counts.
-
-Alert on route Core Web Vitals failure; fallback-rate change >10 percentage points; unrecovered subsystem failure >1%; Realtime startup-budget failure >5% of eligible sessions.
+After deployment, the owner manually checks Home, Product, Synth, Bag, and Checkout Preview. Hosting-provider status and logs may assist diagnosis. Lack of a custom dashboard, five-minute probes, field-vitals sampling, or alert thresholds does not block launch.
 
 ## 16. Search and metadata
 
@@ -234,7 +209,7 @@ Home emits accurate `Organization` and `WebSite` JSON-LD. Product emits sanitize
 
 ## 17. Security
 
-Use separate allowlisted public and preview CSPs. Because nonces force dynamic rendering and conflict with the cached-shell architecture, public launch uses a cache-compatible static header policy, qualified in report-only mode then enforced. Experimental SRI is not a launch dependency. Framework-required inline allowances must be documented, minimized, tested, and unable to broaden silently.
+Use separate allowlisted public and preview CSPs. Because nonces force dynamic rendering and conflict with the cached-shell architecture, public launch uses a cache-compatible static header policy validated on a deploy preview before enforcement. Experimental SRI is not a launch dependency. Framework-required inline allowances must be documented, minimized, and tested.
 
 Production policy:
 
@@ -252,34 +227,29 @@ Production policy:
 
 Do not enable cross-origin isolation unless every Sanity/media/audio/worker/preview dependency passes deployed qualification. Broad wildcards and undocumented origins fail.
 
-Bag, Preview, telemetry, webhooks, and Draft Mode endpoints require applicable origin, schema, rate-limit, injection, abuse, replay, and idempotency tests. Secrets/draft tokens must be absent from browser bundles and generated output. Critical dependency or secret-scan findings block launch.
+Bag, Sanity invalidation, and Draft Mode endpoints require focused tests for their actual origin, schema, replay/idempotency, injection, and abuse risks. Apply rate limiting where an endpoint performs a costly or abusable operation. Secrets and draft tokens must be absent from browser bundles and generated output. Critical dependency or secret-scan findings block launch.
 
 ## 18. Environments, promotion, and rollback
 
 Contexts:
 
-- local/automated: deterministic fixtures; explicit sandbox credentials only for integration checks;
+- local/automated: deterministic fixtures and local environment values;
 - deploy preview: published Sanity, code Catalog, Bag disabled, no production preview token, non-indexed;
 - protected Editorial preview: authenticated drafts/releases, production component tree, Bag disabled;
-- production: published Sanity, code Catalog, first-party Bag and Checkout Preview;
-- isolated Shopify qualification: password-protected development store, synthetic data, test payments/orders; never public runtime.
+- production: published Sanity, code Catalog, first-party Bag and Checkout Preview.
 
-Only an immutable candidate from protected `main` may be promoted after environment/schema validation, lint, type check, tests, production build, source/asset hashes, bundle/transfer budgets, route-isolation assertions, security, deployed smoke, evidence manifest, and human approval. Promote the exact qualified artifact; do not rebuild different code per environment.
+Production is deployed from protected `main` after the existing CI checks pass. Record the deployed commit and immutable Netlify deployment URL, then run a short smoke check against that deployment. A separate candidate evidence system is optional, not a launch prerequisite.
 
-Every promotion begins a 30-minute launch watch. Rollback is a named human action selecting a previously qualified immutable deployment. Immediate rollback triggers: failed Core route/navigation; incorrect Product truth/price/metadata/indexing; inaccessible primary journey; CSP blocking required code; privacy/transaction boundary breach; sustained server/performance regression; or inability to observe the deployment. Optional 3D/audio/analytics/media failure uses local fallback when that fallback passes.
+Rollback selects a previous Netlify deployment when Core routes, Product truth, accessibility, security, privacy, or the transaction boundary is materially broken. Optional 3D, audio, or media failure uses its local fallback when that fallback remains useful.
 
-Content rollback republishes a known-good Sanity revision/release and verifies invalidation; it does not roll back application code.
+Content rollback republishes a known-good Sanity revision and verifies the public result; it does not roll back application code.
 
-## 19. Non-public Shopify qualification
+## 19. Shopify boundary
 
-Use one password-protected Shopify Plus development store only to prove representative Storefront product/Cart API behavior, native test checkout, Checkout Functions, and disposable test orders. All identities, addresses, and payments are synthetic. Suppress notifications/fulfillment, mark orders as tests, and cancel/archive after evidence.
-
-No development-store identifier, token, cart ID, checkout URL, or data enters public runtime. Do not expose the development-store password, use test mode for anonymous traffic, maintain a second paid paused store, or enable public Shopify checkout. Qualification failure blocks only the qualification claim, never public VANTA behavior.
+VANTA does not use Shopify in public production and does not require a private Shopify qualification harness. Automated public-runtime scans continue to protect this boundary. A future Shopify demonstration would be separately scoped and would not silently become a launch dependency.
 
 ## 20. Operations
 
-Name primary and backup custodians for application releases, Sanity publishing, domains/Netlify, secrets, monitoring, and incidents. Individual least-privilege accounts use MFA and recovery stored outside the repository. Secrets live only in deployment platforms or approved password management, rotate after exposure/personnel change, and are reviewed every six months; access/webhook inventories quarterly.
+Maintain one concise owner runbook covering production origin, Sanity, secret locations, access recovery, deployment rollback, content rollback, and emergency disablement of optional capabilities. Use MFA and least privilege where the providers support them, and keep recovery material outside the repository. A second custodian is optional; absent backup coverage is an accepted solo-maintainer risk.
 
-Required credentials fail startup when safety depends on them or disable only the optional dependent subsystem. They never select an insecure mode.
-
-Runbooks cover alert acknowledgement, incident class, local capability disablement, application/content rollback, content freeze, invalidation recovery, DNS/domain recovery, credential rotation, communication, and post-incident review.
+Required credentials fail startup when safety depends on them or disable only the dependent subsystem. They never select an insecure mode. Rotate credentials after suspected exposure or account changes; do not create a standing review process without a concrete need.

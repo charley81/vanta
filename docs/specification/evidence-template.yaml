@@ -1,8 +1,8 @@
 schema_version: 1
 status: template
 notice: >-
-  This file is a schema example and makes no verification or launch claim. Copy it
-  for one immutable candidate and replace every example/null value with real data.
+  This optional schema example makes no verification or launch claim. Use it only
+  when a structured evidence manifest adds value; the concise launch record is sufficient.
 
 candidate:
   baseline_commit: null

@@ -13,8 +13,7 @@ non_waivable_requirement_ids:
   - ARCH-010 # transaction boundary
   - SECURITY-005 # secret-exposure boundary
   - OPS-004 # visitor-data prohibition
-  - OPS-011 # transaction boundary
-  - OPS-012 # transaction boundary
+  - OPS-011 # no-Shopify transaction boundary
   - OPS-015 # non-waivability rule itself
 checks:
   - id: requirement-references
