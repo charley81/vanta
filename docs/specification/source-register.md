@@ -17,13 +17,14 @@ Use the precedence in [README](README.md#source-precedence). A source is authori
 | [Choose the content and commerce ownership model](https://github.com/charley81/vanta/issues/8) | Code/Sanity field ownership and fixed singleton model | Effective after replacing public Shopify Catalog/Cart ownership with code Catalog and non-public qualification |
 | [Choose the 3D asset and rendering pipeline](https://github.com/charley81/vanta/issues/9) | Immutable GLB, governed derivatives, route-fit hybrid | Effective |
 | [Define responsive and inclusive experience behavior](https://github.com/charley81/vanta/issues/10) | Experience equivalence, adaptive behavior, Control deck, lifecycle | Effective; outdated concept-disclosure references superseded |
-| [Define production quality budgets and fallback tiers](https://github.com/charley81/vanta/issues/11) | Budgets, tiers, support floors, failure/recovery, telemetry thresholds | Effective; generic Shopify-failure language applies only to non-public qualification |
+| [Define production quality budgets and fallback tiers](https://github.com/charley81/vanta/issues/11) | Budgets, tiers, support floors, failure/recovery, telemetry thresholds | Effective for product behavior and fallback design; launch measurement and telemetry scope superseded by issue #40 |
 | [Choose the production application and deployment architecture](https://github.com/charley81/vanta/issues/12) | Server-first App Router, deep modules, Cache Components, BFF, Netlify | Effective after removal of public Shopify Catalog/Cart and addition of code Catalog/Preview state |
-| [Define launch operations and discoverability](https://github.com/charley81/vanta/issues/13) | SEO, privacy, telemetry, security, publishing, promotion, operations, evidence | Effective |
+| [Define launch operations and discoverability](https://github.com/charley81/vanta/issues/13) | SEO, privacy, telemetry, security, publishing, promotion, operations, evidence | Discoverability, privacy, and core security remain effective; telemetry and enterprise launch process superseded by issue #40 |
 | [Define cross-route continuity and state behavior](https://github.com/charley81/vanta/issues/34) | Storage lifetimes, history, restoration, lifecycle, races | Effective |
 | [Choose the checkout boundary](https://github.com/charley81/vanta/issues/36) | First-party Bag and public synthetic Preview; Shopify isolation | Latest authority for commerce boundary |
 | [Prototype the public Bag and Checkout Preview](https://github.com/charley81/vanta/issues/37) | Signal Ledger sequence, exact synthetic values/copy, accessibility/recovery | Effective behavior reference |
-| [Define the final production specification and acceptance handoff](https://github.com/charley81/vanta/issues/38) | Handoff Baseline form, traceability, evidence, change control | This bundle’s approving decision |
+| [Define the final production specification and acceptance handoff](https://github.com/charley81/vanta/issues/38) | Handoff Baseline form, traceability, evidence, change control | Original bundle approval |
+| [Build and qualify the production VANTA experience](https://github.com/charley81/vanta/issues/40) | Proportional-scope revision after the remaining-work audit | Latest authority for launch scope, telemetry, Shopify qualification, operations, and evidence burden |
 
 ## Figma
 
@@ -93,6 +94,9 @@ The repository’s installed Next.js 16.4 documentation was used as the framewor
 | Checkout prevention depends on Pause and Build | Public prevention is architectural: no Shopify/payment/order integration; development store stays non-public |
 | Figma `$999` / purchase label | `$2,499 USD` / `ADD TO BAG` |
 | Figma pointer instructions | Semantic Control deck plus equivalent pointer, keyboard, touch, and assistive behavior |
+| Custom telemetry endpoint, provider stack, probes, alerts, and field-vitals pipeline | No custom analytics or journey telemetry; use hosting-provider visibility and manual smoke checks |
+| Required non-public Shopify qualification | No Shopify harness or qualification dependency; public-runtime isolation scans preserve the boundary |
+| Seven-role sign-off, exhaustive evidence manifest, and staffed launch watch | One owner go/no-go decision, deployed commit/URL record, focused review, and post-deploy smoke check |
 
 ## Implementation latitude
 
@@ -102,14 +106,12 @@ These choices are deliberately delegated. They must be recorded in the release r
 |---|---|
 | Production font files | Preserve approved grotesk/serif-italic/mono roles and Figma composition; licensed; self-hosted; first-render fonts ≤120 KiB; no material CLS; readable at required zoom/contrast |
 | Signal cyan refinement | Operational use only; visually consistent with `#7DE3D6`; passes contrast/focus/forced-colors acceptance |
-| Telemetry/monitoring provider | Same-origin validated contract remains authoritative; privacy/retention/redaction and outage isolation pass; provider SDK cannot define browser behavior |
 | Internal component/file names | Preserve deep module contracts, route isolation, and server/client boundaries |
 | State library details | Separate bounded stores/state machines; serializable state only; no runtime objects/global megastore |
 | Audio implementation/calibration | Native AudioNodes first; accepted phrase/six controls/continuum; latency, stress, semantic tests pass |
 | Camera/light/media refinements | Preserve Figma region/crop and Signal Black; generated from approved GLB; derivative manifest/evidence required |
 | Further GLB optimization | Preserve source authority, hierarchy, interaction, visual captures, budgets; no silent node collapse |
 | Sanity image wrapper | Isolated application component; one transformation path; deployed Netlify qualification |
-| Exact telemetry sampling after launch growth | Documented, privacy/cost justified, unbiased for quality measurement; low-volume launch begins at 100% |
 
 ## Pre-launch bindings
 
@@ -122,9 +124,7 @@ Bindings are values to supply, not open design decisions.
 | Sanity Studio origin | Content/platform custodian | Exact preview frame/connect allowlist | Editorial-preview qualification | Preview disabled; public policy unchanged |
 | Preview and webhook secrets | Secrets custodian | Length/schema/rotation/replay tests | Preview/invalidation qualification | Endpoint fails closed |
 | Bag signing key | Secrets custodian | Startup validation, rotation and tamper tests | Production Bag qualification | Bag disabled; routes remain useful |
-| Telemetry/monitoring destination credentials | Monitoring custodian | Redaction/retention/outage test | Launch observability gate | Optional analytics disabled; inability to observe candidate blocks promotion where required |
-| Search Console/Bing ownership | Discoverability owner | Verified origin and sitemap/inspection records | Launch readiness | Launch blocked unless approved waiver |
-| Privacy notice URL and legal review | Privacy owner | Render/link/configuration review | Launch readiness | Optional journey analytics disabled; launch blocked pending review |
-| Named primary/backup custodians | Release Approver | Accounts, MFA, escalation and access inventory | Launch readiness | Missing backup recorded as risk; missing primary blocks launch |
-| Rollback deployment ID | Release owner | Previous artifact smoke and rollback exercise | Promotion | Promotion blocked |
-| Shopify development-store identifiers/credentials | Commerce qualification owner | Password protection, least privilege, synthetic test setup | Non-public qualification | Qualification fails closed; public runtime unaffected |
+| Search Console/Bing ownership | Site owner | Optional ownership and sitemap review | Post-launch discoverability | No launch block; indexing can proceed from the public sitemap |
+| Privacy notice URL | Site owner | Render and link review | Launch readiness | Launch blocks only if deployed behavior requires a notice that is missing |
+| Owner and optional backup | Site owner | Access and recovery review | Launch readiness | Missing backup is an accepted solo-maintainer risk |
+| Rollback deployment reference | Site owner | Confirm a previous Netlify deployment can be selected | Launch readiness | Record recovery limitation if no previous deployment exists |

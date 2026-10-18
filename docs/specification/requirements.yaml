@@ -17,6 +17,7 @@ sources:
   checkout_boundary: https://github.com/charley81/vanta/issues/36
   checkout_prototype: https://github.com/charley81/vanta/issues/37
   final_handoff: https://github.com/charley81/vanta/issues/38
+  proportional_scope_revision: https://github.com/charley81/vanta/issues/40
 
 requirements:
   - id: PRODUCT-001
@@ -92,7 +93,7 @@ requirements:
   - id: PRODUCT-008
     domain: PRODUCT
     level: must
-    statement: Production typography preserves grotesk declaration, restrained serif-italic emphasis, and monospaced telemetry roles while meeting licensing, layout, readability, and font-transfer requirements.
+    statement: Production typography preserves grotesk declaration, restrained serif-italic emphasis, and monospaced readout roles while meeting licensing, layout, readability, and font-transfer requirements.
     applies_to: [all_public_ui]
     source: final_handoff
     acceptance_stage: candidate
@@ -153,7 +154,7 @@ requirements:
   - id: HOME-006
     domain: HOME
     level: must
-    statement: Reduced motion removes camera travel, parallax, horizontal translation, animated telemetry, and autoplaying motion while preserving every narrative beat.
+    statement: Reduced motion removes camera travel, parallax, horizontal translation, animated readouts, and autoplaying motion while preserving every narrative beat.
     applies_to: [home]
     source: inclusive_behavior
     acceptance_stage: candidate
@@ -598,7 +599,7 @@ requirements:
   - id: CONTENT-007
     domain: CONTENT
     level: must
-    statement: Draft or release content never enters public caches, metadata/social output, telemetry, or public journey state.
+    statement: Draft or release content never enters public caches, metadata/social output, or public journey state.
     applies_to: [editorial_preview, public_runtime]
     source: launch_operations
     acceptance_stage: candidate
@@ -608,12 +609,12 @@ requirements:
   - id: CONTENT-008
     domain: CONTENT
     level: must
-    statement: Every publication records author and publisher, passes validation and preview, and supports independent known-good content rollback with invalidation verification.
+    statement: Material Editorial changes can be previewed before publication, and the owner runbook explains how to restore known-good Sanity content and verify the public result.
     applies_to: [sanity, operations]
-    source: launch_operations
+    source: proportional_scope_revision
     acceptance_stage: launch
-    verification: [exercise, review]
-    evidence: [publishing_exercise]
+    verification: [manual, review]
+    evidence: [publishing_check, recovery_runbook]
     owner: content_editorial
   - id: CONTENT-009
     domain: CONTENT
@@ -770,8 +771,8 @@ requirements:
   - id: STATE-008
     domain: STATE
     level: must
-    statement: Prefetch is never treated as route entry, cinematic completion, audio consent, Preview progression, or analytics visitation.
-    applies_to: [navigation, telemetry]
+    statement: Prefetch is never treated as route entry, cinematic completion, audio consent, or Preview progression.
+    applies_to: [navigation]
     source: continuity
     acceptance_stage: candidate
     verification: [automated]
@@ -881,63 +882,63 @@ requirements:
 
   - id: QUALITY-001
     domain: QUALITY
-    level: must
-    statement: Each route meets p75 LCP at or below 2.5 seconds, INP at or below 200 ms, and CLS at or below 0.1 once field volume is sufficient.
+    level: should
+    statement: Post-launch route quality is reviewed from hosting-provider field data when useful data is available; insufficient traffic does not create a standing task or block operation.
     applies_to: [home, product, synth, checkout_preview]
-    source: quality_budgets
+    source: proportional_scope_revision
     acceptance_stage: post_launch
-    verification: [measurement]
-    evidence: [field_vitals_report]
+    verification: [inspection]
+    evidence: [provider_quality_review]
     owner: engineering
   - id: QUALITY-002
     domain: QUALITY
     level: must
-    statement: Before sufficient field volume, median-of-three cold runs meet LCP at or below 2.5 seconds, TBT at or below 200 ms, CLS at or below 0.1, and TTFB at or below 800 ms per route.
+    statement: A repeatable production-build profile confirms that primary routes are responsive and have no material Core Web Vitals failure before launch.
     applies_to: [home, product, synth, checkout_preview]
-    source: quality_budgets
+    source: proportional_scope_revision
     acceptance_stage: candidate
     verification: [measurement]
     evidence: [lab_performance_report]
     owner: engineering
   - id: QUALITY-003
     domain: QUALITY
-    level: must
-    statement: A median performance regression above 10 percent receives explicit approval even when absolute ceilings pass.
+    level: should
+    statement: A material measured performance regression is investigated and recorded rather than accepted only because an absolute ceiling still passes.
     applies_to: [all_routes]
-    source: quality_budgets
+    source: proportional_scope_revision
     acceptance_stage: candidate
     verification: [measurement, review]
-    evidence: [regression_report, approval_record]
-    owner: release_approver
+    evidence: [regression_report]
+    owner: engineering
   - id: QUALITY-004
     domain: QUALITY
     level: must
-    statement: Initial/deferred JavaScript, font, route-through-LCP transfer, runtime GLB, and single-motion payloads remain within every ceiling in the technical specification.
+    statement: Key route JavaScript and media budgets pass, and Product, the global shell, and Bag do not eagerly load the Realtime or audio runtimes.
     applies_to: [build, home, product, synth, bag]
-    source: quality_budgets
+    source: proportional_scope_revision
     acceptance_stage: build
     verification: [automated, measurement]
-    evidence: [bundle_budget_report, transfer_budget_report]
+    evidence: [bundle_budget_report, route_isolation_report]
     owner: engineering
   - id: QUALITY-005
     domain: QUALITY
     level: must
-    statement: Realtime becomes ready within four seconds on the reference network/CPU profile, targets 60 fps desktop and 45 fps mobile, and never remains below the 30 fps hard floor.
+    statement: Realtime reaches a useful state in a representative production profile and downgrades to the authored fallback when startup, rendering, or context recovery is not reliable.
     applies_to: [home, synth]
-    source: quality_budgets
+    source: proportional_scope_revision
     acceptance_stage: candidate
     verification: [measurement]
-    evidence: [realtime_performance_report]
+    evidence: [realtime_performance_check]
     owner: engineering
   - id: QUALITY-006
     domain: QUALITY
     level: must
-    statement: Governed realtime assets stay at or below 32 MB decoded textures, 96 MB estimated GPU resources, DPR 1.5 mobile/2 desktop, startup tasks 100 ms, and interaction tasks 50 ms.
+    statement: Realtime uses the governed model and media assets, bounded DPR, and frame-loop suspension so it does not create runaway resource use or block ordinary interaction.
     applies_to: [home, synth]
-    source: quality_budgets
+    source: proportional_scope_revision
     acceptance_stage: candidate
-    verification: [measurement]
-    evidence: [gpu_resource_report, main_thread_trace]
+    verification: [automated, measurement]
+    evidence: [realtime_resource_check]
     owner: engineering
   - id: QUALITY-007
     domain: QUALITY
@@ -982,43 +983,43 @@ requirements:
   - id: QUALITY-011
     domain: QUALITY
     level: must
-    statement: Core passes on the specified floor devices and enhanced behavior is covered on current/previous major browsers plus the documented minimum Core browser range.
+    statement: Critical journeys pass in current mainstream browsers and on practical available desktop and mobile devices; unsupported enhancements retain a useful Core tier.
     applies_to: [all_public_ui]
-    source: quality_budgets
+    source: proportional_scope_revision
     acceptance_stage: candidate
     verification: [manual, automated]
-    evidence: [device_browser_matrix]
+    evidence: [device_browser_review]
     owner: engineering
   - id: QUALITY-012
     domain: QUALITY
     level: must
-    statement: Manual assistive-technology coverage includes the specified VoiceOver, NVDA, JAWS, and TalkBack browser combinations.
+    statement: Critical journeys receive manual keyboard and available screen-reader review, and unavailable assistive-technology coverage is recorded without being represented as completed.
     applies_to: [all_public_ui]
-    source: quality_budgets
+    source: proportional_scope_revision
     acceptance_stage: candidate
     verification: [manual]
-    evidence: [screen_reader_report]
+    evidence: [accessibility_review]
     owner: accessibility
   - id: QUALITY-013
     domain: QUALITY
     level: must
-    statement: Failures remain local, preserve unaffected content/state, expose targeted recovery, and are exercised for scripts, network, content, Bag, model, WebGL, audio, telemetry, and lifecycle faults.
+    statement: Failures remain local and preserve unaffected content and state; focused tests cover the material script, network, content, Bag, model/WebGL, and audio fallback paths.
     applies_to: [all_public_ui]
-    source: quality_budgets
+    source: proportional_scope_revision
     acceptance_stage: candidate
     verification: [failure_injection]
-    evidence: [failure_injection_report]
+    evidence: [failure_recovery_report]
     owner: engineering
 
   - id: SECURITY-001
     domain: SECURITY
     level: must
-    statement: Production enforces separate allowlisted public and preview CSPs after report-only qualification without forcing nonce-based dynamic rendering.
+    statement: Production enforces separate allowlisted public and preview CSPs validated on a deploy preview without forcing nonce-based dynamic rendering.
     applies_to: [public_runtime, editorial_preview]
-    source: launch_operations
+    source: proportional_scope_revision
     acceptance_stage: candidate
     verification: [automated, manual]
-    evidence: [csp_report]
+    evidence: [csp_header_check]
     owner: security_privacy
   - id: SECURITY-002
     domain: SECURITY
@@ -1043,12 +1044,12 @@ requirements:
   - id: SECURITY-004
     domain: SECURITY
     level: must
-    statement: Public source-map requests return 404 and private maps remain restricted and retained only while their deployment can receive traffic.
-    applies_to: [deployment, monitoring]
-    source: launch_operations
+    statement: Production browser source maps are not published or served unless a later debugging need justifies a separately reviewed restricted solution.
+    applies_to: [deployment]
+    source: proportional_scope_revision
     acceptance_stage: candidate
     verification: [automated, inspection]
-    evidence: [source_map_report]
+    evidence: [source_map_check]
     owner: security_privacy
   - id: SECURITY-005
     domain: SECURITY
@@ -1063,12 +1064,12 @@ requirements:
   - id: SECURITY-006
     domain: SECURITY
     level: must
-    statement: Public endpoints pass applicable origin, schema, rate-limit, replay, idempotency, injection, and abuse tests.
+    statement: Public endpoints validate untrusted input and receive focused origin, replay/idempotency, injection, and abuse tests applicable to their actual behavior; costly or abusable operations are rate-limited.
     applies_to: [api]
-    source: launch_operations
+    source: proportional_scope_revision
     acceptance_stage: candidate
     verification: [automated]
-    evidence: [api_security_report]
+    evidence: [endpoint_security_tests]
     owner: security_privacy
   - id: SECURITY-007
     domain: SECURITY
@@ -1083,12 +1084,12 @@ requirements:
   - id: SECURITY-008
     domain: SECURITY
     level: must
-    statement: Cross-origin isolation is enabled only after every content, media, audio, worker, and preview dependency passes deployed compatibility qualification.
+    statement: Cross-origin isolation remains disabled unless a concrete feature requires it and its content, media, audio, worker, and preview dependencies are first verified.
     applies_to: [public_runtime]
-    source: launch_operations
+    source: proportional_scope_revision
     acceptance_stage: candidate
-    verification: [automated, manual]
-    evidence: [cross_origin_compatibility_report]
+    verification: [automated]
+    evidence: [header_policy_check]
     owner: security_privacy
 
   - id: OPS-001
@@ -1124,120 +1125,120 @@ requirements:
   - id: OPS-004
     domain: OPS
     level: must
-    statement: Public analytics uses no cookies, persistent identity, fingerprint, location, advertising, profile, autocapture, replay, survey, feature flag, DOM capture, or cross-page visitor identifier.
-    applies_to: [telemetry, public_runtime]
-    source: launch_operations
+    statement: Public production collects no custom analytics or journey telemetry and uses no cookies, persistent identity, fingerprinting, replay, DOM capture, or cross-page visitor identifier.
+    applies_to: [public_runtime]
+    source: proportional_scope_revision
     acceptance_stage: candidate
     verification: [automated, inspection]
-    evidence: [privacy_network_report, storage_inventory]
+    evidence: [privacy_network_check, storage_inventory]
     owner: security_privacy
   - id: OPS-005
     domain: OPS
     level: must
-    statement: Browser telemetry uses only the seven allowlisted event families through a same-origin validated, redacted, rate-limited, replaceable boundary with payloads at or below 10 KiB.
-    applies_to: [telemetry, api]
-    source: launch_operations
+    statement: VANTA does not expose a custom browser telemetry endpoint or operate a custom telemetry storage service.
+    applies_to: [public_runtime, api]
+    source: proportional_scope_revision
     acceptance_stage: candidate
     verification: [automated]
-    evidence: [telemetry_contract_report]
+    evidence: [public_runtime_scan]
     owner: security_privacy
   - id: OPS-006
     domain: OPS
-    level: must
-    statement: Telemetry honors GPC and DNT, runs after meaningful content, fails silently, and follows the specified raw, aggregate, log, and source-map retention periods.
-    applies_to: [telemetry, monitoring]
-    source: launch_operations
-    acceptance_stage: candidate
-    verification: [automated, review]
-    evidence: [telemetry_privacy_report]
-    owner: security_privacy
+    level: should
+    statement: Operational diagnosis uses privacy-minimal hosting-provider logs and status information when available; no visitor analytics is required for launch.
+    applies_to: [deployment, operations]
+    source: proportional_scope_revision
+    acceptance_stage: launch
+    verification: [inspection]
+    evidence: [hosting_visibility_check]
+    owner: operations_release
   - id: OPS-007
     domain: OPS
-    level: must
-    statement: Five-minute synthetic probes, release-tagged monitoring, minimum-sample alerts, and the four specified quality alerts are configured and tested before launch.
-    applies_to: [monitoring, operations]
-    source: launch_operations
+    level: should
+    statement: The owner manually checks primary routes after deployment; a simple external uptime check may be added later if outages become a demonstrated concern.
+    applies_to: [deployment, operations]
+    source: proportional_scope_revision
     acceptance_stage: launch
-    verification: [exercise, inspection]
-    evidence: [monitoring_alert_exercise]
+    verification: [manual]
+    evidence: [deployment_smoke_check]
     owner: operations_release
   - id: OPS-008
     domain: OPS
     level: must
-    statement: Production promotion uses the exact immutable qualified candidate from protected main and begins a 30-minute launch watch.
+    statement: Production is deployed from protected main, the deployed commit is recorded, and primary routes receive a post-deploy smoke check.
     applies_to: [deployment, operations]
-    source: launch_operations
+    source: proportional_scope_revision
     acceptance_stage: launch
-    verification: [exercise, review]
-    evidence: [promotion_record, launch_watch_record]
+    verification: [manual, review]
+    evidence: [deployment_record, deployment_smoke_check]
     owner: operations_release
   - id: OPS-009
     domain: OPS
     level: must
-    statement: Application rollback selects a previously qualified immutable deployment and content rollback independently republishes a known-good revision and verifies invalidation.
+    statement: The owner can select a previous Netlify deployment and restore known-good Sanity content; a pre-launch rollback rehearsal is not required.
     applies_to: [deployment, sanity, operations]
-    source: launch_operations
+    source: proportional_scope_revision
     acceptance_stage: launch
-    verification: [exercise]
-    evidence: [rollback_exercise]
+    verification: [inspection]
+    evidence: [recovery_runbook]
     owner: operations_release
   - id: OPS-010
     domain: OPS
     level: must
-    statement: Primary and backup custodians, MFA, least privilege, recovery, secret rotation/review, access inventory, escalation, and required operational runbooks are recorded before launch.
+    statement: A concise owner runbook records production bindings, secret locations, access recovery, deployment rollback, content rollback, and emergency subsystem disablement; backup coverage is optional and any absence is explicit.
     applies_to: [operations]
-    source: launch_operations
+    source: proportional_scope_revision
     acceptance_stage: launch
-    verification: [review, exercise]
-    evidence: [ownership_access_review, runbook_exercise]
+    verification: [review]
+    evidence: [owner_runbook]
     owner: operations_release
   - id: OPS-011
     domain: OPS
     level: must
-    statement: Non-public Shopify qualification uses only a password-protected development store, synthetic identity/address/test payments, suppressed notifications/fulfillment, and cancelled or archived test orders.
-    applies_to: [shopify_qualification]
-    source: checkout_boundary
-    acceptance_stage: candidate
-    verification: [exercise, inspection]
-    evidence: [shopify_qualification_report]
+    statement: No Shopify store, credential, product, cart, checkout, payment, order, Function, or qualification harness is required or used by VANTA public production.
+    applies_to: [public_runtime, build]
+    source: proportional_scope_revision
+    acceptance_stage: build
+    verification: [automated]
+    evidence: [public_runtime_scan]
     owner: engineering
   - id: OPS-012
     domain: OPS
     level: must
-    statement: Shopify qualification outage or failure affects only the qualification result and leaves every public route, Bag, and Checkout Preview fully operational.
-    applies_to: [shopify_qualification, public_runtime]
-    source: checkout_boundary
-    acceptance_stage: candidate
-    verification: [failure_injection]
-    evidence: [shopify_isolation_report]
+    statement: Launch readiness does not depend on Shopify provisioning or non-public Shopify qualification.
+    applies_to: [launch]
+    source: proportional_scope_revision
+    acceptance_stage: launch
+    verification: [review]
+    evidence: [launch_checklist]
     owner: engineering
   - id: OPS-013
     domain: OPS
     level: must
-    statement: Launch approval references one candidate-bound evidence manifest and signatures for product/design, engineering, accessibility, content, security/privacy, operations, and Release Approver.
+    statement: The site owner records one go or no-go decision for the deployed commit after automated checks and focused manual review.
     applies_to: [launch]
-    source: final_handoff
+    source: proportional_scope_revision
     acceptance_stage: launch
     verification: [review]
-    evidence: [signed_readiness_record]
+    evidence: [launch_decision]
     owner: release_approver
   - id: OPS-014
     domain: OPS
     level: must
-    statement: Every waiver records measured evidence, impact, compensating control, owner, approvals, issue, expiry, and follow-up, and no threshold or result is silently changed to pass.
+    statement: Any accepted failed check or material scope deviation is documented with its visitor impact; thresholds and results are not silently changed to pass.
     applies_to: [launch, operations]
-    source: launch_operations
+    source: proportional_scope_revision
     acceptance_stage: launch
     verification: [review]
-    evidence: [waiver_register]
+    evidence: [launch_checklist]
     owner: release_approver
   - id: OPS-015
     domain: OPS
     level: must
-    statement: Transaction-boundary, visitor-data prohibition, secret-exposure, and deceptive-commerce failures are not waivable.
+    statement: Transaction-boundary, visitor-data prohibition, secret-exposure, and deceptive-commerce failures cannot be accepted for launch.
     applies_to: [launch, operations]
-    source: final_handoff
+    source: proportional_scope_revision
     acceptance_stage: launch
     verification: [review]
-    evidence: [signed_readiness_record]
+    evidence: [launch_decision]
     owner: release_approver

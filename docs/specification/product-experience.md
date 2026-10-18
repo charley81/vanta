@@ -55,7 +55,7 @@ Code owns these public values. Sanity cannot edit them and public production doe
 
 - Foundation: Espresso `#0F0905`, Cream `#FEFCFB`, Peach `#E7C5B1`, Taupe `#DED4CF`, Terracotta `#CA8054`, Brown `#604E43`.
 - Signal cyan: the approved prototype reference is `#7DE3D6`; reserve it for active controls, readiness, focus, progress, live values, and instrument-state feedback. Production may refine its accessible token under Implementation latitude but must preserve this operational role.
-- Typography: a modern grotesk for declarations and product identity; restrained serif italic only for physical/sonic emphasis; monospaced text for indices, measurements, state, and telemetry. Font files are a bounded production choice and must pass visual, licensing, language, layout-shift, and 120 KiB first-render font budgets.
+- Typography: a modern grotesk for declarations and product identity; restrained serif italic only for physical/sonic emphasis; monospaced text for indices, measurements, state, and instrument readouts. Font files are a bounded production choice and must pass visual, licensing, language, layout-shift, and 120 KiB first-render font budgets.
 - Composition: generous black fields, calibrated grids, fine rules, edge rails, asymmetrical framing, and density only where interaction requires it.
 - Imagery: graphite detail, controlled specular light, legible silhouette. Avoid lifestyle-orange grading, haze, gratuitous glow, gamer RGB, cyberpunk HUDs, fake engineering data, and low contrast.
 - Shape: rectilinear and instrument-like. Circular geometry is reserved for encoders, lamps, and truly rotary interactions.
@@ -90,7 +90,7 @@ The nine chapters form a reversible horizontal passage only when the CSS viewpor
 
 Each chapter is one real sequential DOM section with heading and index. Assistive technology encounters it once in canonical order. The opening and chapter progression may drive presentation but never sound or persistent instrument state.
 
-Realtime Home 3D is a qualified enhancement. A generated poster or authored motion occupies the same region before readiness and in Core/Motion tiers. Reduced motion removes camera travel, parallax, horizontal translation, and animated telemetry while preserving every narrative beat in stable compositions.
+Realtime Home 3D is a qualified enhancement. A generated poster or authored motion occupies the same region before readiness and in Core/Motion tiers. Reduced motion removes camera travel, parallax, horizontal translation, and animated readouts while preserving every narrative beat in stable compositions.
 
 ## 5. Product
 
@@ -208,7 +208,7 @@ State precedence is: requested route and server-authoritative Bag; valid history
 | Return context | Relevant `history.state` entry only |
 | Presentation qualification | Versioned `sessionStorage`; session downgrade persists; new tab requalifies |
 
-No continuity state uses `localStorage`, public query parameters, telemetry, or free-form visitor data.
+No continuity state uses `localStorage`, public query parameters, analytics, or free-form visitor data.
 
 Explicit navigation starts canonical route beginnings and focuses headings. Back/Forward restores semantic section, normalized progress, focus where valid, and visible state. Restore the Core shell first, recompose for current conditions, apply semantic position before enhancements, then restore focus. Cancel delayed correction on visitor interaction.
 
@@ -228,7 +228,7 @@ VANTA targets WCAG 2.2 AA and **experience equivalence**: every adaptation prese
 - Routes work at 400% zoom and 320 CSS pixels without two-dimensional page scrolling, clipped actions, or overlapping text.
 - No essential information/action exists only in imagery, 3D, motion, hover, color, or sound.
 - Focus is visible against Signal Black. Forced colors use system/native treatments where needed.
-- Reduced motion removes camera travel, parallax, scroll-linked translation, animated telemetry, decorative meters, and eased control choreography; immediate state/value changes remain.
+- Reduced motion removes camera travel, parallax, scroll-linked translation, animated readouts, decorative meters, and eased control choreography; immediate state/value changes remain.
 - Authored content and media render before enhancement. Failures remain local and preserve unaffected state.
 - Core Home/Product content and links remain useful without JavaScript; client-only features identify themselves as unavailable rather than appearing inert.
 

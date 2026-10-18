@@ -1,6 +1,6 @@
 # Delivery path control record
 
-This record describes the shared development and deploy-preview path established for [issue #44](https://github.com/charley81/vanta/issues/44). It is an operational binding record, not candidate Acceptance evidence. A release-specific evidence manifest must still bind checks to the exact candidate being qualified.
+This record describes the shared development and deploy-preview path established for [issue #44](https://github.com/charley81/vanta/issues/44). It is an operational binding record, not a launch result. The launch note records the deployed commit, immutable Netlify URL, checks, material gaps, and owner decision.
 
 Last verified: **2026-10-15 UTC**
 
@@ -52,7 +52,7 @@ Deploy Preview 84 demonstrates the traceability contract:
 - immutable URL: [`https://6ad0fcfb3abdc7febf815373--vanta-monolith.netlify.app`](https://6ad0fcfb3abdc7febf815373--vanta-monolith.netlify.app)
 - pull request: [#84](https://github.com/charley81/vanta/pull/84)
 
-The deploy record's `commit_ref` must equal the Git commit under qualification. The deploy-ID URL, not the mutable pull-request alias, is the identity recorded in candidate evidence.
+The deploy record's `commit_ref` must equal the reviewed Git commit. Record the deploy-ID URL, not only the mutable pull-request alias, in the launch note.
 
 ## Protected delivery path
 
@@ -76,16 +76,15 @@ GitHub secret scanning, push protection, vulnerability alerts, and Dependabot se
 | GitHub repository and protected branch | `charley81`, repository administrator | No second collaborator was present at verification time | GitHub commit, pull request, Actions run, and branch-protection records |
 | Netlify project and deploy previews | `charley81`, Netlify team owner | No second project custodian was verified | Netlify project/deploy records; environment values stay in Netlify |
 
-The absent backup is an explicit operational risk, not fictional separation of duties. It does not block the documented solo-maintainer pull-request and CI path. Before launch, the accountable `operations_release` role must either name a least-privilege backup and confirm their Netlify access, individual MFA, recovery method, and escalation route in an access-controlled system, or explicitly accept and record continued single-custodian coverage under the Handoff Baseline.
+The absent backup is an explicit solo-maintainer risk, not fictional separation of duties, and does not block launch. A backup may be added later if another maintainer actually participates.
 
 Access and recovery expectations:
 
 1. Use individual accounts with least privilege and MFA; never share a personal login or access token.
-2. Keep recovery codes, service credentials, and escalation contact details in an approved system outside this repository.
-3. Review access and webhook inventories quarterly and secret locations/rotation status at least every six months.
-4. Rotate credentials after suspected exposure or personnel/access changes.
-5. Recover a failed deployment by selecting a previously qualified immutable Netlify deploy; do not rebuild and call the result the same candidate.
-6. Removing or replacing the Git integration, changing the production branch, build command, toolchain, adapter behavior, environment contexts, or deployment project is a qualification event and requires this record to be updated.
+2. Keep recovery codes and service credentials outside this repository.
+3. Rotate credentials after suspected exposure or account/access changes.
+4. Recover a failed deployment by selecting a previous Netlify deploy.
+5. Re-run normal build and smoke checks after changing the Git integration, production branch, build command, toolchain, environment contexts, or deployment project, and update this record when its facts change.
 
 ## Verification
 
@@ -97,4 +96,4 @@ netlify api getSite --data '{"site_id":"1d61bad6-06f4-4304-9bde-c4ff5f619d41"}'
 netlify api listSiteDeploys --data '{"site_id":"1d61bad6-06f4-4304-9bde-c4ff5f619d41","per_page":20}'
 ```
 
-Capture sensitive access, MFA, recovery, and environment-variable evidence in the approved restricted system. Public issue/release records should contain only status, provenance, custodian, retention, and an access-controlled link.
+Do not place secret values, recovery material, or private environment configuration in public issue or release records.
