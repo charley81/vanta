@@ -46,6 +46,21 @@ checks:
     tool: vanta-verification
     report_path: artifacts/reports/public-runtime-scan.json
     requirement_ids: [BAG-009, PREVIEW-002, ARCH-010, SECURITY-005]
+  - id: secret-scan
+    command: pnpm scan:secrets
+    tool: vanta-verification
+    report_path: artifacts/reports/secret-scan.json
+    requirement_ids: [SECURITY-005, SECURITY-007]
+  - id: critical-vulnerability-scan
+    command: pnpm scan:vulnerabilities
+    tool: pnpm
+    report_path: artifacts/reports/critical-vulnerability-scan.json
+    requirement_ids: [SECURITY-007]
+  - id: production-output-security
+    command: pnpm validate:production-security
+    tool: vanta-verification
+    report_path: artifacts/reports/production-output-security.json
+    requirement_ids: [SECURITY-004, SECURITY-005]
   - id: audio-calibration
     command: pnpm validate:audio-calibration
     tool: vanta-verification
@@ -105,7 +120,7 @@ checks:
     command: pnpm test:unit
     tool: vitest
     report_path: artifacts/reports/unit-tests.json
-    requirement_ids: [PRODUCT-001, PRODUCT-002, PRODUCT-003, PRODUCT-004, PRODUCT-005, PRODUCT-006, CONTENT-001, CONTENT-003, CONTENT-004, CONTENT-009, SYNTH-008, SYNTH-009, BAG-001, BAG-004, BAG-005, BAG-009, PREVIEW-008, PREVIEW-009, STATE-001, STATE-002, STATE-003, STATE-005, STATE-006, STATE-007, STATE-008, ARCH-002, ARCH-003, ARCH-004, ARCH-005, ARCH-006, ARCH-007, ARCH-008, ARCH-009, ARCH-010, MEDIA-001, MEDIA-002, MEDIA-003, MEDIA-004, QUALITY-006, QUALITY-013, SECURITY-005, SECURITY-006, SECURITY-007]
+    requirement_ids: [PRODUCT-001, PRODUCT-002, PRODUCT-003, PRODUCT-004, PRODUCT-005, PRODUCT-006, CONTENT-001, CONTENT-003, CONTENT-004, CONTENT-005, CONTENT-006, CONTENT-007, CONTENT-009, SYNTH-008, SYNTH-009, BAG-001, BAG-004, BAG-005, BAG-009, PREVIEW-008, PREVIEW-009, STATE-001, STATE-002, STATE-003, STATE-005, STATE-006, STATE-007, STATE-008, ARCH-002, ARCH-003, ARCH-004, ARCH-005, ARCH-006, ARCH-007, ARCH-008, ARCH-009, ARCH-010, MEDIA-001, MEDIA-002, MEDIA-003, MEDIA-004, QUALITY-006, QUALITY-013, SECURITY-001, SECURITY-002, SECURITY-003, SECURITY-004, SECURITY-005, SECURITY-006, SECURITY-007, SECURITY-008]
   - id: production-build
     command: pnpm build:verified
     tool: next
@@ -115,4 +130,4 @@ checks:
     command: pnpm test:browser
     tool: playwright
     report_path: artifacts/reports/browser-tests.json
-    requirement_ids: [HOME-005, PRODUCT-ROUTE-001, PRODUCT-ROUTE-002, PRODUCT-ROUTE-003, PRODUCT-ROUTE-004, CONTENT-009, SYNTH-007, SYNTH-008, SYNTH-009, SYNTH-010, MEDIA-005, MEDIA-006, MEDIA-007, BAG-001, BAG-002, BAG-003, BAG-004, BAG-005, BAG-006, BAG-007, BAG-008, BAG-009, PREVIEW-001, PREVIEW-002, PREVIEW-003, PREVIEW-004, PREVIEW-005, PREVIEW-006, PREVIEW-007, PREVIEW-008, PREVIEW-009, PREVIEW-010, PREVIEW-011, PREVIEW-012, STATE-001, STATE-002, STATE-003, STATE-004, STATE-005, STATE-006, ARCH-009, QUALITY-009, QUALITY-010, QUALITY-013, SECURITY-006]
+    requirement_ids: [HOME-005, PRODUCT-ROUTE-001, PRODUCT-ROUTE-002, PRODUCT-ROUTE-003, PRODUCT-ROUTE-004, CONTENT-005, CONTENT-007, CONTENT-009, SYNTH-007, SYNTH-008, SYNTH-009, SYNTH-010, MEDIA-005, MEDIA-006, MEDIA-007, BAG-001, BAG-002, BAG-003, BAG-004, BAG-005, BAG-006, BAG-007, BAG-008, BAG-009, PREVIEW-001, PREVIEW-002, PREVIEW-003, PREVIEW-004, PREVIEW-005, PREVIEW-006, PREVIEW-007, PREVIEW-008, PREVIEW-009, PREVIEW-010, PREVIEW-011, PREVIEW-012, STATE-001, STATE-002, STATE-003, STATE-004, STATE-005, STATE-006, ARCH-009, QUALITY-009, QUALITY-010, QUALITY-013, SECURITY-001, SECURITY-002, SECURITY-003, SECURITY-004, SECURITY-006, SECURITY-008]

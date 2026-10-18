@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { resetRateLimitsForTesting } from "@/src/security/rate-limit.server";
+
 const { isValidSignature, revalidateTag, verifyFreshness } = vi.hoisted(() => ({
   isValidSignature: vi.fn(),
   revalidateTag: vi.fn(),
@@ -31,6 +33,7 @@ function request(body: string, signature = "signature"): Request {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  resetRateLimitsForTesting();
   process.env = {
     ...process.env,
     NODE_ENV: "production",
@@ -116,5 +119,22 @@ describe("Editorial invalidation Route Handler", () => {
       "sanity:document:synthPage",
       "max",
     );
+  });
+
+  it("rate-limits abusive webhook attempts before signature work", async () => {
+    isValidSignature.mockResolvedValue(false);
+    const { POST } = await import("@/app/api/editorial/invalidate/route");
+    const responses: Response[] = [];
+    for (let attempt = 0; attempt < 61; attempt += 1) {
+      responses.push(await POST(request("{}", "invalid")));
+    }
+
+    expect(responses.slice(0, 60).every(({ status }) => status === 401)).toBe(
+      true,
+    );
+    expect(responses[60].status).toBe(429);
+    expect(responses[60].headers.get("retry-after")).toBe("60");
+    expect(isValidSignature).toHaveBeenCalledTimes(60);
+    expect(revalidateTag).not.toHaveBeenCalled();
   });
 });

@@ -31,7 +31,10 @@ function applyPublicResponseHeaders(
   response.headers.set("Referrer-Policy", "no-referrer");
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("X-Frame-Options", "DENY");
-  if (process.env.CONTEXT === "production") {
+  if (
+    process.env.CONTEXT === "production" ||
+    process.env.NETLIFY === "true"
+  ) {
     response.headers.set("Strict-Transport-Security", "max-age=31536000");
   }
 }

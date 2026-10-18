@@ -23,6 +23,11 @@ import { validateEvidenceManifest } from "./evidence-manifest";
 import { evaluatePerformanceRegression } from "./performance-regression";
 import { writeVerificationReport } from "./report";
 import {
+  evaluatePnpmAuditReport,
+  inspectProductionOutput,
+  inspectRepositorySecrets,
+} from "./security";
+import {
   parseRequirementRegister,
   parseVerificationChecks,
   type ValidationIssue,
@@ -56,6 +61,12 @@ function getCheck(id: string): VerificationCheck {
 function packageVersion(name: string): string {
   if (name === "vanta-verification") {
     return JSON.parse(readUtf8("package.json")).version as string;
+  }
+  if (name === "pnpm") {
+    return (JSON.parse(readUtf8("package.json")).packageManager as string).replace(
+      /^pnpm@/,
+      "",
+    );
   }
 
   const packagePath = join("node_modules", ...name.split("/"), "package.json");
@@ -265,6 +276,97 @@ function runArchitectureCheck(
   return result.status === "pass" ? 0 : 1;
 }
 
+function runSecretScan(): number {
+  const startedAt = new Date().toISOString();
+  const check = getCheck("secret-scan");
+  let paths: string[] = [];
+  const issues: ValidationIssue[] = [];
+  try {
+    paths = execFileSync(
+      "git",
+      ["ls-files", "-co", "--exclude-standard", "-z"],
+      { encoding: "utf8" },
+    )
+      .split("\0")
+      .filter(Boolean);
+    issues.push(...inspectRepositorySecrets(process.cwd(), paths));
+  } catch {
+    issues.push({
+      code: "repository_inventory_failed",
+      message: "Unable to enumerate repository files for the secret scan.",
+      path: "$",
+    });
+  }
+
+  reportResult({
+    check,
+    startedAt,
+    status: issues.length === 0 ? "pass" : "fail",
+    summary: { scannedFileCount: paths.length },
+    issues,
+  });
+  printIssues(issues);
+  return issues.length === 0 ? 0 : 1;
+}
+
+function runProductionSecurityScan(): number {
+  const startedAt = new Date().toISOString();
+  const check = getCheck("production-output-security");
+  const issues = inspectProductionOutput(process.cwd());
+  reportResult({
+    check,
+    startedAt,
+    status: issues.length === 0 ? "pass" : "fail",
+    summary: {
+      browserOutput: ".next/static",
+      productionBrowserSourceMaps: false,
+    },
+    issues,
+  });
+  printIssues(issues);
+  return issues.length === 0 ? 0 : 1;
+}
+
+function runDependencyAudit(): number {
+  const startedAt = new Date().toISOString();
+  const check = getCheck("critical-vulnerability-scan");
+  const command = spawnSync(
+    "pnpm",
+    ["audit", "--audit-level", "critical", "--json"],
+    { encoding: "utf8", env: process.env },
+  );
+  let input: unknown;
+  try {
+    input = JSON.parse(command.stdout || "null");
+  } catch {
+    input = null;
+  }
+  const result = evaluatePnpmAuditReport(input);
+  const issues = [...result.issues];
+  if (command.error || command.status !== 0) {
+    if (issues.length === 0) {
+      issues.push({
+        code: "audit_command_failed",
+        message: "pnpm audit did not complete successfully.",
+        path: "pnpm-lock.yaml",
+      });
+    }
+  }
+  const status = issues.length === 0 ? "pass" : "fail";
+  reportResult({
+    check,
+    startedAt,
+    status,
+    summary: {
+      ...result.summary,
+      auditExitCode: command.status,
+    },
+    issues,
+  });
+  printIssues(issues);
+  return status === "pass" ? 0 : 1;
+}
+
 function runCheck(checkId: string, command: string[]): number {
   if (command.length === 0) throw new Error("A command is required after --");
   const startedAt = new Date().toISOString();
@@ -301,7 +403,7 @@ function runCheck(checkId: string, command: string[]): number {
 
 function usage(): never {
   throw new Error(
-    "Usage: cli.ts requirements | evidence [manifest ...] | performance <input.json> | product-catalog | boundaries | public-runtime | audio-calibration | audio-stress | audio-isolation | run <check-id> -- <command ...>",
+    "Usage: cli.ts requirements | evidence [manifest ...] | performance <input.json> | product-catalog | boundaries | public-runtime | secret-scan | dependency-audit | production-security | audio-calibration | audio-stress | audio-isolation | run <check-id> -- <command ...>",
   );
 }
 
@@ -326,6 +428,12 @@ function main(): number {
       );
     case "public-runtime":
       return runArchitectureCheck("public-runtime-scan", evaluatePublicRuntime);
+    case "secret-scan":
+      return runSecretScan();
+    case "dependency-audit":
+      return runDependencyAudit();
+    case "production-security":
+      return runProductionSecurityScan();
     case "audio-calibration":
       return runArchitectureCheck("audio-calibration", () =>
         evaluateAudioCalibration(),

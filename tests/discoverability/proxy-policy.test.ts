@@ -35,6 +35,28 @@ describe("discoverability response policy", () => {
     );
   });
 
+  it("applies the complete production security policy without cross-origin isolation", async () => {
+    process.env.CONTEXT = "production";
+    const response = await proxy(
+      new NextRequest("https://vanta.example/monolith"),
+    );
+
+    expect(response.headers.get("content-security-policy")).toContain(
+      "frame-ancestors 'none'",
+    );
+    expect(response.headers.get("content-security-policy")).not.toContain("*");
+    expect(response.headers.get("referrer-policy")).toBe("no-referrer");
+    expect(response.headers.get("x-content-type-options")).toBe("nosniff");
+    expect(response.headers.get("x-frame-options")).toBe("DENY");
+    expect(response.headers.get("permissions-policy")).toContain("payment=()");
+    expect(response.headers.get("strict-transport-security")).toBe(
+      "max-age=31536000",
+    );
+    expect(response.headers.get("cross-origin-opener-policy")).toBeNull();
+    expect(response.headers.get("cross-origin-embedder-policy")).toBeNull();
+    expect(response.headers.get("cross-origin-resource-policy")).toBeNull();
+  });
+
   it("redirects trailing-slash and legacy variants without requiring a production host", async () => {
     const trailingSlash = await proxy(
       new NextRequest("http://localhost:3000/synth/"),
@@ -85,6 +107,9 @@ describe("discoverability response policy", () => {
     expect(response.headers.get("location")).toBeNull();
     expect(response.headers.get("x-robots-tag")).toBe(
       "noindex, nofollow, noarchive",
+    );
+    expect(response.headers.get("strict-transport-security")).toBe(
+      "max-age=31536000",
     );
   });
 });

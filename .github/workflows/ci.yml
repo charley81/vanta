@@ -36,6 +36,12 @@ jobs:
       - name: Install Chromium
         run: pnpm exec playwright install --with-deps chromium
 
+      - name: Scan repository for committed credentials
+        run: pnpm scan:secrets
+
+      - name: Scan dependencies for critical vulnerabilities
+        run: pnpm scan:vulnerabilities
+
       - name: Validate requirement references
         run: pnpm validate:requirements
 
@@ -59,6 +65,9 @@ jobs:
 
       - name: Build production application
         run: pnpm build:verified
+
+      - name: Scan production browser output
+        run: pnpm validate:production-security
 
       - name: Run browser and accessibility tests
         run: pnpm test:browser

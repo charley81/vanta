@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import { resetRateLimitsForTesting } from "@/src/security/rate-limit.server";
+
 const enable = vi.fn();
 const setCookie = vi.fn();
 const validatePreviewUrl = vi.fn();
@@ -19,6 +21,7 @@ const originalEnvironment = { ...process.env };
 
 beforeEach(() => {
   vi.clearAllMocks();
+  resetRateLimitsForTesting();
   process.env.SANITY_CONTENT_SOURCE = "published";
   process.env.SANITY_STUDIO_PROJECT_ID = "project-id";
   process.env.SANITY_STUDIO_DATASET = "production";
@@ -139,5 +142,27 @@ describe("Editorial preview entry Route Handler", () => {
     expect(response.status).toBe(503);
     expect(validatePreviewUrl).not.toHaveBeenCalled();
     expect(enable).not.toHaveBeenCalled();
+  });
+
+  it("rate-limits abusive authorization attempts before further validation", async () => {
+    validatePreviewUrl.mockResolvedValue({ isValid: false });
+    const { GET } = await import("@/app/api/editorial/preview/route");
+    const responses: Response[] = [];
+    for (let attempt = 0; attempt < 21; attempt += 1) {
+      responses.push(
+        await GET(
+          new Request(
+            "https://vanta.example/api/editorial/preview?secret=redacted",
+          ),
+        ),
+      );
+    }
+
+    expect(responses.slice(0, 20).every(({ status }) => status === 401)).toBe(
+      true,
+    );
+    expect(responses[20].status).toBe(429);
+    expect(responses[20].headers.get("retry-after")).toBe("60");
+    expect(validatePreviewUrl).toHaveBeenCalledTimes(20);
   });
 });
