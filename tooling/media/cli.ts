@@ -154,6 +154,7 @@ async function verify(): Promise<number> {
     comparedOutputs: generated.outputs.length,
     manifests: [mediaPaths.derivativeManifest, mediaPaths.mediaManifest],
     cleanStagingRun: true,
+    portableImageComparisons: result.portableImageComparisons,
   }, result.issues);
   report("media-resource-budgets", startedAt, budgetIssues.length === 0 ? "pass" : "fail", {
     runtimeGlbBytes: browserModel?.bytes ?? null,
