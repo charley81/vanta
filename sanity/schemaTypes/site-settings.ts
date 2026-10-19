@@ -17,7 +17,11 @@ export const siteSettings = defineType({
       title: "Privacy notice URL",
       description: "Use /privacy or a reviewed HTTPS destination.",
       type: "url",
-      validation: (rule) => rule.required().custom(validateApprovedLink),
+      validation: (rule) =>
+        rule
+          .required()
+          .uri({ allowRelative: true, scheme: ["https"] })
+          .custom(validateApprovedLink),
     }),
     defineField({
       name: "defaultSocialImage",

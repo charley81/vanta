@@ -1,4 +1,5 @@
 import { evaluate, parse } from "groq-js";
+import { createSchema } from "sanity";
 import { describe, expect, it } from "vitest";
 
 import { EDITORIAL_FIXTURES } from "@/src/editorial/fixtures.server";
@@ -74,6 +75,34 @@ describe("Editorial Sanity schema", () => {
       "synthPage",
     ]);
     expect(schemaTypes.flatMap(schemaTypeNames)).not.toContain("block");
+  });
+
+  it("accepts the approved relative Privacy destination in the Studio URL input", () => {
+    const compiledSchema = createSchema({
+      name: "editorial-test",
+      types: schemaTypes,
+    });
+    const settings = compiledSchema.get("siteSettings") as unknown as {
+      fields: Array<{
+        name: string;
+        type: {
+          validation: Array<{
+            _rules: Array<{
+              flag: string;
+              constraint?: { options?: { allowRelative?: boolean } };
+            }>;
+          }>;
+        };
+      }>;
+    };
+    const privacyField = settings.fields.find(
+      ({ name }) => name === "privacyNoticeUrl",
+    );
+    const uriRule = privacyField?.type.validation
+      .flatMap(({ _rules }) => _rules)
+      .find(({ flag }) => flag === "uri");
+
+    expect(uriRule?.constraint?.options?.allowRelative).toBe(true);
   });
 
   it("accepts the complete initial seed", () => {
