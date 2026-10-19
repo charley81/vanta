@@ -221,6 +221,29 @@ describe("Bag Route Handler contract", () => {
     });
   });
 
+  it("accepts the configured production origin when Netlify uses an internal request origin", async () => {
+    process.env = {
+      ...process.env,
+      CONTEXT: "production",
+      NODE_ENV: "production",
+      VANTA_PRODUCTION_ORIGIN: "https://vanta-monolith.netlify.app",
+    };
+    const { POST: add } = await import("@/app/api/bag/add/route");
+    const response = await add(
+      new Request("https://main--vanta-monolith.netlify.app/api/bag/add", {
+        body: "{}",
+        headers: {
+          "content-type": "application/json",
+          origin: "https://vanta-monolith.netlify.app",
+        },
+        method: "POST",
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ item: { name: "MONOLITH" } });
+  });
+
   it("accepts an exact same-site mutation through an immutable Netlify deployment origin", async () => {
     const { POST: add } = await import("@/app/api/bag/add/route");
     const response = await add(
