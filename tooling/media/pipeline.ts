@@ -134,6 +134,37 @@ export type GeneratedMedia = {
   outputs: OutputRecord[];
 };
 
+export type PortableImageComparison = {
+  path: string;
+  meanAbsoluteChannelDifference: number;
+  maximumChannelDifference: number;
+  changedChannelRatio: number;
+  encodedSizeDeltaRatio: number;
+  dimensionsMatch: boolean;
+};
+
+export const PORTABLE_AVIF_TOLERANCE = {
+  meanAbsoluteChannelDifference: 0.3,
+  maximumChannelDifference: 48,
+  changedChannelRatio: 0.15,
+  encodedSizeDeltaRatio: 0.15,
+} as const;
+
+export function isPortableAvifEquivalent(
+  comparison: PortableImageComparison,
+): boolean {
+  return (
+    comparison.dimensionsMatch &&
+    comparison.meanAbsoluteChannelDifference <=
+      PORTABLE_AVIF_TOLERANCE.meanAbsoluteChannelDifference &&
+    comparison.maximumChannelDifference <=
+      PORTABLE_AVIF_TOLERANCE.maximumChannelDifference &&
+    comparison.changedChannelRatio <= PORTABLE_AVIF_TOLERANCE.changedChannelRatio &&
+    comparison.encodedSizeDeltaRatio <=
+      PORTABLE_AVIF_TOLERANCE.encodedSizeDeltaRatio
+  );
+}
+
 export const APPROVED_SOURCE_SHA256 =
   "ccbdb568548e154335b2d8eb147a8f39b9881eb930e2b290e098f419425ca261";
 
@@ -392,20 +423,27 @@ async function buildVisualComparison({
       const runtimePath = join(temporary, `${render.id}-runtime.png`);
       await renderGlbToPng({ glb: source, camera: render.camera, light: render.light, width: tileWidth, height: tileHeight, outputPath: sourcePath });
       await renderGlbToPng({ glb: runtime, camera: render.camera, light: render.light, width: tileWidth, height: tileHeight, outputPath: runtimePath });
-      const label = Buffer.from(`<svg width="800" height="32"><rect width="800" height="32" fill="#0f0905"/><text x="12" y="21" fill="#fefcfb" font-family="monospace" font-size="14">${render.id}: approved source</text><text x="412" y="21" fill="#fefcfb" font-family="monospace" font-size="14">Meshopt browser derivative</text></svg>`);
-      rows.push(await sharp({ create: { width: 800, height: 282, channels: 3, background: "#0f0905" } })
+      rows.push(await sharp({
+        create: { width: 800, height: tileHeight, channels: 3, background: "#0f0905" },
+      })
         .composite([
-          { input: label, top: 0, left: 0 },
-          { input: sourcePath, top: 32, left: 0 },
-          { input: runtimePath, top: 32, left: 400 },
+          { input: sourcePath, top: 0, left: 0 },
+          { input: runtimePath, top: 0, left: tileWidth },
         ])
         .webp({ quality: 88, effort: 6 })
         .toBuffer());
     }
     const target = outputLocation(root, stagingRoot, comparisonPath);
     mkdirSync(dirname(target), { recursive: true });
-    await sharp({ create: { width: 800, height: rows.length * 282, channels: 3, background: "#0f0905" } })
-      .composite(rows.map((input, index) => ({ input, top: index * 282, left: 0 })))
+    await sharp({
+      create: {
+        width: tileWidth * 2,
+        height: rows.length * tileHeight,
+        channels: 3,
+        background: "#0f0905",
+      },
+    })
+      .composite(rows.map((input, index) => ({ input, top: index * tileHeight, left: 0 })))
       .webp({ quality: 90, effort: 6 })
       .toFile(target);
   } finally {
@@ -657,6 +695,84 @@ function serialized(value: unknown): string {
   return `${JSON.stringify(value, null, 2)}\n`;
 }
 
+type ManifestAsset = {
+  path: string;
+  mediaType: string;
+  sha256: string;
+  bytes: number;
+};
+
+function normalizePortableAvifIdentities(
+  actual: Record<string, unknown>,
+  expected: Record<string, unknown>,
+): Record<string, unknown> {
+  const normalized = structuredClone(actual);
+  for (const key of ["outputs", "assets"] as const) {
+    const actualAssets = normalized[key];
+    const expectedAssets = expected[key];
+    if (!Array.isArray(actualAssets) || !Array.isArray(expectedAssets)) continue;
+    const expectedByPath = new Map(
+      (expectedAssets as ManifestAsset[]).map((asset) => [asset.path, asset]),
+    );
+    for (const asset of actualAssets as ManifestAsset[]) {
+      if (asset.mediaType !== "image/avif") continue;
+      const expectedAsset = expectedByPath.get(asset.path);
+      if (!expectedAsset) continue;
+      asset.sha256 = expectedAsset.sha256;
+      asset.bytes = expectedAsset.bytes;
+    }
+  }
+  return normalized;
+}
+
+async function comparePortableImage(
+  committedPath: string,
+  regeneratedPath: string,
+  path: string,
+): Promise<PortableImageComparison> {
+  const committedSize = statSync(committedPath).size;
+  const regeneratedSize = statSync(regeneratedPath).size;
+  const committed = await sharp(committedPath)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const regenerated = await sharp(regeneratedPath)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  const dimensionsMatch =
+    committed.info.width === regenerated.info.width &&
+    committed.info.height === regenerated.info.height &&
+    committed.info.channels === regenerated.info.channels &&
+    committed.data.length === regenerated.data.length;
+  let totalDifference = 0;
+  let maximumChannelDifference = 0;
+  let changedChannels = 0;
+  if (dimensionsMatch) {
+    for (let index = 0; index < committed.data.length; index += 1) {
+      const difference = Math.abs(committed.data[index] - regenerated.data[index]);
+      totalDifference += difference;
+      maximumChannelDifference = Math.max(maximumChannelDifference, difference);
+      if (difference > 0) changedChannels += 1;
+    }
+  }
+  return {
+    path,
+    meanAbsoluteChannelDifference: dimensionsMatch
+      ? totalDifference / committed.data.length
+      : Number.POSITIVE_INFINITY,
+    maximumChannelDifference: dimensionsMatch
+      ? maximumChannelDifference
+      : Number.POSITIVE_INFINITY,
+    changedChannelRatio: dimensionsMatch
+      ? changedChannels / committed.data.length
+      : 1,
+    encodedSizeDeltaRatio:
+      Math.abs(committedSize - regeneratedSize) / committedSize,
+    dimensionsMatch,
+  };
+}
+
 export async function buildMedia(root: string): Promise<GeneratedMedia> {
   const generated = await generateMedia(root);
   mkdirSync(join(root, dirname(derivativeManifestPath)), { recursive: true });
@@ -669,28 +785,55 @@ export async function verifyMediaReproducibility(root: string): Promise<{
   status: "pass" | "fail";
   issues: ValidationIssue[];
   generated: GeneratedMedia;
+  portableImageComparisons: PortableImageComparison[];
 }> {
   const stagingRoot = mkdtempSync(join(tmpdir(), "vanta-media-repro-"));
   try {
     const generated = await generateMedia(root, stagingRoot);
     const issues: ValidationIssue[] = [];
+    const portableImageComparisons: PortableImageComparison[] = [];
     for (const [path, value] of [
       [derivativeManifestPath, generated.derivativeManifest],
       [mediaManifestPath, generated.mediaManifest],
     ] as const) {
-      const expected = readFileSync(join(root, path), "utf8");
-      const actual = serialized(value);
-      if (expected !== actual) {
+      const expectedText = readFileSync(join(root, path), "utf8");
+      const expected = JSON.parse(expectedText) as Record<string, unknown>;
+      const actual = serialized(normalizePortableAvifIdentities(value, expected));
+      if (expectedText !== actual) {
         issues.push({ code: "manifest_not_reproducible", message: `${path} differs from a clean generated manifest`, path });
       }
     }
-    generated.outputs.forEach((output) => {
+    for (const output of generated.outputs) {
       const committedPath = join(root, output.path);
-      if (statSync(committedPath).size !== output.bytes || sha256(readFileSync(committedPath)) !== output.sha256) {
-        issues.push({ code: "output_not_reproducible", message: `${output.path} differs from a clean generated output`, path: output.path });
+      if (
+        statSync(committedPath).size === output.bytes &&
+        sha256(readFileSync(committedPath)) === output.sha256
+      ) {
+        continue;
       }
-    });
-    return { status: issues.length === 0 ? "pass" : "fail", issues, generated };
+      if (output.mediaType === "image/avif") {
+        const comparison = await comparePortableImage(
+          committedPath,
+          join(stagingRoot, output.path),
+          output.path,
+        );
+        portableImageComparisons.push(comparison);
+        if (isPortableAvifEquivalent(comparison)) continue;
+        issues.push({
+          code: "portable_image_not_equivalent",
+          message: `${output.path} exceeds the cross-platform AVIF tolerance`,
+          path: output.path,
+        });
+        continue;
+      }
+      issues.push({ code: "output_not_reproducible", message: `${output.path} differs from a clean generated output`, path: output.path });
+    }
+    return {
+      status: issues.length === 0 ? "pass" : "fail",
+      issues,
+      generated,
+      portableImageComparisons,
+    };
   } finally {
     rmSync(stagingRoot, { recursive: true, force: true });
   }

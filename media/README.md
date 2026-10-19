@@ -7,10 +7,12 @@ This directory owns the immutable approved geometry source, versioned render/cro
 ```bash
 pnpm validate:media-source # checksum, glTF, bounds, hierarchy, texture/GPU checks
 pnpm build:media           # regenerate the browser GLB, masters, stills, comparison, manifests
-pnpm validate:media        # regenerate in a clean temporary tree and byte-compare every output
+pnpm validate:media        # regenerate in a clean temporary tree and verify every output
 ```
 
 `pnpm build:media` is intentionally fail-closed. It first verifies the immutable source at `media/source/VANTA_MONOLITH_v03D.glb`, then reproduces the accepted conservative Meshopt model with glTF Transform 4.5.1. It does not flatten, join, instance, simplify, palette-convert, or recompress textures. It renders the approved source offline with the repository-owned software rasterizer and versioned camera/light/crop settings in `media/pipeline.json`; no browser, Figma-hosted image, or donor-prototype asset is used as a master.
+
+Clean verification requires byte-identical models, PNG masters, WebP delivery variants, and the visual comparison. AVIF encoding is the sole portable exception: libaom produces CPU-dependent bytes even under the pinned Sharp/libvips toolchain. The gate therefore requires identical dimensions and manifest provenance, then bounds decoded mean/max channel error, changed-channel ratio, and encoded-size variance. The committed AVIF hashes remain the production identities; the tolerance only permits measured cross-platform encoder variance and fails recipe, dimension, or material visual drift.
 
 The committed outputs are:
 

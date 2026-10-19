@@ -9,9 +9,9 @@ This directory indexes branch-level implementation evidence. It does not claim c
 | Approved-source and required-node validation | `artifacts/reports/glb-validation.json` from `pnpm validate:media-source` | Pass under the documented hash-scoped source finding policy |
 | Derivative manifest | `media/manifests/derivatives.json` | SHA-256 `20ea020786e240a3bdf96e90dca255b26a789004d222d5ab219441a2536881f7` |
 | Public media manifest | `media/manifests/media.json` | SHA-256 `6e289ba5eb5a3554b0741e3815ec442c5c9b5584d48cb10fbebce90f10a815c0` |
-| Clean-run reproducibility | `artifacts/reports/media-reproducibility.json` from `pnpm validate:media` | 22 outputs and both manifests reproduced byte-for-byte |
+| Clean-run reproducibility | `artifacts/reports/media-reproducibility.json` from `pnpm validate:media` | 22 outputs and both manifests reproduced; deterministic outputs matched byte-for-byte and AVIFs stayed within the recorded portable encoder tolerance |
 | Resource ceilings | `artifacts/reports/media-resource-budgets.json` | Pass |
-| Source/runtime visual comparison | [`visual-comparison.webp`](visual-comparison.webp) | Four versioned cameras, approved source at left and Meshopt derivative at right |
+| Source/runtime visual comparison | [`visual-comparison.webp`](visual-comparison.webp) | Four versioned cameras, approved source at left and Meshopt derivative at right; the text-free image keeps regeneration independent of host fonts |
 
 ## Measured results
 

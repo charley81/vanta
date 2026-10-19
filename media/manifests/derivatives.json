@@ -1362,8 +1362,8 @@
       "id": "source-runtime-visual-comparison",
       "kind": "visual-comparison",
       "path": "docs/evidence/issue-59/visual-comparison.webp",
-      "sha256": "e64e490ca48f662c1e1e1c498898d0b66a216462edd9c115442bdbabb3814a53",
-      "bytes": 46566,
+      "sha256": "68636a3932db3411fe8724aa329c0d1cda0fe5804028b4568fdaceded124e5b2",
+      "bytes": 32528,
       "mediaType": "image/webp",
       "properties": {
         "subjects": [
@@ -1390,7 +1390,7 @@
         }
       },
       "width": 800,
-      "height": 1128
+      "height": 1000
     }
   ]
 }

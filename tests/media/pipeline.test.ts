@@ -5,7 +5,12 @@ import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { calculateSceneStats, parseGlb, sha256 } from "@/tooling/media/glb";
-import { validateApprovedSource } from "@/tooling/media/pipeline";
+import {
+  isPortableAvifEquivalent,
+  PORTABLE_AVIF_TOLERANCE,
+  validateApprovedSource,
+  type PortableImageComparison,
+} from "@/tooling/media/pipeline";
 
 const temporaryRoots: string[] = [];
 
@@ -66,6 +71,33 @@ describe("governed media pipeline", () => {
       ]),
     );
     expect(result.validator.acceptedFindings).toEqual([]);
+  });
+
+  it("bounds cross-platform AVIF variance without accepting recipe drift", () => {
+    const atBoundary: PortableImageComparison = {
+      path: "public/media/stills/example.avif",
+      dimensionsMatch: true,
+      ...PORTABLE_AVIF_TOLERANCE,
+    };
+
+    expect(isPortableAvifEquivalent(atBoundary)).toBe(true);
+    for (const metric of [
+      "meanAbsoluteChannelDifference",
+      "maximumChannelDifference",
+      "changedChannelRatio",
+      "encodedSizeDeltaRatio",
+    ] as const) {
+      expect(
+        isPortableAvifEquivalent({
+          ...atBoundary,
+          [metric]: PORTABLE_AVIF_TOLERANCE[metric] + 0.001,
+        }),
+        metric,
+      ).toBe(false);
+    }
+    expect(
+      isPortableAvifEquivalent({ ...atBoundary, dimensionsMatch: false }),
+    ).toBe(false);
   });
 
   it("pins the accepted conservative Meshopt output", () => {
