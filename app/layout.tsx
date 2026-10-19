@@ -8,6 +8,7 @@ import { getSiteSettingsForRequest } from "@/src/editorial/preview-content.serve
 
 import { FooterBagTrigger } from "./ui/bag-trigger";
 import { DeferredShellNavigation } from "./ui/deferred-shell-navigation";
+import { EditorialVisualEditing } from "./ui/editorial-visual-editing";
 import shellStyles from "./ui/shell-navigation.module.css";
 
 const geistSans = Geist({
@@ -80,6 +81,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             <FooterBagTrigger />
           </nav>
         </footer>
+        <EditorialVisualEditing />
       </body>
     </html>
   );
