@@ -11,7 +11,7 @@ import {
 } from "@/src/editorial/preview-content.server";
 
 import { EditorialPreviewBanner } from "../ui/editorial-preview-banner";
-import { BagTrigger } from "../ui/shell-navigation";
+import { BagTrigger } from "../ui/bag-trigger";
 import { ProductMedia } from "./product-media";
 import { ProductRouteLink } from "./product-route-link";
 import styles from "./product.module.css";

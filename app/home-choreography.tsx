@@ -3,6 +3,7 @@
 import { useLayoutEffect, useRef, type ReactNode } from "react";
 
 import {
+  CONTINUITY_READY_EVENT,
   ROUTE_ACTIVATE_ENHANCEMENTS_EVENT,
   ROUTE_RECOMPOSE_EVENT,
   type RouteEnhancementPosition,
@@ -337,6 +338,24 @@ export function HomeChoreography({ children }: { children: ReactNode }) {
       setVertical(null, false);
     }
 
+    function scheduleInitialActivation(): void {
+      initialActivationFrame = window.requestAnimationFrame(() => {
+        initialActivationFrame = 0;
+        delayedActivationFrame = window.requestAnimationFrame(() => {
+          delayedActivationFrame = 0;
+          activate(captureReadingPosition());
+        });
+      });
+    }
+
+    function handleContinuityReady(): void {
+      document.removeEventListener(
+        CONTINUITY_READY_EVENT,
+        handleContinuityReady,
+      );
+      scheduleInitialActivation();
+    }
+
     function handleActivateEnhancements(event: Event): void {
       const detail = (event as CustomEvent<RouteEnhancementPosition>).detail;
       const chapterIndex = chapters.findIndex(
@@ -377,19 +396,25 @@ export function HomeChoreography({ children }: { children: ReactNode }) {
     lastReadingPosition = captureReadingPosition();
     const initial = qualification();
     if (!initial.eligible) main.dataset.homeFallback = initial.fallback;
-    initialActivationFrame = window.requestAnimationFrame(() => {
-      initialActivationFrame = 0;
-      delayedActivationFrame = window.requestAnimationFrame(() => {
-        delayedActivationFrame = 0;
-        activate(captureReadingPosition());
-      });
-    });
+    if (document.documentElement.dataset.continuityReady === "true") {
+      scheduleInitialActivation();
+    } else {
+      document.addEventListener(
+        CONTINUITY_READY_EVENT,
+        handleContinuityReady,
+        { once: true },
+      );
+    }
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleEnvironmentChange);
       track.removeEventListener("focusin", handleFocusIn);
       document.removeEventListener(ROUTE_RECOMPOSE_EVENT, handleRecompose);
+      document.removeEventListener(
+        CONTINUITY_READY_EVENT,
+        handleContinuityReady,
+      );
       document.removeEventListener(
         ROUTE_ACTIVATE_ENHANCEMENTS_EVENT,
         handleActivateEnhancements,

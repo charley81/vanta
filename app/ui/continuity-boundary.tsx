@@ -200,7 +200,7 @@ function restoreRouteContext(context: ReturnContext) {
   void controller.restore(context);
 }
 
-export function ContinuityBoundary() {
+export function ContinuityBoundary({ onReady }: { onReady?: () => void }) {
   const pathname = usePathname();
   const router = useRouter();
   const navigationIntent = useRef<"explicit" | null>(null);
@@ -404,6 +404,8 @@ export function ContinuityBoundary() {
       window.history.scrollRestoration = previousScrollRestoration;
     };
   }, [pathname]);
+
+  useEffect(() => onReady?.(), [onReady]);
 
   return null;
 }

@@ -1,21 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
-  Fragment,
   type KeyboardEvent,
+  lazy,
   type MouseEvent,
-  type ReactNode,
+  Suspense,
   useEffect,
-  useId,
   useRef,
   useState,
 } from "react";
 
-import { BagOverlayBoundary } from "./bag-overlay-boundary";
+import { BagTrigger } from "./bag-trigger-runtime";
 import { useBag } from "./bag-provider";
 import styles from "./shell-navigation.module.css";
+
+const BagOverlayBoundary = lazy(() =>
+  import("./bag-overlay-boundary").then((module) => ({
+    default: module.BagOverlayBoundary,
+  })),
+);
 
 const destinations = [
   { href: "/", label: "Home" },
@@ -33,8 +38,13 @@ function isPrimaryNavigationClick(event: MouseEvent<HTMLAnchorElement>) {
   );
 }
 
+type BagActivationGlobal = typeof globalThis & {
+  __vantaBagActivation?: Promise<void>;
+};
+
 function NavigationLinks({ onRouteIntent }: { onRouteIntent?: () => void }) {
   const pathname = usePathname();
+  const router = useRouter();
 
   return destinations.map(({ href, label }) => (
     <Link
@@ -42,7 +52,14 @@ function NavigationLinks({ onRouteIntent }: { onRouteIntent?: () => void }) {
       href={href}
       key={href}
       onClick={(event) => {
-        if (isPrimaryNavigationClick(event)) onRouteIntent?.();
+        if (!isPrimaryNavigationClick(event)) return;
+        onRouteIntent?.();
+        const activation = (globalThis as BagActivationGlobal)
+          .__vantaBagActivation;
+        if (activation) {
+          event.preventDefault();
+          void activation.then(() => router.push(href));
+        }
       }}
     >
       {label}
@@ -187,88 +204,13 @@ export function ShellNavigation() {
               Close Bag
             </button>
           </div>
-          <BagOverlayBoundary />
+          {state.open ? (
+            <Suspense fallback={<p role="status">Checking Bag…</p>}>
+              <BagOverlayBoundary />
+            </Suspense>
+          ) : null}
         </div>
       </dialog>
     </div>
   );
-}
-
-type BagTriggerProps = {
-  ariaDescribedBy?: string;
-  ariaLabel?: string;
-  children?: ReactNode;
-  className?: string;
-  disabled?: boolean;
-  operation?: "add" | "open";
-};
-
-export function BagTrigger({
-  ariaDescribedBy,
-  ariaLabel,
-  children,
-  className,
-  disabled = false,
-  operation = "open",
-}: BagTriggerProps) {
-  const id = useId();
-  const { activeInvokerId, addToBag, openBag, retry, state } = useBag();
-  const count = state.confirmed?.item ? 1 : 0;
-  const countKnown = state.confirmed !== null;
-  const label =
-    ariaLabel ??
-    (countKnown
-      ? `Open Bag, ${count} ${count === 1 ? "item" : "items"}`
-      : "Open Bag, status unknown");
-  const isActiveInvoker = activeInvokerId === id;
-  const adding = operation === "add" && state.pending === "add";
-  const addError =
-    operation === "add" &&
-    isActiveInvoker &&
-    state.error?.operation === "add"
-      ? state.error
-      : null;
-
-  return (
-    <Fragment>
-      <button
-        aria-controls="bag-dialog"
-        aria-describedby={ariaDescribedBy}
-        aria-expanded={state.open}
-        aria-haspopup="dialog"
-        aria-label={label}
-        className={className}
-        data-bag-action
-        disabled={disabled || adding}
-        onClick={(event) => {
-          if (operation === "add") {
-            void addToBag(event.currentTarget, id);
-          } else {
-            openBag(event.currentTarget, id);
-          }
-        }}
-        type="button"
-      >
-        {adding ? (
-          "Adding MONOLITH to Bag…"
-        ) : (children ?? (
-          <>
-            Bag <span aria-hidden="true">/ {countKnown ? count : "—"}</span>
-          </>
-        ))}
-      </button>
-      {addError ? (
-        <span className={styles.bagTriggerError} role="alert">
-          {addError.message}{" "}
-          <button data-bag-action onClick={() => void retry()} type="button">
-            Retry
-          </button>
-        </span>
-      ) : null}
-    </Fragment>
-  );
-}
-
-export function FooterBagTrigger() {
-  return <BagTrigger />;
 }
