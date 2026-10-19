@@ -19,7 +19,8 @@ export type EditorialInvalidationConfiguration = {
 type InvalidationEnvironment = Readonly<Record<string, string | undefined>>;
 
 const REVISION = /^[A-Za-z0-9._-]{1,128}$/;
-const RETRY_DELAYS_MS = [0, 1_000, 2_000, 4_000, 8_000, 12_000, 12_000] as const;
+const RETRY_DELAYS_MS = [0, 250, 500, 1_000, 1_500] as const;
+const FRESHNESS_REQUEST_TIMEOUT_MS = 1_000;
 
 export function resolveEditorialInvalidationConfiguration(
   environment: InvalidationEnvironment,
@@ -122,7 +123,7 @@ export async function verifyPublicEditorialFreshness(
       const response = await dependencies.fetch(url, {
         cache: "no-store",
         redirect: "error",
-        signal: AbortSignal.timeout(2_000),
+        signal: AbortSignal.timeout(FRESHNESS_REQUEST_TIMEOUT_MS),
       });
       if (response.status === 200) {
         const result: unknown = await response.json();
