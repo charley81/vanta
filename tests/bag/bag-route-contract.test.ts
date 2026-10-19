@@ -283,6 +283,15 @@ describe("Bag Route Handler contract", () => {
     });
   });
 
+  it("does not rate-limit the inexpensive read-only Bag operation", async () => {
+    const { GET } = await import("@/app/api/bag/route");
+    const responses = await Promise.all(
+      Array.from({ length: 121 }, () => GET(request("/api/bag"))),
+    );
+
+    expect(responses.every((response) => response.status === 200)).toBe(true);
+  });
+
   it("keeps mutations read-only during an authenticated Editorial preview", async () => {
     process.env.EDITORIAL_PREVIEW_SESSION_SECRET = "p".repeat(32);
     const session = await signEditorialPreviewSession(

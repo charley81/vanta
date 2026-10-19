@@ -96,4 +96,8 @@ netlify api getSite --data '{"site_id":"1d61bad6-06f4-4304-9bde-c4ff5f619d41"}'
 netlify api listSiteDeploys --data '{"site_id":"1d61bad6-06f4-4304-9bde-c4ff5f619d41","per_page":20}'
 ```
 
-Do not place secret values, recovery material, or private environment configuration in public issue or release records.
+For candidate security qualification, bind the GitHub Actions `EDITORIAL_PREVIEW_SESSION_SECRET` secret to the same value as the candidate deployment without printing or copying it into workflow inputs. Run the **Security qualification** workflow with the immutable Netlify deployment ID, its full application commit, and the exact public Sanity Studio origin. The workflow rejects mutable deployment aliases, confirms the Netlify deployment is ready and commit-bound, checks public and Editorial-preview CSP/header behavior, and verifies browser source maps return `404`. Its retained artifact contains only deployment identity, policy headers, and status/count outcomes; tracing and video are disabled so the signed preview cookie is not retained.
+
+The repository and browser-output secret scans, critical dependency audit, local production build, and endpoint security tests run in normal CI. A local result has `acceptanceClaim: false`; link the successful immutable-deployment workflow run from the launch issue rather than creating another evidence store.
+
+Do not place secret values, signed preview cookies, recovery material, or private environment configuration in public issue or release records.

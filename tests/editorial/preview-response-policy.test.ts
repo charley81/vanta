@@ -34,6 +34,22 @@ describe("public and Editorial preview response policy", () => {
     );
   });
 
+  it("rejects malformed or non-HTTPS frame ancestors at the policy boundary", () => {
+    for (const origin of [
+      "https://studio.example; script-src *",
+      "https://studio.example/path",
+      "http://studio.example",
+      "https://*.sanity.studio",
+    ]) {
+      expect(() => previewContentSecurityPolicy(origin)).toThrow(
+        /exact HTTPS origin/,
+      );
+    }
+    expect(() =>
+      previewContentSecurityPolicy("http://localhost:3333", true),
+    ).not.toThrow();
+  });
+
   it("disables sensitive and unused browser capabilities", () => {
     for (const capability of [
       "camera=()",

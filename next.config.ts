@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
   },
   cacheComponents: true,
   partialPrefetching: true,
+  productionBrowserSourceMaps: false,
   skipTrailingSlashRedirect: true,
   turbopack: {
     rules: {

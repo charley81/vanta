@@ -371,16 +371,18 @@ export async function handleBagRequest(
     );
   }
 
-  const limit = consumeRateLimit(
-    `bag-${action}`,
-    requestRateLimitKey(request),
-    action === "read" ? 120 : 30,
-    60_000,
-  );
-  if (!limit.allowed) {
-    return error(429, "rate_limited", "Too many Bag requests. Try again shortly.", {
-      "Retry-After": String(limit.retryAfterSeconds),
-    });
+  if (action !== "read") {
+    const limit = consumeRateLimit(
+      `bag-${action}`,
+      requestRateLimitKey(request),
+      30,
+      60_000,
+    );
+    if (!limit.allowed) {
+      return error(429, "rate_limited", "Too many Bag requests. Try again shortly.", {
+        "Retry-After": String(limit.retryAfterSeconds),
+      });
+    }
   }
   if (!exactRequestUrl(request, action)) {
     return error(400, "invalid_request", "The Bag request is invalid.");

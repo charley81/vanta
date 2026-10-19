@@ -1,0 +1,68 @@
+name: Security qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      deployment_id:
+        description: Immutable 24-character Netlify deployment ID
+        required: true
+        type: string
+      application_commit:
+        description: Full 40-character commit deployed by Netlify
+        required: true
+        type: string
+      studio_origin:
+        description: Exact configured HTTPS Sanity Studio origin
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: security-qualification-${{ inputs.deployment_id }}
+  cancel-in-progress: false
+
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.application_commit }}
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Test immutable deployed security policy
+        env:
+          EDITORIAL_PREVIEW_SESSION_SECRET: ${{ secrets.EDITORIAL_PREVIEW_SESSION_SECRET }}
+          SANITY_STUDIO_ORIGIN: ${{ inputs.studio_origin }}
+          SECURITY_QUALIFICATION_APPLICATION_COMMIT: ${{ inputs.application_commit }}
+          SECURITY_QUALIFICATION_BASE_URL: https://${{ inputs.deployment_id }}--vanta-monolith.netlify.app
+          SECURITY_QUALIFICATION_DEPLOYMENT_ID: ${{ inputs.deployment_id }}
+        run: pnpm test:security
+
+      - name: Upload sanitized security evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-qualification-${{ inputs.deployment_id }}
+          path: |
+            artifacts/security-playwright/
+            artifacts/security-results/
+          if-no-files-found: warn
+          retention-days: 30
