@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Sanity Studio's deploy command writes its generated bundle here.
+    "dist/**",
     // Generated browser-test traces contain vendored, minified JavaScript.
     "artifacts/playwright/**",
     "artifacts/test-results/**",
