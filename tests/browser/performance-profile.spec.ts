@@ -164,6 +164,13 @@ test("profiles every primary route and verifies practical Realtime outcomes", as
       phase,
       useful: realtimeUseful,
     };
+  } catch (error) {
+    issues.push({
+      code: "profile_execution_failed",
+      message: error instanceof Error ? error.message : "Production profile failed",
+      path: "$",
+    });
+    throw error;
   } finally {
     await context.close();
     const report = {
