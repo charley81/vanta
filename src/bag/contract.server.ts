@@ -2,6 +2,7 @@ import "server-only";
 
 import { resolveBagMode } from "@/src/bag/configuration";
 import { CATALOG } from "@/src/catalog/catalog";
+import { resolveCanonicalOrigin } from "@/src/discoverability/configuration";
 import {
   EDITORIAL_PREVIEW_COOKIE,
   verifyEditorialPreviewSession,
@@ -274,6 +275,24 @@ function exactRequestUrl(request: Request, action: BagAction): boolean {
   }
 }
 
+function isBoundNetlifyDeploymentOrigin(
+  originUrl: URL,
+  boundUrl: URL,
+): boolean {
+  const deploymentSuffix = `--${boundUrl.hostname}`;
+  if (
+    boundUrl.protocol !== "https:" ||
+    !boundUrl.hostname.endsWith(".netlify.app") ||
+    originUrl.protocol !== "https:" ||
+    originUrl.port ||
+    !originUrl.hostname.endsWith(deploymentSuffix)
+  ) {
+    return false;
+  }
+  const deploymentId = originUrl.hostname.slice(0, -deploymentSuffix.length);
+  return /^[a-f0-9]{24}$/u.test(deploymentId);
+}
+
 function sameOrigin(request: Request): boolean {
   const origin = request.headers.get("origin");
   if (!origin) return false;
@@ -281,20 +300,19 @@ function sameOrigin(request: Request): boolean {
     const requestUrl = new URL(request.url);
     const originUrl = new URL(origin);
     if (origin !== originUrl.origin) return false;
-    if (originUrl.origin === requestUrl.origin) return true;
-
-    const deploymentSuffix = `--${requestUrl.hostname}`;
     if (
-      requestUrl.protocol !== "https:" ||
-      !requestUrl.hostname.endsWith(".netlify.app") ||
-      originUrl.protocol !== "https:" ||
-      originUrl.port ||
-      !originUrl.hostname.endsWith(deploymentSuffix)
+      originUrl.origin === requestUrl.origin ||
+      isBoundNetlifyDeploymentOrigin(originUrl, requestUrl)
     ) {
-      return false;
+      return true;
     }
-    const deploymentId = originUrl.hostname.slice(0, -deploymentSuffix.length);
-    return /^[a-f0-9]{24}$/u.test(deploymentId);
+    if (process.env.NODE_ENV !== "production") return false;
+
+    const canonicalUrl = new URL(resolveCanonicalOrigin(process.env));
+    return (
+      originUrl.origin === canonicalUrl.origin ||
+      isBoundNetlifyDeploymentOrigin(originUrl, canonicalUrl)
+    );
   } catch {
     return false;
   }
