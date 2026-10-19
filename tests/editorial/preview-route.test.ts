@@ -95,7 +95,8 @@ describe("Editorial preview entry Route Handler", () => {
   it("enables a private signed session and redirects only to an allowlisted target", async () => {
     validatePreviewUrl.mockResolvedValue({
       isValid: true,
-      redirectTo: "/monolith",
+      redirectTo:
+        "/monolith?sanity-preview-perspective=release-42%2Cdrafts",
       studioOrigin: "https://studio.example",
       studioPreviewPerspective: "release-42,drafts",
     });

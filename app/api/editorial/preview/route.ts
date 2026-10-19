@@ -78,9 +78,12 @@ export async function GET(request: Request): Promise<Response> {
   } catch {
     return privateResponse("Editorial preview authorization failed", 401);
   }
-  const target = parseEditorialPreviewTarget(validation.redirectTo);
   const perspective = parseEditorialPreviewPerspective(
     validation.studioPreviewPerspective,
+  );
+  const target = parseEditorialPreviewTarget(
+    validation.redirectTo,
+    perspective ?? undefined,
   );
   if (
     !validation.isValid ||

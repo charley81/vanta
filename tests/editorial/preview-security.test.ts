@@ -16,6 +16,12 @@ describe("Editorial preview boundary", () => {
     expect(parseEditorialPreviewTarget("/")).toBe("/");
     expect(parseEditorialPreviewTarget("/monolith")).toBe("/monolith");
     expect(parseEditorialPreviewTarget("/synth")).toBe("/synth");
+    expect(
+      parseEditorialPreviewTarget(
+        "/monolith?sanity-preview-perspective=release-42%2Cdrafts",
+        ["release-42", "drafts"],
+      ),
+    ).toBe("/monolith");
 
     for (const target of [
       "//attacker.example/path",
@@ -27,6 +33,15 @@ describe("Editorial preview boundary", () => {
       "javascript:alert(1)",
     ]) {
       expect(parseEditorialPreviewTarget(target)).toBeNull();
+    }
+
+    const perspective = ["release-42", "drafts"] as const;
+    for (const target of [
+      "/monolith?sanity-preview-perspective=drafts",
+      "/monolith?sanity-preview-perspective=release-42%2Cdrafts&extra=true",
+      "/monolith?sanity-preview-perspective=release-42%2Cdrafts&sanity-preview-perspective=release-42%2Cdrafts",
+    ]) {
+      expect(parseEditorialPreviewTarget(target, perspective)).toBeNull();
     }
   });
 

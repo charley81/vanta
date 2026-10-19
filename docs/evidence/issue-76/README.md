@@ -14,7 +14,7 @@ This record contains provider identities and outcomes only. It intentionally exc
 | Netlify project | `vanta-monolith` / `1d61bad6-06f4-4304-9bde-c4ff5f619d41` |
 | Delivery source | GitHub `charley81/vanta`, protected `main` |
 | Sanity project/dataset | `vanta` / `o2kc8mv4` / `production` |
-| Sanity Studio | `https://vanta-monolith-studio.sanity.studio`, application `hqf91rq4dplvkajud4do9pon`; authenticated browser origin `https://www.sanity.io` |
+| Sanity Studio | `https://vanta-monolith-studio.sanity.studio`, application `hqf91rq4dplvkajud4do9pon`; authenticated browser origin `https://vanta-monolith-studio.sanity.studio` |
 | Bag | `first-party-bag` in production; GET returned `200` with an empty quantity-one contract; non-production contexts are disabled |
 | Privacy destination | Repository `/privacy` route added on this branch; production Sanity binding to `/privacy` is a post-merge publishing check |
 | Sanity invalidation | Enabled document webhook for published create/update events, fixed singleton filter, and `{documentId, revision}` projection |
