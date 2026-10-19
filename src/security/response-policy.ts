@@ -57,10 +57,19 @@ export function publicContentSecurityPolicy(development = false): string {
 }
 
 export function previewContentSecurityPolicy(
-  presentationOrigin: string,
+  frameAncestorOrigins: readonly string[],
   development = false,
 ): string {
-  const frameAncestor = exactFrameAncestor(presentationOrigin, development);
+  const frameAncestors = [
+    ...new Set(
+      frameAncestorOrigins.map((origin) =>
+        exactFrameAncestor(origin, development),
+      ),
+    ),
+  ];
+  if (frameAncestors.length === 0) {
+    throw new Error("Editorial preview requires at least one exact frame ancestor");
+  }
   return policy([
     "default-src 'self'",
     `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'${development ? " 'unsafe-eval'" : ""}`,
@@ -74,6 +83,6 @@ export function previewContentSecurityPolicy(
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
-    `frame-ancestors ${frameAncestor}`,
+    `frame-ancestors ${frameAncestors.join(" ")}`,
   ]);
 }

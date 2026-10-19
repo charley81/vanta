@@ -20,18 +20,22 @@ describe("public and Editorial preview response policy", () => {
 
   it("changes only framing for the exact Presentation origin and adds no browser Sanity connection", () => {
     const publicPolicy = publicContentSecurityPolicy();
-    const previewPolicy = previewContentSecurityPolicy(
+    const previewPolicy = previewContentSecurityPolicy([
+      "https://presentation.example",
       "https://studio.example",
-    );
+    ]);
 
     expect(previewPolicy).toContain(
-      "frame-ancestors https://studio.example",
+      "frame-ancestors https://presentation.example https://studio.example",
     );
     expect(previewPolicy).toContain("connect-src 'self' blob:");
     expect(previewPolicy).not.toContain("*.sanity.io");
-    expect(previewPolicy.replace("https://studio.example", "'none'")).toBe(
-      publicPolicy,
-    );
+    expect(
+      previewPolicy.replace(
+        "https://presentation.example https://studio.example",
+        "'none'",
+      ),
+    ).toBe(publicPolicy);
   });
 
   it("rejects malformed or non-HTTPS frame ancestors at the policy boundary", () => {
@@ -41,13 +45,16 @@ describe("public and Editorial preview response policy", () => {
       "http://studio.example",
       "https://*.sanity.studio",
     ]) {
-      expect(() => previewContentSecurityPolicy(origin)).toThrow(
+      expect(() => previewContentSecurityPolicy([origin])).toThrow(
         /exact HTTPS origin/,
       );
     }
     expect(() =>
-      previewContentSecurityPolicy("http://localhost:3333", true),
+      previewContentSecurityPolicy(["http://localhost:3333"], true),
     ).not.toThrow();
+    expect(() => previewContentSecurityPolicy([])).toThrow(
+      /at least one exact frame ancestor/,
+    );
   });
 
   it("disables sensitive and unused browser capabilities", () => {

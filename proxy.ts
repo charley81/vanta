@@ -64,9 +64,10 @@ export async function proxy(request: NextRequest) {
   const isPreviewSession = Boolean(
     session && studioOrigin && session.studioOrigin === studioOrigin,
   );
-  const previewPresentationOrigin = isPreviewSession
-    ? presentationOrigin
-    : null;
+  const previewFrameAncestors =
+    isPreviewSession && presentationOrigin && studioOrigin
+      ? [presentationOrigin, studioOrigin]
+      : null;
   const isPreviewTarget = Object.hasOwn(
     EDITORIAL_PREVIEW_TARGETS,
     request.nextUrl.pathname,
@@ -77,8 +78,8 @@ export async function proxy(request: NextRequest) {
   applyPublicResponseHeaders(response, development);
   response.headers.set(
     "Content-Security-Policy",
-    previewPresentationOrigin && isPreviewTarget
-      ? previewContentSecurityPolicy(previewPresentationOrigin, development)
+    previewFrameAncestors && isPreviewTarget
+      ? previewContentSecurityPolicy(previewFrameAncestors, development)
       : publicContentSecurityPolicy(development),
   );
 
@@ -86,7 +87,7 @@ export async function proxy(request: NextRequest) {
     response.headers.set("Cache-Control", "private, no-store, max-age=0, must-revalidate");
     response.headers.set("X-Robots-Tag", NOINDEX);
   }
-  if (previewPresentationOrigin && isPreviewTarget) {
+  if (previewFrameAncestors && isPreviewTarget) {
     response.headers.delete("X-Frame-Options");
   } else {
     response.headers.set("X-Frame-Options", "DENY");
