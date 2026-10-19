@@ -17,6 +17,8 @@ const eslintConfig = defineConfig([
     "artifacts/test-results/**",
     "artifacts/commerce-playwright/**",
     "artifacts/commerce-results/**",
+    "artifacts/quality-*-playwright/**",
+    "artifacts/quality-*-results/**",
   ]),
 ]);
 

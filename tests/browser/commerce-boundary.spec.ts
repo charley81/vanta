@@ -104,8 +104,16 @@ async function attachJson(testInfo: TestInfo, name: string, value: unknown) {
   });
 }
 
+async function waitForInteractiveShell(page: Page) {
+  await expect(page.locator("html")).toHaveAttribute(
+    "data-continuity-ready",
+    "true",
+  );
+}
+
 async function addMonolithAndEnterPreview(page: Page) {
   await page.goto("/monolith");
+  await waitForInteractiveShell(page);
   await page.getByRole("button", { name: "Add MONOLITH to Bag" }).first().click();
   const bag = page.getByRole("dialog", { name: "Bag" });
   await expect(bag).toBeVisible();
@@ -258,6 +266,7 @@ test.describe.serial("commerce-shaped journey boundary", () => {
     const network = observeNetwork(page);
     const otherTab = await context.newPage();
     await otherTab.goto("/");
+    await waitForInteractiveShell(otherTab);
     await otherTab.evaluate(() => {
       const messages: unknown[] = [];
       const observer = new BroadcastChannel("vanta:bag-invalidation:v1");
@@ -275,6 +284,7 @@ test.describe.serial("commerce-shaped journey boundary", () => {
     await expect(otherTrigger).toHaveAttribute("aria-label", "Open Bag, 0 items");
 
     await page.goto("/monolith");
+    await waitForInteractiveShell(page);
     await page.getByRole("button", { name: "Add MONOLITH to Bag" }).first().click();
     await expect(page.getByRole("dialog", { name: "Bag" })).toBeVisible();
     await expect(otherTrigger).toHaveAttribute("aria-label", "Open Bag, 0 items");
@@ -324,6 +334,7 @@ test.describe.serial("commerce-shaped journey boundary", () => {
     page,
   }, testInfo) => {
     await page.goto("/monolith");
+    await waitForInteractiveShell(page);
     await page.getByRole("button", { name: "Add MONOLITH to Bag" }).first().click();
     const bag = page.getByRole("dialog", { name: "Bag" });
     await expect(bag.getByText("Graphite / Quantity 1")).toBeVisible();

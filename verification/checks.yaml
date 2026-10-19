@@ -131,6 +131,21 @@ checks:
     tool: next
     report_path: artifacts/reports/production-build.json
     requirement_ids: [CONTENT-004, ARCH-006, ARCH-007, QUALITY-004, SECURITY-005]
+  - id: accessibility-tests
+    command: pnpm test:accessibility
+    tool: playwright
+    report_path: artifacts/reports/accessibility.json
+    requirement_ids: [HOME-003, HOME-004, SYNTH-004, SYNTH-010, BAG-002, BAG-007, PREVIEW-012, QUALITY-009, QUALITY-010]
+  - id: critical-browser-journeys
+    command: pnpm test:browser:critical
+    tool: playwright
+    report_path: artifacts/reports/browser-journeys.json
+    requirement_ids: [HOME-003, HOME-004, SYNTH-004, SYNTH-010, BAG-002, BAG-007, PREVIEW-012, QUALITY-011]
+  - id: fallback-tests
+    command: pnpm test:fallbacks
+    tool: playwright
+    report_path: artifacts/reports/fallbacks.json
+    requirement_ids: [HOME-004, SYNTH-004, BAG-006, PREVIEW-012, QUALITY-013]
   - id: browser-tests
     command: pnpm test:browser
     tool: playwright
