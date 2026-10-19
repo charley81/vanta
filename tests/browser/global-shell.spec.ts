@@ -45,7 +45,7 @@ test.describe("global shell", () => {
       page
         .getByRole("navigation", { name: "Footer navigation" })
         .getByRole("link", { name: "Privacy" }),
-    ).toHaveAttribute("href", "https://vanta.example/privacy");
+    ).toHaveAttribute("href", "/privacy");
     await expect(page.getByRole("link", { name: "VANTA home" })).toBeVisible();
     await expect(
       page

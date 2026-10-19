@@ -32,6 +32,9 @@ importers:
       server-only:
         specifier: ^0.0.1
         version: 0.0.1
+      styled-components:
+        specifier: 6.6.0
+        version: 6.6.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       three:
         specifier: 0.186.1
         version: 0.186.1

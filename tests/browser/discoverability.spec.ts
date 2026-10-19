@@ -106,6 +106,25 @@ test.describe("discoverability surface", () => {
     );
   });
 
+  test("binds the footer privacy notice to a real noindex route", async ({
+    page,
+  }) => {
+    await page.goto("/");
+    await expect(page.getByRole("link", { name: "Privacy" })).toHaveAttribute(
+      "href",
+      "/privacy",
+    );
+
+    await page.goto("/privacy");
+    await expect(
+      page.getByRole("heading", { name: "Privacy at VANTA." }),
+    ).toBeVisible();
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute(
+      "content",
+      /noindex/,
+    );
+  });
+
   test("renders sanitized entity data without commerce signals", async ({
     page,
   }) => {
@@ -147,7 +166,12 @@ test.describe("discoverability surface", () => {
     expect(legacy.status()).toBe(308);
     expect(legacy.headers().location).toBe("/monolith");
 
-    for (const path of ["/checkout-preview", "/api/bag", "/missing"] as const) {
+    for (const path of [
+      "/privacy",
+      "/checkout-preview",
+      "/api/bag",
+      "/missing",
+    ] as const) {
       const response = await request.get(path);
       expect(response.headers()["x-robots-tag"], path).toContain("noindex");
     }
