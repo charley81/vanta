@@ -197,16 +197,20 @@ export function HomeRealtimeReveal() {
       }
     };
 
-    const bagDialog = document.getElementById("bag-dialog");
-    const synchronizeBag = () =>
+    const synchronizeBag = () => {
+      const bagDialog = document.getElementById("bag-dialog");
       runtime?.setActivity({
         covered: bagDialog instanceof HTMLDialogElement && bagDialog.open,
       });
+    };
     const bagObserver = new MutationObserver(synchronizeBag);
-    if (bagDialog) {
-      bagObserver.observe(bagDialog, {
+    const shell = document.querySelector("body > header");
+    if (shell) {
+      bagObserver.observe(shell, {
         attributeFilter: ["open"],
         attributes: true,
+        childList: true,
+        subtree: true,
       });
     }
 

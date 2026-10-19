@@ -66,6 +66,9 @@ jobs:
       - name: Build production application
         run: pnpm build:verified
 
+      - name: Enforce production delivery budgets and runtime isolation
+        run: pnpm validate:delivery-budgets
+
       - name: Scan production browser output
         run: pnpm validate:production-security
 

@@ -247,6 +247,7 @@ test.describe("Home Core narrative", () => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/");
     const main = page.locator("main");
+    await expect(main).toHaveAttribute("data-home-presentation", "horizontal");
     const start = await page
       .locator("[data-chapter]")
       .first()

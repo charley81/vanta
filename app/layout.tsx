@@ -1,17 +1,13 @@
+/* eslint-disable @next/next/no-html-link-for-pages -- Secondary shell links use resilient full-document navigation so Next Link stays outside the critical Product bundle. */
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
-import Link from "next/link";
 import "./globals.css";
 
 import { resolveCanonicalOrigin } from "@/src/discoverability/configuration";
 import { getSiteSettingsForRequest } from "@/src/editorial/preview-content.server";
 
-import { BagProvider } from "./ui/bag-provider";
-import { ContinuityBoundary } from "./ui/continuity-boundary";
-import {
-  FooterBagTrigger,
-  ShellNavigation,
-} from "./ui/shell-navigation";
+import { FooterBagTrigger } from "./ui/bag-trigger";
+import { DeferredShellNavigation } from "./ui/deferred-shell-navigation";
 import shellStyles from "./ui/shell-navigation.module.css";
 
 const geistSans = Geist({
@@ -60,26 +56,30 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <a className={shellStyles.skipLink} href="#main-content">
           Skip to main content
         </a>
-        <BagProvider>
-          <header className={shellStyles.siteHeader}>
-            <Link aria-label="VANTA home" className={shellStyles.siteBrand} href="/">
-              VANTA
-            </Link>
-            <ShellNavigation />
-          </header>
-          <ContinuityBoundary />
-          {children}
-          <footer className={shellStyles.siteFooter}>
-            <p>VANTA / MONOLITH</p>
-            <nav aria-label="Footer navigation" className={shellStyles.footerNavigation}>
-              <Link href="/">Home</Link>
-              <Link href="/monolith">Product</Link>
-              <Link href="/synth">Synth</Link>
-              <Link href={siteSettings.privacyNoticeUrl}>Privacy</Link>
-              <FooterBagTrigger />
-            </nav>
-          </footer>
-        </BagProvider>
+        <header className={shellStyles.siteHeader}>
+          <a
+            aria-label="VANTA home"
+            className={shellStyles.siteBrand}
+            href="/"
+          >
+            VANTA
+          </a>
+          <DeferredShellNavigation />
+        </header>
+        {children}
+        <footer className={shellStyles.siteFooter}>
+          <p>VANTA / MONOLITH</p>
+          <nav
+            aria-label="Footer navigation"
+            className={shellStyles.footerNavigation}
+          >
+            <a href="/">Home</a>
+            <a href="/monolith">Product</a>
+            <a href="/synth">Synth</a>
+            <a href={siteSettings.privacyNoticeUrl}>Privacy</a>
+            <FooterBagTrigger />
+          </nav>
+        </footer>
       </body>
     </html>
   );

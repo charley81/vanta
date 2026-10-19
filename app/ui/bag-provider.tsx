@@ -1,43 +1,42 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import {
-  createContext,
-  type ReactNode,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  useSyncExternalStore,
-} from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 
-import { createBagClient } from "@/src/bag/client";
-import {
-  createBagCoordinator,
-  type BagCoordinator,
-  type BagCoordinatorState,
-} from "@/src/bag/coordinator";
+import { createDeferredBagCoordinator } from "@/src/bag/deferred-coordinator.client";
 
 const BAG_HISTORY_KEY = "__vantaBagDisclosure";
 const BAG_CHANNEL_NAME = "vanta:bag-invalidation:v1";
 const BAG_OPENED_EVENT = "vanta:bag-opened";
 const INVALIDATION_MESSAGE = { type: "invalidate", version: 1 } as const;
 
-type BagContextValue = {
+type BagRuntime = {
   activeInvokerId: string | null;
-  addToBag(invoker: HTMLButtonElement, invokerId: string): Promise<void>;
-  closeBag(): void;
-  confirmBag(): Promise<boolean>;
-  consumeBagHistory(): void;
-  openBag(invoker: HTMLButtonElement, invokerId: string): void;
-  removeFromBag(): Promise<void>;
-  retry(): Promise<void>;
-  state: BagCoordinatorState;
+  channel: BroadcastChannel | null;
+  coordinator: ReturnType<typeof createDeferredBagCoordinator>;
+  disposeLifecycle: (() => void) | null;
+  invoker: HTMLButtonElement | null;
+  invokerListeners: Set<() => void>;
+  lifecycleUsers: number;
+  restoreFocus: boolean;
 };
 
-const BagContext = createContext<BagContextValue | null>(null);
+type BagRuntimeGlobal = typeof globalThis & {
+  __vantaBagRuntime?: BagRuntime;
+};
+
+const scope = globalThis as BagRuntimeGlobal;
+const runtime = (scope.__vantaBagRuntime ??= {
+  activeInvokerId: null,
+  channel: null,
+  coordinator: createDeferredBagCoordinator(),
+  disposeLifecycle: null,
+  invoker: null,
+  invokerListeners: new Set(),
+  lifecycleUsers: 0,
+  restoreFocus: true,
+});
+const { coordinator } = runtime;
 
 function hasBagHistoryState(): boolean {
   const state: unknown = window.history.state;
@@ -77,121 +76,105 @@ function clearBagHistoryState() {
   window.history.replaceState(next, "", window.location.href);
 }
 
-function announceBagOpened() {
+function restoreInvokerFocus() {
+  if (runtime.restoreFocus) {
+    requestAnimationFrame(() => runtime.invoker?.focus());
+  }
+}
+
+function publishInvalidation() {
+  runtime.channel?.postMessage(INVALIDATION_MESSAGE);
+}
+
+function enterBagHistory() {
+  runtime.restoreFocus = true;
+  pushBagHistoryState();
   document.dispatchEvent(new CustomEvent(BAG_OPENED_EVENT));
 }
 
-export function BagProvider({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
-  const [coordinator] = useState<BagCoordinator>(() =>
-    createBagCoordinator(createBagClient()),
-  );
-  const state = useSyncExternalStore(
-    coordinator.subscribe,
-    coordinator.getSnapshot,
-    coordinator.getSnapshot,
-  );
-  const [activeInvokerId, setActiveInvokerId] = useState<string | null>(null);
-  const invokerRef = useRef<HTMLButtonElement | null>(null);
-  const channelRef = useRef<BroadcastChannel | null>(null);
-  const restoreFocusRef = useRef(true);
-  const pathnameRef = useRef(pathname);
+function selectInvoker(nextInvoker: HTMLButtonElement, id: string) {
+  runtime.invoker = nextInvoker;
+  runtime.activeInvokerId = id;
+  runtime.invokerListeners.forEach((listener) => listener());
+}
 
-  const restoreInvokerFocus = useCallback(() => {
-    if (!restoreFocusRef.current) return;
-    requestAnimationFrame(() => invokerRef.current?.focus());
-  }, []);
+async function addToBag(nextInvoker: HTMLButtonElement, id: string) {
+  selectInvoker(nextInvoker, id);
+  const confirmed = await coordinator.add();
+  if (!confirmed) return;
+  publishInvalidation();
+  if (coordinator.getSnapshot().open) enterBagHistory();
+}
 
-  const publishInvalidation = useCallback(() => {
-    channelRef.current?.postMessage(INVALIDATION_MESSAGE);
-  }, []);
+function openBag(nextInvoker: HTMLButtonElement, id: string) {
+  selectInvoker(nextInvoker, id);
+  void coordinator.open();
+  enterBagHistory();
+}
 
-  const enterBagHistory = useCallback(() => {
-    restoreFocusRef.current = true;
-    pushBagHistoryState();
-    announceBagOpened();
-  }, []);
+export function activateDeferredBag(
+  operation: "add" | "open",
+  nextInvoker: HTMLButtonElement,
+) {
+  if (operation === "add") {
+    void addToBag(nextInvoker, "deferred");
+  } else {
+    openBag(nextInvoker, "deferred");
+  }
+}
 
-  const openBag = useCallback(
-    (invoker: HTMLButtonElement, invokerId: string) => {
-      invokerRef.current = invoker;
-      setActiveInvokerId(invokerId);
-      void coordinator.open();
-      enterBagHistory();
-    },
-    [coordinator, enterBagHistory],
-  );
+export function registerDeferredBagInvoker(invoker: HTMLButtonElement | null) {
+  if (invoker && runtime.activeInvokerId === "deferred") {
+    runtime.invoker = invoker;
+  }
+}
 
-  const addToBag = useCallback(
-    async (invoker: HTMLButtonElement, invokerId: string) => {
-      invokerRef.current = invoker;
-      setActiveInvokerId(invokerId);
-      const confirmed = await coordinator.add();
-      if (!confirmed) return;
-      publishInvalidation();
-      if (coordinator.getSnapshot().open) enterBagHistory();
-    },
-    [coordinator, enterBagHistory, publishInvalidation],
-  );
+function closeBag() {
+  if (hasBagHistoryState()) {
+    window.history.back();
+    return;
+  }
+  coordinator.close();
+  restoreInvokerFocus();
+}
 
-  const confirmBag = useCallback(() => coordinator.confirm(), [coordinator]);
+function consumeBagHistory() {
+  runtime.restoreFocus = false;
+  clearBagHistoryState();
+  coordinator.close();
+}
 
-  const removeFromBag = useCallback(async () => {
-    if (await coordinator.remove()) publishInvalidation();
-  }, [coordinator, publishInvalidation]);
+function confirmBag() {
+  return coordinator.confirm();
+}
 
-  const retry = useCallback(async () => {
-    const operation = coordinator.getSnapshot().error?.operation;
-    if (!(await coordinator.retry())) return;
-    if (operation === "add" || operation === "remove") publishInvalidation();
-    if (operation === "add" && coordinator.getSnapshot().open) {
-      enterBagHistory();
-    }
-  }, [coordinator, enterBagHistory, publishInvalidation]);
+async function removeFromBag() {
+  if (await coordinator.remove()) publishInvalidation();
+}
 
-  const closeBag = useCallback(() => {
+async function retry() {
+  const operation = coordinator.getSnapshot().error?.operation;
+  if (!(await coordinator.retry())) return;
+  if (operation === "add" || operation === "remove") publishInvalidation();
+  if (operation === "add" && coordinator.getSnapshot().open) enterBagHistory();
+}
+
+function installLifecycle(): () => void {
+  function handlePopState() {
     if (hasBagHistoryState()) {
-      window.history.back();
-      return;
+      void coordinator.open();
+      document.dispatchEvent(new CustomEvent(BAG_OPENED_EVENT));
+    } else if (coordinator.getSnapshot().open) {
+      coordinator.close();
+      restoreInvokerFocus();
     }
-    coordinator.close();
-    restoreInvokerFocus();
-  }, [coordinator, restoreInvokerFocus]);
+  }
 
-  const consumeBagHistory = useCallback(() => {
-    restoreFocusRef.current = false;
-    clearBagHistoryState();
-    coordinator.close();
-  }, [coordinator]);
+  window.addEventListener("popstate", handlePopState);
 
-  useEffect(() => {
-    if (pathnameRef.current === pathname) return;
-    pathnameRef.current = pathname;
-    restoreFocusRef.current = false;
-    clearBagHistoryState();
-    coordinator.close();
-  }, [coordinator, pathname]);
-
-  useEffect(() => {
-    function handlePopState() {
-      if (hasBagHistoryState()) {
-        void coordinator.open();
-        announceBagOpened();
-      } else if (coordinator.getSnapshot().open) {
-        coordinator.close();
-        restoreInvokerFocus();
-      }
-    }
-
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, [coordinator, restoreInvokerFocus]);
-
-  useEffect(() => {
-    if (!("BroadcastChannel" in window)) return;
-    const channel = new BroadcastChannel(BAG_CHANNEL_NAME);
-    channelRef.current = channel;
-    channel.addEventListener("message", (event: MessageEvent<unknown>) => {
+  if ("BroadcastChannel" in window) {
+    runtime.channel = new BroadcastChannel(BAG_CHANNEL_NAME);
+    runtime.channel.addEventListener("message", (event: MessageEvent<unknown>) => {
       const message = event.data;
       if (
         message &&
@@ -202,70 +185,91 @@ export function BagProvider({ children }: { children: ReactNode }) {
         coordinator.invalidate();
       }
     });
-    return () => {
-      channelRef.current = null;
-      channel.close();
-    };
-  }, [coordinator]);
+  }
 
-  useEffect(() => {
-    const refresh = () => void coordinator.refreshIfStale();
-    const refreshAfterInteraction = (event: Event) => {
-      const target = event.target;
-      if (
-        target instanceof Element &&
-        target.closest("[data-bag-action]")
-      ) {
-        return;
-      }
-      refresh();
-    };
-    const refreshWhenVisible = () => {
-      if (document.visibilityState === "visible") refresh();
-    };
+  const refresh = () => void coordinator.refreshIfStale();
+  const refreshAfterInteraction = (event: Event) => {
+    const target = event.target;
+    if (target instanceof Element && target.closest("[data-bag-action]")) return;
+    refresh();
+  };
+  const refreshWhenVisible = () => {
+    if (document.visibilityState === "visible") refresh();
+  };
 
-    window.addEventListener("focus", refresh);
-    document.addEventListener("pointerdown", refreshAfterInteraction, true);
-    document.addEventListener("keydown", refreshAfterInteraction, true);
-    document.addEventListener("visibilitychange", refreshWhenVisible);
-    return () => {
-      window.removeEventListener("focus", refresh);
-      document.removeEventListener("pointerdown", refreshAfterInteraction, true);
-      document.removeEventListener("keydown", refreshAfterInteraction, true);
-      document.removeEventListener("visibilitychange", refreshWhenVisible);
-    };
-  }, [coordinator]);
+  window.addEventListener("focus", refresh);
+  document.addEventListener("pointerdown", refreshAfterInteraction, true);
+  document.addEventListener("keydown", refreshAfterInteraction, true);
+  document.addEventListener("visibilitychange", refreshWhenVisible);
 
-  const value = useMemo<BagContextValue>(
-    () => ({
-      activeInvokerId,
-      addToBag,
-      closeBag,
-      confirmBag,
-      consumeBagHistory,
-      openBag,
-      removeFromBag,
-      retry,
-      state,
-    }),
-    [
-      activeInvokerId,
-      addToBag,
-      closeBag,
-      confirmBag,
-      consumeBagHistory,
-      openBag,
-      removeFromBag,
-      retry,
-      state,
-    ],
-  );
-
-  return <BagContext.Provider value={value}>{children}</BagContext.Provider>;
+  return () => {
+    window.removeEventListener("popstate", handlePopState);
+    window.removeEventListener("focus", refresh);
+    document.removeEventListener("pointerdown", refreshAfterInteraction, true);
+    document.removeEventListener("keydown", refreshAfterInteraction, true);
+    document.removeEventListener("visibilitychange", refreshWhenVisible);
+    runtime.channel?.close();
+    runtime.channel = null;
+  };
 }
 
-export function useBag(): BagContextValue {
-  const context = useContext(BagContext);
-  if (!context) throw new Error("useBag must be rendered inside BagProvider");
-  return context;
+function retainLifecycle(): () => void {
+  runtime.lifecycleUsers += 1;
+  runtime.disposeLifecycle ??= installLifecycle();
+  return () => {
+    runtime.lifecycleUsers -= 1;
+    if (runtime.lifecycleUsers === 0) {
+      runtime.disposeLifecycle?.();
+      runtime.disposeLifecycle = null;
+    }
+  };
+}
+
+function subscribeToInvoker(listener: () => void): () => void {
+  runtime.invokerListeners.add(listener);
+  return () => runtime.invokerListeners.delete(listener);
+}
+
+function getActiveInvokerId() {
+  return runtime.activeInvokerId;
+}
+
+if (typeof window !== "undefined") {
+  runtime.disposeLifecycle ??= installLifecycle();
+}
+
+export function useBag() {
+  const pathname = usePathname();
+  const previousPathname = useRef(pathname);
+  const state = useSyncExternalStore(
+    coordinator.subscribe,
+    coordinator.getSnapshot,
+    coordinator.getSnapshot,
+  );
+  const selectedInvokerId = useSyncExternalStore(
+    subscribeToInvoker,
+    getActiveInvokerId,
+    () => null,
+  );
+
+  useEffect(retainLifecycle, []);
+  useEffect(() => {
+    if (previousPathname.current === pathname) return;
+    previousPathname.current = pathname;
+    runtime.restoreFocus = false;
+    clearBagHistoryState();
+    coordinator.close();
+  }, [pathname]);
+
+  return {
+    activeInvokerId: selectedInvokerId,
+    addToBag,
+    closeBag,
+    confirmBag,
+    consumeBagHistory,
+    openBag,
+    removeFromBag,
+    retry,
+    state,
+  };
 }

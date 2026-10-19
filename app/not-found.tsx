@@ -1,5 +1,4 @@
-import Link from "next/link";
-
+/* eslint-disable @next/next/no-html-link-for-pages -- The recovery page intentionally works without client navigation JavaScript. */
 import styles from "./ui/core-route.module.css";
 
 export default function NotFound() {
@@ -10,12 +9,12 @@ export default function NotFound() {
         <h1 id="not-found-heading">This route does not exist.</h1>
         <p>Return to VANTA or continue directly to the MONOLITH instrument.</p>
         <div className={styles.actionRow}>
-          <Link className={styles.action} href="/">
+          <a className={styles.action} href="/">
             RETURN HOME
-          </Link>
-          <Link className={styles.secondaryAction} href="/monolith">
+          </a>
+          <a className={styles.secondaryAction} href="/monolith">
             EXPLORE MONOLITH
-          </Link>
+          </a>
         </div>
       </section>
     </main>
