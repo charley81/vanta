@@ -20,6 +20,10 @@ import {
   evaluateAudioStress,
 } from "./audio";
 import { validateEvidenceManifest } from "./evidence-manifest";
+import {
+  evaluateDeliveryBudgets,
+  inspectProductionDelivery,
+} from "./delivery-budgets";
 import { evaluatePerformanceRegression } from "./performance-regression";
 import { writeVerificationReport } from "./report";
 import {
@@ -309,6 +313,39 @@ function runSecretScan(): number {
   return issues.length === 0 ? 0 : 1;
 }
 
+function runDeliveryBudgetCheck(): number {
+  const startedAt = new Date().toISOString();
+  const check = getCheck("delivery-budgets");
+  try {
+    const result = evaluateDeliveryBudgets(
+      inspectProductionDelivery(process.cwd()),
+    );
+    reportResult({ check, startedAt, ...result });
+    printIssues(result.issues);
+    return result.status === "pass" ? 0 : 1;
+  } catch (error) {
+    const issues = [
+      {
+        code: "production_inventory_failed",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Unable to inspect the production build.",
+        path: ".next",
+      },
+    ];
+    reportResult({
+      check,
+      startedAt,
+      status: "fail",
+      summary: {},
+      issues,
+    });
+    printIssues(issues);
+    return 1;
+  }
+}
+
 function runProductionSecurityScan(): number {
   const startedAt = new Date().toISOString();
   const check = getCheck("production-output-security");
@@ -403,7 +440,7 @@ function runCheck(checkId: string, command: string[]): number {
 
 function usage(): never {
   throw new Error(
-    "Usage: cli.ts requirements | evidence [manifest ...] | performance <input.json> | product-catalog | boundaries | public-runtime | secret-scan | dependency-audit | production-security | audio-calibration | audio-stress | audio-isolation | run <check-id> -- <command ...>",
+    "Usage: cli.ts requirements | evidence [manifest ...] | performance <input.json> | delivery-budgets | product-catalog | boundaries | public-runtime | secret-scan | dependency-audit | production-security | audio-calibration | audio-stress | audio-isolation | run <check-id> -- <command ...>",
   );
 }
 
@@ -416,6 +453,8 @@ function main(): number {
       return validateEvidence(args);
     case "performance":
       return args[0] ? validatePerformance(args[0]) : usage();
+    case "delivery-budgets":
+      return runDeliveryBudgetCheck();
     case "product-catalog":
       return runArchitectureCheck(
         "product-catalog-manifest",

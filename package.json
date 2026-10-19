@@ -21,6 +21,7 @@
     "validate:requirements": "tsx tooling/verification/cli.ts requirements",
     "validate:evidence": "tsx tooling/verification/cli.ts evidence",
     "validate:performance": "tsx tooling/verification/cli.ts performance verification/fixtures/performance-regression.json",
+    "validate:delivery-budgets": "tsx tooling/verification/cli.ts delivery-budgets",
     "validate:product-catalog": "tsx tooling/verification/cli.ts product-catalog",
     "validate:boundaries": "tsx tooling/verification/cli.ts boundaries",
     "validate:public-runtime": "tsx tooling/verification/cli.ts public-runtime",
@@ -39,7 +40,7 @@
     "sanity:dev": "sanity dev",
     "sanity:deploy": "sanity deploy",
     "seed:editorial": "tsx scripts/seed-editorial.ts",
-    "check": "pnpm validate:requirements && pnpm validate:evidence && pnpm validate:performance && pnpm validate:product-catalog && pnpm validate:boundaries && pnpm validate:public-runtime && pnpm scan:secrets && pnpm scan:vulnerabilities && pnpm validate:audio-calibration && pnpm validate:audio-stress && pnpm validate:audio-isolation && pnpm validate:media && pnpm test:realtime && pnpm validate:editorial && pnpm lint && pnpm typecheck && pnpm test:unit && pnpm build:verified && pnpm validate:production-security && pnpm test:browser"
+    "check": "pnpm validate:requirements && pnpm validate:evidence && pnpm validate:performance && pnpm validate:product-catalog && pnpm validate:boundaries && pnpm validate:public-runtime && pnpm scan:secrets && pnpm scan:vulnerabilities && pnpm validate:audio-calibration && pnpm validate:audio-stress && pnpm validate:audio-isolation && pnpm validate:media && pnpm test:realtime && pnpm validate:editorial && pnpm lint && pnpm typecheck && pnpm test:unit && pnpm build:verified && pnpm validate:delivery-budgets && pnpm validate:production-security && pnpm test:browser"
   },
   "dependencies": {
     "@sanity/client": "8.9.0",
