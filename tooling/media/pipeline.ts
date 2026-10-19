@@ -684,12 +684,26 @@ export async function verifyMediaReproducibility(root: string): Promise<{
         issues.push({ code: "manifest_not_reproducible", message: `${path} differs from a clean generated manifest`, path });
       }
     }
-    generated.outputs.forEach((output) => {
+    for (const output of generated.outputs) {
       const committedPath = join(root, output.path);
       if (statSync(committedPath).size !== output.bytes || sha256(readFileSync(committedPath)) !== output.sha256) {
+        if (output.mediaType.startsWith("image/")) {
+          const committed = await sharp(committedPath).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+          const regenerated = await sharp(join(stagingRoot, output.path)).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+          let totalDifference = 0;
+          let maximumDifference = 0;
+          let changedChannels = 0;
+          for (let index = 0; index < committed.data.length; index += 1) {
+            const difference = Math.abs(committed.data[index] - regenerated.data[index]);
+            totalDifference += difference;
+            maximumDifference = Math.max(maximumDifference, difference);
+            if (difference > 0) changedChannels += 1;
+          }
+          console.error(`[DEBUG-media-equivalence] ${output.path} committed=${statSync(committedPath).size} regenerated=${output.bytes} mean=${totalDifference / committed.data.length} max=${maximumDifference} changed=${changedChannels}/${committed.data.length} dimensions=${committed.info.width}x${committed.info.height}:${regenerated.info.width}x${regenerated.info.height}`);
+        }
         issues.push({ code: "output_not_reproducible", message: `${output.path} differs from a clean generated output`, path: output.path });
       }
-    });
+    }
     return { status: issues.length === 0 ? "pass" : "fail", issues, generated };
   } finally {
     rmSync(stagingRoot, { recursive: true, force: true });
