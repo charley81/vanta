@@ -14,6 +14,7 @@ beforeEach(() => {
   process.env = {
     ...process.env,
     EDITORIAL_PREVIEW_SESSION_SECRET: secret,
+    SANITY_PRESENTATION_ORIGIN: "https://presentation.example",
     SANITY_STUDIO_ORIGIN: "https://studio.example",
   };
 });
@@ -23,7 +24,7 @@ afterEach(() => {
 });
 
 describe("Editorial preview response boundary", () => {
-  it("makes an authenticated preview private and frameable only by the exact Studio", async () => {
+  it("separates the signed Studio identity from the exact Presentation frame origin", async () => {
     const value = await signEditorialPreviewSession(
       {
         version: 1,
@@ -40,7 +41,7 @@ describe("Editorial preview response boundary", () => {
     const response = await proxy(request);
 
     expect(response.headers.get("content-security-policy")).toContain(
-      "frame-ancestors https://studio.example",
+      "frame-ancestors https://presentation.example",
     );
     expect(response.headers.get("content-security-policy")).toContain(
       "connect-src 'self'",
@@ -50,6 +51,31 @@ describe("Editorial preview response boundary", () => {
     );
     expect(response.headers.get("x-frame-options")).toBeNull();
     expect(response.headers.get("cache-control")).toContain("private");
+    expect(response.headers.get("cache-control")).toContain("no-store");
+    expect(response.headers.get("x-robots-tag")).toContain("noindex");
+  });
+
+  it("fails closed when the Presentation frame origin is absent", async () => {
+    delete process.env.SANITY_PRESENTATION_ORIGIN;
+    const value = await signEditorialPreviewSession(
+      {
+        version: 1,
+        perspective: ["drafts"],
+        studioOrigin: "https://studio.example",
+        expiresAt: Date.now() + 60_000,
+      },
+      secret,
+    );
+    const response = await proxy(
+      new NextRequest("https://vanta.example/monolith", {
+        headers: { cookie: `${EDITORIAL_PREVIEW_COOKIE}=${value}` },
+      }),
+    );
+
+    expect(response.headers.get("content-security-policy")).toContain(
+      "frame-ancestors 'none'",
+    );
+    expect(response.headers.get("x-frame-options")).toBe("DENY");
     expect(response.headers.get("cache-control")).toContain("no-store");
     expect(response.headers.get("x-robots-tag")).toContain("noindex");
   });

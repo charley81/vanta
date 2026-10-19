@@ -57,10 +57,10 @@ export function publicContentSecurityPolicy(development = false): string {
 }
 
 export function previewContentSecurityPolicy(
-  studioOrigin: string,
+  presentationOrigin: string,
   development = false,
 ): string {
-  const frameAncestor = exactFrameAncestor(studioOrigin, development);
+  const frameAncestor = exactFrameAncestor(presentationOrigin, development);
   return policy([
     "default-src 'self'",
     `script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'${development ? " 'unsafe-eval'" : ""}`,

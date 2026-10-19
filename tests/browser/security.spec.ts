@@ -86,15 +86,19 @@ test.describe("production browser security policy", () => {
     });
   });
 
-  test("restricts Editorial preview framing to the configured exact Studio origin", async ({
+  test("restricts Editorial preview framing to the configured exact Presentation origin", async ({
     context,
     page,
   }, testInfo) => {
     const studioOrigin = parseExactOrigin(process.env.SANITY_STUDIO_ORIGIN);
+    const presentationOrigin = parseExactOrigin(
+      process.env.SANITY_PRESENTATION_ORIGIN,
+    );
     const sessionSecret = process.env.EDITORIAL_PREVIEW_SESSION_SECRET;
     expect(studioOrigin).not.toBeNull();
+    expect(presentationOrigin).not.toBeNull();
     expect(sessionSecret).toBeTruthy();
-    if (!studioOrigin || !sessionSecret) {
+    if (!studioOrigin || !presentationOrigin || !sessionSecret) {
       throw new Error("Editorial preview qualification bindings are required");
     }
     const expiresAt = Date.now() + 10 * 60 * 1_000;
@@ -127,7 +131,7 @@ test.describe("production browser security policy", () => {
     expect(response).not.toBeNull();
     const headers = response!.headers();
     const csp = headers["content-security-policy"];
-    expect(csp).toContain(`frame-ancestors ${studioOrigin}`);
+    expect(csp).toContain(`frame-ancestors ${presentationOrigin}`);
     expect(csp).toContain("connect-src 'self' blob:");
     expect(csp.match(/frame-ancestors/gu)).toHaveLength(1);
     expect(csp).not.toContain("frame-ancestors *");
@@ -136,9 +140,51 @@ test.describe("production browser security policy", () => {
     expect(headers["cache-control"]).toContain("no-store");
     expect(headers["x-robots-tag"]).toContain("noindex");
 
+    let framedPreviewOrigin = baseURL;
+    if (new URL(baseURL).protocol !== "https:") {
+      framedPreviewOrigin = "https://preview.example";
+      await context.addCookies([
+        {
+          expires: expiresAt / 1_000,
+          httpOnly: true,
+          name: EDITORIAL_PREVIEW_COOKIE,
+          sameSite: "None",
+          secure: true,
+          url: framedPreviewOrigin,
+          value: session,
+        },
+      ]);
+      await page.route(`${framedPreviewOrigin}/**`, async (route) => {
+        const source = new URL(route.request().url());
+        const localTarget = new URL(source.pathname + source.search, baseURL);
+        const response = await route.fetch({
+          headers: {
+            ...route.request().headers(),
+            cookie: `${EDITORIAL_PREVIEW_COOKIE}=${session}`,
+          },
+          url: localTarget.href,
+        });
+        await route.fulfill({ response });
+      });
+    }
+
+    const previewUrl = new URL("/monolith", framedPreviewOrigin).href;
+    const harnessUrl = `${presentationOrigin}/presentation-qualification-harness`;
+    await page.route(harnessUrl, async (route) => {
+      await route.fulfill({
+        body: `<!doctype html><iframe id="preview" src="${previewUrl}"></iframe>`,
+        contentType: "text/html",
+      });
+    });
+    await page.goto(harnessUrl);
+    await expect(page.frameLocator("#preview").locator("body")).toContainText(
+      "MONOLITH",
+    );
+
     await attachJson(testInfo, "editorial-preview-security-headers", {
       candidate: testInfo.config.metadata,
       contentSecurityPolicy: csp,
+      presentationOrigin,
       studioOrigin,
       xFrameOptions: "omitted-for-exact-csp-frame-ancestor",
     });

@@ -12,7 +12,11 @@ on:
         required: true
         type: string
       studio_origin:
-        description: Exact configured HTTPS Sanity Studio origin
+        description: Exact configured HTTPS Sanity preview identity origin
+        required: true
+        type: string
+      presentation_origin:
+        description: Exact HTTPS browser origin hosting Sanity Presentation
         required: true
         type: string
 
@@ -50,6 +54,7 @@ jobs:
       - name: Test immutable deployed security policy
         env:
           EDITORIAL_PREVIEW_SESSION_SECRET: ${{ secrets.EDITORIAL_PREVIEW_SESSION_SECRET }}
+          SANITY_PRESENTATION_ORIGIN: ${{ inputs.presentation_origin }}
           SANITY_STUDIO_ORIGIN: ${{ inputs.studio_origin }}
           SECURITY_QUALIFICATION_APPLICATION_COMMIT: ${{ inputs.application_commit }}
           SECURITY_QUALIFICATION_BASE_URL: https://${{ inputs.deployment_id }}--vanta-monolith.netlify.app

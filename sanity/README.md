@@ -64,10 +64,11 @@ The optional Presentation tool is enabled only when the Studio build receives `S
 The application preview context requires server-only bindings:
 
 - `SANITY_API_READ_TOKEN`: least-privilege viewer token used for secret validation and draft/release reads;
-- `SANITY_STUDIO_ORIGIN`: exact HTTPS origin of the deployed Studio allowed to frame preview;
+- `SANITY_STUDIO_ORIGIN`: exact HTTPS Studio identity returned in Sanity's validated preview metadata;
+- `SANITY_PRESENTATION_ORIGIN`: exact HTTPS browser origin that hosts Presentation and frames the application preview;
 - `EDITORIAL_PREVIEW_SESSION_SECRET`: random 32–256 character HMAC secret.
 
-Entry validates Sanity's short-lived Preview URL secret, the exact Studio origin, an allowlisted route, and a bounded `drafts` or release-stack perspective before enabling Next.js Draft Mode. Preview reads bypass public cache scopes and the Sanity CDN. Metadata continues to read the published perspective. The signed preview session is `HttpOnly`, lasts at most one hour, and selects the separate preview CSP. Exit is same-origin POST only.
+These origins can differ when a deployed `sanity.studio` entry redirects into Sanity's authenticated `www.sanity.io` application shell. Entry validates Sanity's short-lived Preview URL secret, the exact Studio identity origin, an allowlisted route, and a bounded `drafts` or release-stack perspective before enabling Next.js Draft Mode. Preview reads bypass public cache scopes and the Sanity CDN. Metadata continues to read the published perspective. The signed preview session is `HttpOnly`, lasts at most one hour, and selects a preview CSP whose `frame-ancestors` directive permits only the configured Presentation browser origin. Exit is same-origin POST only.
 
 ## Publication invalidation
 

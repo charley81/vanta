@@ -53,7 +53,7 @@ test("authenticated Editorial preview is marked, private, non-indexable, and Bag
   expect(response!.headers()["cache-control"]).toContain("no-store");
   expect(response!.headers()["x-robots-tag"]).toContain("noindex");
   expect(response!.headers()["content-security-policy"]).toContain(
-    "frame-ancestors https://studio.example",
+    "frame-ancestors https://www.sanity.io",
   );
   expect(response!.headers()["x-frame-options"]).toBeUndefined();
 
@@ -133,7 +133,7 @@ test("Editorial preview answers Sanity Presentation's visual-editing handshake",
     });
     await route.fulfill({ response });
   });
-  await page.route("https://studio.example/presentation-harness", async (route) => {
+  await page.route("https://www.sanity.io/presentation-harness", async (route) => {
     await route.fulfill({
       contentType: "text/html",
       body: `<!doctype html>
@@ -156,7 +156,7 @@ test("Editorial preview answers Sanity Presentation's visual-editing handshake",
     });
   });
 
-  await page.goto("https://studio.example/presentation-harness");
+  await page.goto("https://www.sanity.io/presentation-harness");
 
   await expect
     .poll(() =>
