@@ -36,44 +36,8 @@ jobs:
       - name: Install mainstream browser engines
         run: pnpm exec playwright install --with-deps chromium firefox webkit
 
-      - name: Scan repository for committed credentials
-        run: pnpm scan:secrets
-
-      - name: Scan dependencies for critical vulnerabilities
-        run: pnpm scan:vulnerabilities
-
-      - name: Validate requirement references
-        run: pnpm validate:requirements
-
-      - name: Validate evidence manifests
-        run: pnpm validate:evidence
-
-      - name: Exercise performance regression gate
-        run: pnpm validate:performance
-
-      - name: Validate Editorial schema, seed, and delivery contracts
-        run: pnpm validate:editorial
-
-      - name: Lint
-        run: pnpm lint
-
-      - name: Generate route types and type-check
-        run: pnpm typecheck
-
-      - name: Run unit and component tests
-        run: pnpm test:unit
-
-      - name: Build production application
-        run: pnpm build:verified
-
-      - name: Enforce production delivery budgets and runtime isolation
-        run: pnpm validate:delivery-budgets
-
-      - name: Scan production browser output
-        run: pnpm validate:production-security
-
-      - name: Run browser and accessibility tests
-        run: pnpm test:browser
+      - name: Run the full repository check suite
+        run: pnpm check
 
       - name: Upload verification reports
         if: always()
