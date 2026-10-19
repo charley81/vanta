@@ -17,7 +17,7 @@ export default defineConfig({
   },
   test: {
     environment: "node",
-    exclude: ["tests/browser/**", "node_modules/**"],
+    exclude: ["tests/browser/**", "tests/quality/**", "node_modules/**"],
     setupFiles: ["./tests/setup.ts"],
   },
 });

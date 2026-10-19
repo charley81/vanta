@@ -24,6 +24,12 @@ export default async function SynthPage() {
     <>
       {preview ? <EditorialPreviewBanner session={preview} /> : null}
       <main className={routeStyles.routeMain} id="main-content" tabIndex={-1}>
+        <noscript>
+          <p className={routeStyles.lede}>
+            Interactive sound, Realtime, and control changes require JavaScript.
+            The authored instrument scope and Product route remain available.
+          </p>
+        </noscript>
         <section
           aria-labelledby="synth-heading"
           className={routeStyles.routeHeader}

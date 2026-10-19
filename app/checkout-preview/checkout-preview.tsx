@@ -527,6 +527,17 @@ export function CheckoutPreview({ model }: { model: CheckoutPreviewRouteViewMode
   return (
     <main className={styles.previewMain} id="main-content" tabIndex={-1}>
       <p className={styles.banner}>{model.banner}</p>
+      <noscript>
+        <section className={styles.unavailable}>
+          <p className={styles.eyebrow}>Signal Ledger / unavailable</p>
+          <h1>Checkout Preview requires JavaScript.</h1>
+          <p>
+            No order was placed and no information was collected. Product
+            details remain available without JavaScript.
+          </p>
+          <Link href="/monolith">Return to MONOLITH</Link>
+        </section>
+      </noscript>
       {state.confirmed?.item && session ? (
         <header className={styles.previewHeader}>
           <div>
