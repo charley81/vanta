@@ -17,6 +17,7 @@ import {
   type PreviewVisibleStage,
 } from "@/src/continuity";
 import type { CheckoutPreviewRouteViewModel } from "@/src/checkout-preview/model";
+import { ROUTE_INTENT_EVENT } from "@/src/continuity/composition";
 
 import { useBag } from "../ui/bag-provider";
 import styles from "./checkout-preview.module.css";
@@ -284,6 +285,7 @@ export function CheckoutPreview({ model }: { model: CheckoutPreviewRouteViewMode
   }, []);
 
   const leavePreviewNow = useCallback((target: "/" | "/monolith" | "/synth") => {
+    document.dispatchEvent(new Event(ROUTE_INTENT_EVENT));
     clearPreviewConcern();
     router.replace(target);
   }, [clearPreviewConcern, router]);

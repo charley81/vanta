@@ -14,6 +14,7 @@ import {
 } from "@/src/continuity";
 import {
   ROUTE_ACTIVATE_ENHANCEMENTS_EVENT,
+  ROUTE_INTENT_EVENT,
   ROUTE_RECOMPOSE_EVENT,
 } from "@/src/continuity/composition";
 
@@ -339,6 +340,23 @@ export function ContinuityBoundary({ onReady }: { onReady?: () => void }) {
       if (anchor) pointerContext = captureRouteContext(currentRoute);
     }
 
+    function recordExplicitRouteIntent(
+      routeContext = captureRouteContext(currentRoute),
+    ) {
+      saveCurrentEntry(routeContext);
+      pointerContext = null;
+      navigationIntent.current = "explicit";
+      const savedRouteContext = readReturnContext(window.history);
+      pendingRouteContext.current =
+        savedRouteContext?.originRoute === currentRoute
+          ? savedRouteContext
+          : routeContext;
+    }
+
+    function handleRouteIntent() {
+      recordExplicitRouteIntent();
+    }
+
     function handleClick(event: MouseEvent) {
       if (
         event.defaultPrevented ||
@@ -362,14 +380,7 @@ export function ContinuityBoundary({ onReady }: { onReady?: () => void }) {
       if (!destinationRoute || destination.hash) return;
 
       const routeContext = pointerContext ?? captureRouteContext(currentRoute);
-      saveCurrentEntry(routeContext);
-      pointerContext = null;
-      navigationIntent.current = "explicit";
-      const savedRouteContext = readReturnContext(window.history);
-      pendingRouteContext.current =
-        savedRouteContext?.originRoute === currentRoute
-          ? savedRouteContext
-          : routeContext;
+      recordExplicitRouteIntent(routeContext);
       if (destinationRoute === currentRoute) {
         event.preventDefault();
         window.scrollTo({ top: 0, left: 0, behavior: "instant" });
@@ -388,6 +399,7 @@ export function ContinuityBoundary({ onReady }: { onReady?: () => void }) {
     document.addEventListener("click", handleClick, true);
     document.addEventListener("focusin", handleFocusIn, true);
     document.addEventListener("pointerdown", handlePointerDown, true);
+    document.addEventListener(ROUTE_INTENT_EVENT, handleRouteIntent);
     window.addEventListener("beforeunload", handlePageExit);
     window.addEventListener("pagehide", handlePageExit);
     window.addEventListener("scroll", scheduleCurrentEntrySave, {
@@ -397,6 +409,7 @@ export function ContinuityBoundary({ onReady }: { onReady?: () => void }) {
       document.removeEventListener("click", handleClick, true);
       document.removeEventListener("focusin", handleFocusIn, true);
       document.removeEventListener("pointerdown", handlePointerDown, true);
+      document.removeEventListener(ROUTE_INTENT_EVENT, handleRouteIntent);
       window.removeEventListener("beforeunload", handlePageExit);
       window.removeEventListener("pagehide", handlePageExit);
       window.removeEventListener("scroll", scheduleCurrentEntrySave);

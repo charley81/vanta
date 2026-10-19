@@ -144,6 +144,10 @@ function consumeBagHistory() {
   coordinator.close();
 }
 
+function confirmBag() {
+  return coordinator.confirm();
+}
+
 async function removeFromBag() {
   if (await coordinator.remove()) publishInvalidation();
 }
@@ -261,7 +265,7 @@ export function useBag() {
     activeInvokerId: selectedInvokerId,
     addToBag,
     closeBag,
-    confirmBag: () => coordinator.confirm(),
+    confirmBag,
     consumeBagHistory,
     openBag,
     removeFromBag,
