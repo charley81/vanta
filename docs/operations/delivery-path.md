@@ -1,6 +1,6 @@
 # Delivery path control record
 
-This record describes the shared development and deploy-preview path established for [issue #44](https://github.com/charley81/vanta/issues/44). It is an operational binding record, not a launch result. The launch note records the deployed commit, immutable Netlify URL, checks, material gaps, and owner decision.
+This record describes the shared development and deploy-preview path established for [issue #44](https://github.com/charley81/vanta/issues/44). It is an operational binding record, not a launch result. The launch note records the deployed commit, immutable Netlify URL, checks, material gaps, and owner decision. Routine operation and recovery use the single [`owner-runbook.md`](owner-runbook.md).
 
 Last verified: **2026-10-15 UTC**
 

@@ -67,7 +67,9 @@ test.describe("production browser security policy", () => {
     expect(headers["cross-origin-opener-policy"]).toBeUndefined();
     expect(headers["cross-origin-embedder-policy"]).toBeUndefined();
     if (new URL(String(testInfo.project.use.baseURL)).protocol === "https:") {
-      expect(headers["strict-transport-security"]).toBe("max-age=31536000");
+      expect(headers["strict-transport-security"]).toMatch(
+        /^max-age=31536000(?:; includeSubDomains)?(?:; preload)?$/u,
+      );
     }
 
     await attachJson(testInfo, "public-security-headers", {

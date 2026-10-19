@@ -16,7 +16,7 @@ export type EditorialSourceConfiguration =
 type EditorialEnvironment = Readonly<Record<string, string | undefined>>;
 
 const LOCAL_SITE_SETTINGS_FIXTURE = {
-  privacyNoticeUrl: "https://vanta.example/privacy",
+  privacyNoticeUrl: "/privacy",
   defaultSocialImage: {
     _type: "editorialImage",
     asset: {
