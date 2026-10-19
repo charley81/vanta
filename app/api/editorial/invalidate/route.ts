@@ -75,9 +75,10 @@ export async function POST(request: Request): Promise<Response> {
   const payload = parseEditorialInvalidationPayload(body);
   if (!payload) return result(400, { accepted: false });
 
-  // Expiring an already-expired tag is safe, so webhook retries and replays are
-  // idempotent and cannot broaden invalidation beyond the fixed document map.
-  revalidateTag(EDITORIAL_CACHE_TAGS[payload.documentId], "max");
+  // Immediate expiration makes the first verification request block for the
+  // new value. Webhook retries remain idempotent and cannot broaden
+  // invalidation beyond the fixed document map.
+  revalidateTag(EDITORIAL_CACHE_TAGS[payload.documentId], { expire: 0 });
   const fresh = await verifyPublicEditorialFreshness(configuration, payload, {
     fetch,
   });

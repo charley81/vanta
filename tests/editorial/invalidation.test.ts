@@ -117,7 +117,8 @@ describe("signed Editorial invalidation contract", () => {
         { fetch: fetchMock, sleep },
       ),
     ).resolves.toBe(false);
-    expect(fetchMock).toHaveBeenCalledTimes(7);
+    expect(fetchMock).toHaveBeenCalledTimes(5);
+    expect(sleep.mock.calls).toEqual([[250], [500], [1_000], [1_500]]);
 
     // Replaying the same signed event repeats the same read-only verification
     // contract; it cannot select another tag or mutation.

@@ -86,7 +86,7 @@ describe("Editorial invalidation Route Handler", () => {
     expect(response.status).toBe(200);
     expect(revalidateTag).toHaveBeenCalledWith(
       "sanity:document:productPage",
-      "max",
+      { expire: 0 },
     );
     expect(verifyFreshness).toHaveBeenCalledWith(
       expect.objectContaining({ publicOrigin: "https://vanta.example" }),
@@ -112,12 +112,12 @@ describe("Editorial invalidation Route Handler", () => {
     expect(revalidateTag).toHaveBeenNthCalledWith(
       1,
       "sanity:document:synthPage",
-      "max",
+      { expire: 0 },
     );
     expect(revalidateTag).toHaveBeenNthCalledWith(
       2,
       "sanity:document:synthPage",
-      "max",
+      { expire: 0 },
     );
   });
 
