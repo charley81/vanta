@@ -2,6 +2,8 @@
 
 Verified: **2026-10-19 UTC**
 
+Implementation: [pull request #119](https://github.com/charley81/vanta/pull/119)
+
 This record contains provider identities and outcomes only. It intentionally excludes tokens, signing material, webhook secrets, recovery codes, cookies, and environment-variable values that are credentials.
 
 ## Safe binding record
