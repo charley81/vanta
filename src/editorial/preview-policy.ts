@@ -1,3 +1,5 @@
+import { urlSearchParamPreviewPerspective } from "@sanity/preview-url-secret/constants";
+
 export const EDITORIAL_PREVIEW_COOKIE = "vanta_editorial_preview";
 export const EDITORIAL_PREVIEW_TTL_SECONDS = 60 * 60;
 
@@ -97,6 +99,7 @@ export function parseEditorialPreviewPerspective(
 
 export function parseEditorialPreviewTarget(
   value: string | null | undefined,
+  perspective?: EditorialPreviewPerspective,
 ): EditorialPreviewTarget | null {
   if (!value) return null;
   let url: URL;
@@ -109,8 +112,17 @@ export function parseEditorialPreviewTarget(
     url.origin !== "https://preview.invalid" ||
     url.username ||
     url.password ||
-    url.search ||
     url.hash
+  ) {
+    return null;
+  }
+  if (
+    url.search &&
+    (!perspective ||
+      url.searchParams.size !== 1 ||
+      url.searchParams.getAll(urlSearchParamPreviewPerspective).length !== 1 ||
+      url.searchParams.get(urlSearchParamPreviewPerspective) !==
+        perspective.join(","))
   ) {
     return null;
   }

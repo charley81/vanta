@@ -15,7 +15,7 @@ This is the single routine-operation and recovery runbook for the site owner. It
 | Netlify | [`vanta-monolith`](https://app.netlify.com/projects/vanta-monolith), project ID `1d61bad6-06f4-4304-9bde-c4ff5f619d41` |
 | Sanity | [`vanta`](https://www.sanity.io/manage/project/o2kc8mv4), project ID `o2kc8mv4`, dataset `production` |
 | Editorial Studio entry | [`https://vanta-monolith-studio.sanity.studio`](https://vanta-monolith-studio.sanity.studio), application ID `hqf91rq4dplvkajud4do9pon` |
-| Studio browser origin | `https://www.sanity.io` (the hosted Studio entry redirects into Sanity's authenticated application shell) |
+| Studio browser origin | `https://vanta-monolith-studio.sanity.studio` |
 | Studio preview target | `https://vanta-monolith.netlify.app` |
 | Privacy notice | Repository-owned `/privacy`; Sanity `siteSettings.privacyNoticeUrl` must be `/privacy` |
 | Bag | `first-party-bag` in production; disabled in deploy previews and branch deploys |
