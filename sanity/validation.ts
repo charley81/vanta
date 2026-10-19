@@ -157,7 +157,7 @@ export function validateSingletonId(
   expected: (typeof SINGLETON_TYPES)[number],
 ): (value: unknown) => true | string {
   return (value) =>
-    value === expected
+    value === expected || value === `drafts.${expected}`
       ? true
       : `must equal the fixed singleton id "${expected}"`;
 }

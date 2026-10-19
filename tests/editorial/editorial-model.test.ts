@@ -15,7 +15,11 @@ import {
 } from "@/sanity/seed/initial-editorial";
 import { schemaTypes } from "@/sanity/schemaTypes";
 import { EDITORIAL_PROJECTIONS } from "@/sanity/projections";
-import { validateEditorialDataset } from "@/sanity/validation";
+import {
+  SINGLETON_TYPES,
+  validateEditorialDataset,
+  validateSingletonId,
+} from "@/sanity/validation";
 
 const bindings = {
   privacyNoticeUrl: "https://vanta.example/privacy",
@@ -103,6 +107,16 @@ describe("Editorial Sanity schema", () => {
       .find(({ flag }) => flag === "uri");
 
     expect(uriRule?.constraint?.options?.allowRelative).toBe(true);
+  });
+
+  it("accepts only the fixed published and draft singleton IDs", () => {
+    for (const type of SINGLETON_TYPES) {
+      expect(validateSingletonId(type)(type)).toBe(true);
+      expect(validateSingletonId(type)(`drafts.${type}`)).toBe(true);
+      expect(validateSingletonId(type)(`drafts.other-${type}`)).toBe(
+        `must equal the fixed singleton id "${type}"`,
+      );
+    }
   });
 
   it("accepts the complete initial seed", () => {
