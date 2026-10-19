@@ -86,7 +86,7 @@ test.describe("production browser security policy", () => {
     });
   });
 
-  test("restricts Editorial preview framing to the configured exact Presentation origin", async ({
+  test("restricts Editorial preview framing to the configured exact ancestor chain", async ({
     context,
     page,
   }, testInfo) => {
@@ -131,7 +131,9 @@ test.describe("production browser security policy", () => {
     expect(response).not.toBeNull();
     const headers = response!.headers();
     const csp = headers["content-security-policy"];
-    expect(csp).toContain(`frame-ancestors ${presentationOrigin}`);
+    expect(csp).toContain(
+      `frame-ancestors ${presentationOrigin} ${studioOrigin}`,
+    );
     expect(csp).toContain("connect-src 'self' blob:");
     expect(csp.match(/frame-ancestors/gu)).toHaveLength(1);
     expect(csp).not.toContain("frame-ancestors *");
@@ -169,17 +171,27 @@ test.describe("production browser security policy", () => {
     }
 
     const previewUrl = new URL("/monolith", framedPreviewOrigin).href;
-    const harnessUrl = `${presentationOrigin}/presentation-qualification-harness`;
-    await page.route(harnessUrl, async (route) => {
+    const studioHarnessUrl = `${studioOrigin}/presentation-qualification-harness`;
+    await page.route(studioHarnessUrl, async (route) => {
       await route.fulfill({
         body: `<!doctype html><iframe id="preview" src="${previewUrl}"></iframe>`,
         contentType: "text/html",
       });
     });
-    await page.goto(harnessUrl);
-    await expect(page.frameLocator("#preview").locator("body")).toContainText(
-      "MONOLITH",
-    );
+    const sanityShellUrl = `${presentationOrigin}/studio-shell`;
+    await page.route(sanityShellUrl, async (route) => {
+      await route.fulfill({
+        body: `<!doctype html><iframe id="studio" src="${studioHarnessUrl}"></iframe>`,
+        contentType: "text/html",
+      });
+    });
+    await page.goto(sanityShellUrl);
+    await expect(
+      page
+        .frameLocator("#studio")
+        .frameLocator("#preview")
+        .locator("body"),
+    ).toContainText("MONOLITH");
 
     await attachJson(testInfo, "editorial-preview-security-headers", {
       candidate: testInfo.config.metadata,

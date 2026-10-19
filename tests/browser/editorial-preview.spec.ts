@@ -53,7 +53,7 @@ test("authenticated Editorial preview is marked, private, non-indexable, and Bag
   expect(response!.headers()["cache-control"]).toContain("no-store");
   expect(response!.headers()["x-robots-tag"]).toContain("noindex");
   expect(response!.headers()["content-security-policy"]).toContain(
-    "frame-ancestors https://www.sanity.io",
+    "frame-ancestors https://www.sanity.io https://studio.example",
   );
   expect(response!.headers()["x-frame-options"]).toBeUndefined();
 
@@ -133,7 +133,8 @@ test("Editorial preview answers Sanity Presentation's visual-editing handshake",
     });
     await route.fulfill({ response });
   });
-  await page.route("https://www.sanity.io/presentation-harness", async (route) => {
+  const studioHarnessUrl = "https://studio.example/presentation-harness";
+  await page.route(studioHarnessUrl, async (route) => {
     await route.fulfill({
       contentType: "text/html",
       body: `<!doctype html>
@@ -155,12 +156,23 @@ test("Editorial preview answers Sanity Presentation's visual-editing handshake",
         </script>`,
     });
   });
+  const sanityShellUrl = "https://www.sanity.io/studio-shell";
+  await page.route(sanityShellUrl, async (route) => {
+    await route.fulfill({
+      contentType: "text/html",
+      body: `<!doctype html><iframe id="studio" src="${studioHarnessUrl}"></iframe>`,
+    });
+  });
 
-  await page.goto("https://www.sanity.io/presentation-harness");
+  await page.goto(sanityShellUrl);
 
   await expect
-    .poll(() =>
-      page.evaluate(() =>
+    .poll(async () => {
+      const studioFrame = page
+        .frames()
+        .find((frame) => frame.url() === studioHarnessUrl);
+      if (!studioFrame) return false;
+      return studioFrame.evaluate(() =>
         (
           window as typeof window & {
             presentationMessages: Array<{ data?: { type?: string }; origin: string }>;
@@ -170,7 +182,7 @@ test("Editorial preview answers Sanity Presentation's visual-editing handshake",
             origin === "https://preview.example" &&
             data?.type === "visual-editing/status",
         ),
-      ),
-    )
+      );
+    })
     .toBe(true);
 });

@@ -41,7 +41,7 @@ describe("Editorial preview response boundary", () => {
     const response = await proxy(request);
 
     expect(response.headers.get("content-security-policy")).toContain(
-      "frame-ancestors https://presentation.example",
+      "frame-ancestors https://presentation.example https://studio.example",
     );
     expect(response.headers.get("content-security-policy")).toContain(
       "connect-src 'self'",
