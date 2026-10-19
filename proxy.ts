@@ -53,15 +53,20 @@ export async function proxy(request: NextRequest) {
     process.env.SANITY_STUDIO_ORIGIN,
     development,
   );
+  const presentationOrigin = parseExactOrigin(
+    process.env.SANITY_PRESENTATION_ORIGIN,
+    development,
+  );
   const session = await verifyEditorialPreviewSession(
     request.cookies.get(EDITORIAL_PREVIEW_COOKIE)?.value,
     process.env.EDITORIAL_PREVIEW_SESSION_SECRET,
   );
-  const previewStudioOrigin =
-    session && studioOrigin && session.studioOrigin === studioOrigin
-      ? studioOrigin
-      : null;
-  const isPreviewSession = previewStudioOrigin !== null;
+  const isPreviewSession = Boolean(
+    session && studioOrigin && session.studioOrigin === studioOrigin,
+  );
+  const previewPresentationOrigin = isPreviewSession
+    ? presentationOrigin
+    : null;
   const isPreviewTarget = Object.hasOwn(
     EDITORIAL_PREVIEW_TARGETS,
     request.nextUrl.pathname,
@@ -72,14 +77,16 @@ export async function proxy(request: NextRequest) {
   applyPublicResponseHeaders(response, development);
   response.headers.set(
     "Content-Security-Policy",
-    previewStudioOrigin && isPreviewTarget
-      ? previewContentSecurityPolicy(previewStudioOrigin, development)
+    previewPresentationOrigin && isPreviewTarget
+      ? previewContentSecurityPolicy(previewPresentationOrigin, development)
       : publicContentSecurityPolicy(development),
   );
 
   if (isPreviewSession && isPreviewTarget) {
     response.headers.set("Cache-Control", "private, no-store, max-age=0, must-revalidate");
     response.headers.set("X-Robots-Tag", NOINDEX);
+  }
+  if (previewPresentationOrigin && isPreviewTarget) {
     response.headers.delete("X-Frame-Options");
   } else {
     response.headers.set("X-Frame-Options", "DENY");

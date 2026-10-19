@@ -26,6 +26,7 @@ beforeEach(() => {
   process.env.SANITY_STUDIO_PROJECT_ID = "project-id";
   process.env.SANITY_STUDIO_DATASET = "production";
   process.env.SANITY_API_READ_TOKEN = "private-read-token";
+  process.env.SANITY_PRESENTATION_ORIGIN = "https://presentation.example";
   process.env.SANITY_STUDIO_ORIGIN = "https://studio.example";
   process.env.EDITORIAL_PREVIEW_SESSION_SECRET = "s".repeat(32);
 });
@@ -132,8 +133,12 @@ describe("Editorial preview entry Route Handler", () => {
     expect(validatePreviewUrl).not.toHaveBeenCalled();
   });
 
-  it("stays unavailable when any private binding is absent", async () => {
-    delete process.env.SANITY_API_READ_TOKEN;
+  it.each([
+    "SANITY_API_READ_TOKEN",
+    "SANITY_PRESENTATION_ORIGIN",
+    "SANITY_STUDIO_ORIGIN",
+  ])("stays unavailable when %s is absent", async (binding) => {
+    delete process.env[binding];
     const { GET } = await import("@/app/api/editorial/preview/route");
 
     const response = await GET(

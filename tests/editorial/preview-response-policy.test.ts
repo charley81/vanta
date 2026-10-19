@@ -18,7 +18,7 @@ describe("public and Editorial preview response policy", () => {
     expect(policy).not.toContain("*");
   });
 
-  it("changes only framing for the exact Studio origin and adds no browser Sanity connection", () => {
+  it("changes only framing for the exact Presentation origin and adds no browser Sanity connection", () => {
     const publicPolicy = publicContentSecurityPolicy();
     const previewPolicy = previewContentSecurityPolicy(
       "https://studio.example",

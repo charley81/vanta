@@ -47,6 +47,7 @@ const baseURL = remoteBaseURL ?? localBaseURL;
 if (!remoteBaseURL) {
   process.env.EDITORIAL_PREVIEW_SESSION_SECRET = localPreviewSecret;
   process.env.SANITY_CONTENT_SOURCE = "fixture";
+  process.env.SANITY_PRESENTATION_ORIGIN = "https://presentation.example";
   process.env.SANITY_STUDIO_ORIGIN = "https://studio.example";
 }
 
@@ -97,6 +98,7 @@ export default defineConfig({
           ...process.env,
           EDITORIAL_PREVIEW_SESSION_SECRET: localPreviewSecret,
           SANITY_CONTENT_SOURCE: "fixture",
+          SANITY_PRESENTATION_ORIGIN: "https://presentation.example",
           SANITY_STUDIO_ORIGIN: "https://studio.example",
         },
         reuseExistingServer: false,

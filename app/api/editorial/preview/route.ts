@@ -55,11 +55,21 @@ export async function GET(request: Request): Promise<Response> {
   }
   const token = process.env.SANITY_API_READ_TOKEN?.trim();
   const sessionSecret = process.env.EDITORIAL_PREVIEW_SESSION_SECRET;
+  const allowLocalhost = process.env.NODE_ENV !== "production";
   const expectedStudioOrigin = parseExactOrigin(
     process.env.SANITY_STUDIO_ORIGIN,
-    process.env.NODE_ENV !== "production",
+    allowLocalhost,
   );
-  if (configuration.mode !== "published" || !token || !expectedStudioOrigin) {
+  const presentationOrigin = parseExactOrigin(
+    process.env.SANITY_PRESENTATION_ORIGIN,
+    allowLocalhost,
+  );
+  if (
+    configuration.mode !== "published" ||
+    !token ||
+    !expectedStudioOrigin ||
+    !presentationOrigin
+  ) {
     return privateResponse("Editorial preview is unavailable", 503);
   }
 

@@ -7,6 +7,7 @@ const browserPreviewSecret = "browser-preview-session-secret-32-characters";
 process.env.EDITORIAL_PREVIEW_SESSION_SECRET = browserPreviewSecret;
 process.env.SANITY_CONTENT_SOURCE = "fixture";
 process.env.SANITY_STUDIO_ORIGIN = "https://studio.example";
+process.env.SANITY_PRESENTATION_ORIGIN = "https://www.sanity.io";
 
 export default defineConfig({
   testDir: "./tests/browser",
@@ -42,6 +43,7 @@ export default defineConfig({
       ...process.env,
       EDITORIAL_PREVIEW_SESSION_SECRET: browserPreviewSecret,
       SANITY_CONTENT_SOURCE: "fixture",
+      SANITY_PRESENTATION_ORIGIN: "https://www.sanity.io",
       SANITY_STUDIO_ORIGIN: "https://studio.example",
     },
     reuseExistingServer: false,
